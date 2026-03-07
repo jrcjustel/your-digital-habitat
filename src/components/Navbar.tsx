@@ -8,7 +8,7 @@ const navItems = [
   { label: "Particulares", href: "/inmuebles" },
   { label: "Inversores", href: "/inversores" },
   { label: "Cómo funciona", href: "/como-funciona" },
-  { label: "Marketplace", href: "/inversores" },
+  { label: "Valorar inmueble", href: "/valorar" },
 ];
 
 const Navbar = () => {

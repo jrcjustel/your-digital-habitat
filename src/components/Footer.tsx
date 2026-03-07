@@ -27,6 +27,7 @@ const footerSections = [
     links: [
       { label: "Sobre nosotros", href: "/" },
       { label: "Contacto", href: "/" },
+      { label: "Valorar mi inmueble", href: "/valorar" },
     ],
   },
   {
