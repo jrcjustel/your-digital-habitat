@@ -12,13 +12,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
   display_name: string | null;
   phone: string | null;
   avatar_url: string | null;
+  nda_signed?: boolean;
+  nda_signed_at?: string | null;
 }
 
 interface Favorite {
@@ -50,7 +52,7 @@ interface Offer {
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile>({ display_name: "", phone: "", avatar_url: "" });
+  const [profile, setProfile] = useState<Profile>({ display_name: "", phone: "", avatar_url: "", nda_signed: false, nda_signed_at: null });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -70,12 +72,12 @@ const Dashboard = () => {
 
   const loadData = async () => {
     const [profileRes, favRes, alertRes, offersRes] = await Promise.all([
-      supabase.from("profiles").select("display_name, phone, avatar_url").eq("user_id", user!.id).single(),
+      supabase.from("profiles").select("display_name, phone, avatar_url, nda_signed, nda_signed_at").eq("user_id", user!.id).single(),
       supabase.from("favorites").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("alerts").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
     ]);
-    if (profileRes.data) setProfile(profileRes.data);
+    if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
     if (favRes.data) setFavorites(favRes.data);
     if (alertRes.data) setAlerts(alertRes.data);
     if (offersRes.data) setOffers(offersRes.data as unknown as Offer[]);
@@ -270,6 +272,41 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="profile">
+            {/* NDA Status */}
+            <Card className="mb-6">
+              <CardContent className="flex items-center gap-4 p-5">
+                {profile.nda_signed ? (
+                  <>
+                    <div className="p-3 rounded-full bg-green-50">
+                      <ShieldCheck className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">NDA firmado</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Acuerdo de confidencialidad aceptado el{" "}
+                        {profile.nda_signed_at
+                          ? new Date(profile.nda_signed_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+                          : "—"}
+                        . Tienes acceso completo a productos NPL y Cesión de Remate.
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-3 rounded-full bg-destructive/10">
+                      <ShieldX className="w-6 h-6 text-destructive" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">NDA pendiente</h3>
+                      <p className="text-sm text-muted-foreground">
+                        No has firmado el Acuerdo de Confidencialidad. Accede a cualquier producto NPL o Cesión de Remate para firmarlo y desbloquear la documentación completa.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader><CardTitle>Datos personales</CardTitle></CardHeader>
               <CardContent className="space-y-4 max-w-md">
