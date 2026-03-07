@@ -26,6 +26,8 @@ import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
+import Academia from "./pages/Academia";
+import AcademiaArticle from "./pages/AcademiaArticle";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,8 @@ const App = () => (
             <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
             <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
+            <Route path="/academia" element={<Academia />} />
+            <Route path="/academia/:slug" element={<AcademiaArticle />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             {/* Legal */}
