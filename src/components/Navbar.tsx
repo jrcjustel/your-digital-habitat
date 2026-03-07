@@ -8,6 +8,7 @@ const navItems = [
   { label: "Particulares", href: "#particulares" },
   { label: "Inversores", href: "#inversores" },
   { label: "Obra Nueva", href: "#obra-nueva" },
+  { label: "Activos NPL", href: "/npl" },
   { label: "Marketplace", href: "#marketplace" },
 ];
 
@@ -29,15 +30,25 @@ const Navbar = () => {
         </a>
 
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors rounded-lg hover:bg-secondary"
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) =>
+            item.href.startsWith("/") ? (
+              <button
+                key={item.label}
+                onClick={() => navigate(item.href)}
+                className="px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors rounded-lg hover:bg-secondary"
+              >
+                {item.label}
+              </button>
+            ) : (
+              <a
+                key={item.label}
+                href={item.href}
+                className="px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors rounded-lg hover:bg-secondary"
+              >
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -78,16 +89,26 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="md:hidden bg-card border-t border-border animate-fade-in">
           <div className="container mx-auto px-4 py-4 space-y-2">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="block px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
-                onClick={() => setMobileOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item) =>
+              item.href.startsWith("/") ? (
+                <button
+                  key={item.label}
+                  onClick={() => { setMobileOpen(false); navigate(item.href); }}
+                  className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="block px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </a>
+              )
+            )}
             {user ? (
               <>
                 <button onClick={() => { setMobileOpen(false); navigate("/mi-cuenta"); }} className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg">
