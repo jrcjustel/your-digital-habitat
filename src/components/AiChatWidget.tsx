@@ -199,7 +199,7 @@ const AiChatWidget = () => {
         }`}
         aria-label="Asesor IA"
       >
-        {isOpen ? <X className="w-5 h-5" /> : <Bot className="w-6 h-6" />}
+        {isOpen ? <X className="w-5 h-5" /> : <span className="text-2xl">👩‍💼</span>}
       </button>
 
       {/* Chat window */}
