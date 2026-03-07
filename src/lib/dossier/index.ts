@@ -5,7 +5,7 @@ import type { DossierData } from "./types";
 import type { Property } from "@/data/properties";
 import { occupancyLabels, judicialPhaseLabels } from "@/data/properties";
 
-export { generateInvestmentDossier } from "./generateDossier";
+export { generateInvestmentDossier, generateDossierBlob } from "./generateDossier";
 export type { DossierData } from "./types";
 
 const saleTypeToOpType: Record<string, DossierData["operationType"]> = {
