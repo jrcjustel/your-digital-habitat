@@ -181,8 +181,8 @@ export const drawTable = (
   // Data rows
   rows.forEach((row, ri) => {
     x = MARGIN;
-    const bg = ri % 2 === 0 ? BRAND_LIGHT_BG : WHITE;
-    doc.setFillColor(...bg);
+    const bg: [number, number, number] = ri % 2 === 0 ? [...BRAND_LIGHT_BG] : [...WHITE];
+    doc.setFillColor(bg[0], bg[1], bg[2]);
     doc.rect(x, y, CONTENT_WIDTH, rowH, "F");
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
