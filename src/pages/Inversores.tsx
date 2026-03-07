@@ -1,19 +1,43 @@
 import { useNavigate } from "react-router-dom";
-import { Building2, Landmark, Package, FileText, Gavel, Users, TreePine, Map, Target, Shield, Eye, Award, Headphones, ArrowRight } from "lucide-react";
+import { CreditCard, Gavel, Home, Building2, Package, Users, TreePine, Map, Target, Shield, Eye, Award, Headphones, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Newsletter from "@/components/Newsletter";
 
-const categories = [
-  { icon: FileText, label: "NPL (Deuda)", description: "Carteras de crédito impagado con descuentos significativos", href: "/npl", active: true },
-  { icon: Gavel, label: "Cesiones de Remate", description: "Oportunidades en subastas judiciales con alto potencial", href: "/npl", active: true },
-  { icon: Building2, label: "Obra Parada (WIP)", description: "Promociones sin finalizar listas para retomar", href: "#", active: false },
-  { icon: Landmark, label: "Edificios", description: "Edificios completos para rehabilitación o explotación", href: "#", active: false },
-  { icon: Package, label: "Grandes Lotes", description: "Paquetes de activos diversificados por geografía y tipo", href: "#", active: false },
-  { icon: Users, label: "Activos Ocupados", description: "Inmuebles con inquilinos y rentabilidad desde el primer día", href: "#", active: false },
-  { icon: TreePine, label: "Suelo Rústico", description: "Terrenos rústicos con potencial de revalorización", href: "#", active: false },
-  { icon: Map, label: "Suelo Urbanizable", description: "Suelo con desarrollo urbanístico aprobado o en curso", href: "#", active: false },
-  { icon: Target, label: "Suelo Finalista", description: "Parcelas listas para edificar con licencia en trámite", href: "#", active: false },
+const mainCategories = [
+  {
+    icon: CreditCard,
+    label: "NPL (Compra de crédito)",
+    description: "Adquiere derechos de crédito hipotecario impagado con descuentos significativos sobre la deuda pendiente.",
+    href: "/inversores/npl",
+    active: true,
+    color: "bg-destructive/10 border-destructive/20 text-destructive",
+  },
+  {
+    icon: Gavel,
+    label: "Cesiones de Remate",
+    description: "Oportunidades de adjudicación de inmuebles tras subastas judiciales, por debajo del valor de mercado.",
+    href: "/inversores/cesiones-remate",
+    active: true,
+    color: "bg-accent/10 border-accent/20 text-accent",
+  },
+  {
+    icon: Home,
+    label: "Inmuebles Ocupados",
+    description: "Inmuebles sin posesión con los mayores descuentos del mercado. Para inversores experimentados.",
+    href: "/inversores/ocupados",
+    active: true,
+    color: "bg-primary/10 border-primary/20 text-primary",
+  },
+];
+
+const futureCategories = [
+  { icon: Building2, label: "Obra Parada (WIP)", description: "Promociones sin finalizar listas para retomar" },
+  { icon: Package, label: "Grandes Lotes", description: "Paquetes de activos diversificados por geografía y tipo" },
+  { icon: Users, label: "Postura en Subasta", description: "Acuerdos de postura para participar en subastas activas" },
+  { icon: TreePine, label: "Suelo Rústico", description: "Terrenos rústicos con potencial de revalorización" },
+  { icon: Map, label: "Suelo Urbanizable", description: "Suelo con desarrollo urbanístico aprobado o en curso" },
+  { icon: Target, label: "Suelo Finalista", description: "Parcelas listas para edificar con licencia en trámite" },
 ];
 
 const features = [
@@ -38,58 +62,84 @@ const Inversores = () => {
             Inversión inmobiliaria con alta rentabilidad y seguridad
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Accede a oportunidades exclusivas en activos NPL, cesiones de remate, obra parada y mucho más. Todo verificado por nuestro equipo de expertos.
+            Accede a oportunidades exclusivas en activos NPL, cesiones de remate, inmuebles ocupados y mucho más.
+            Todo verificado por nuestro equipo de expertos.
           </p>
         </div>
       </section>
 
-      {/* Asset Categories */}
+      {/* Main 3 Categories */}
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="section-label">Marketplace de Inversión</span>
+            <span className="section-label">Oportunidades de Inversión</span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
-              Categorías de activos disponibles
+              Elige tu tipo de inversión
             </h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+              Tres vehículos de inversión especializados, cada uno con su propio marketplace y documentación detallada.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {categories.map((cat) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {mainCategories.map((cat) => (
               <button
                 key={cat.label}
-                onClick={() => cat.active && navigate(cat.href)}
-                disabled={!cat.active}
-                className={`flex items-start gap-4 bg-card rounded-xl p-6 text-left card-elevated group transition-all ${
-                  cat.active
-                    ? "hover:border-accent cursor-pointer"
-                    : "opacity-60 cursor-not-allowed"
-                }`}
+                onClick={() => navigate(cat.href)}
+                className="flex flex-col items-center text-center bg-card rounded-2xl p-8 card-elevated group transition-all hover:border-accent cursor-pointer border border-border"
               >
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors">
-                  <cat.icon className="w-5 h-5 text-accent group-hover:text-accent-foreground transition-colors" />
+                <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center mb-5 ${cat.color}`}>
+                  <cat.icon className="w-7 h-7" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-heading font-semibold text-foreground group-hover:text-accent transition-colors">
-                      {cat.label}
-                    </span>
-                    {cat.active && <ArrowRight className="w-4 h-4 text-accent opacity-0 group-hover:opacity-100 transition-opacity" />}
-                    {!cat.active && (
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-                        Próximamente
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{cat.description}</p>
-                </div>
+                <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-accent transition-colors mb-2">
+                  {cat.label}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{cat.description}</p>
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent">
+                  Ver oportunidades <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
               </button>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Future Categories */}
+      <section className="py-12 md:py-16 bg-secondary/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="section-label">Próximamente</span>
+            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mt-3">
+              Más categorías en camino
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {futureCategories.map((cat) => (
+              <div
+                key={cat.label}
+                className="flex items-start gap-3 bg-card rounded-xl p-5 border border-border opacity-60"
+              >
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+                  <cat.icon className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-heading font-semibold text-foreground text-sm">{cat.label}</span>
+                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+                      Próximamente
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{cat.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Why Invest */}
-      <section className="py-16 md:py-20 bg-secondary">
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="section-label">Por qué invertir con IKESA</span>
@@ -100,7 +150,7 @@ const Inversores = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feat) => (
-              <div key={feat.title} className="text-center bg-card rounded-2xl p-8 card-elevated">
+              <div key={feat.title} className="text-center bg-card rounded-2xl p-8 card-elevated border border-border">
                 <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-5">
                   <feat.icon className="w-6 h-6 text-accent" />
                 </div>
