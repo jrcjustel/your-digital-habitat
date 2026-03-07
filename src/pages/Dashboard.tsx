@@ -125,7 +125,6 @@ const Dashboard = () => {
     property: properties.find((p) => p.id === f.property_id),
   })).filter((f) => f.property);
 
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleQuickSearch = (e: React.FormEvent) => {
     e.preventDefault();
