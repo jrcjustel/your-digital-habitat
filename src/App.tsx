@@ -14,7 +14,7 @@ import AdminImport from "./pages/AdminImport";
 import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
-import CookieConsent from "./components/CookieConsent";
+import AiChatWidget from "./components/AiChatWidget";
 import NplDetail from "./pages/NplDetail";
 import ComoFunciona from "./pages/ComoFunciona";
 import AvisoLegal from "./pages/AvisoLegal";
@@ -24,7 +24,6 @@ import CanalDenuncias from "./pages/CanalDenuncias";
 import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
-import AsesorIa from "./pages/AsesorIa";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,9 +60,9 @@ const App = () => (
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="/valorar" element={<Valorador />} />
-            <Route path="/asesor-ia" element={<AsesorIa />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AiChatWidget />
           <CookieConsent />
         </BrowserRouter>
       </AuthProvider>
