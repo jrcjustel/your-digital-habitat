@@ -11,8 +11,8 @@ import {
 } from "./helpers";
 import logoUrl from "@/assets/ikesa-logo-color.png";
 
-/** Generate professional investment dossier PDF */
-export const generateInvestmentDossier = async (data: DossierData) => {
+/** Generate professional investment dossier PDF. Returns the jsPDF doc. */
+export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   let y = 0;
 
@@ -380,7 +380,19 @@ export const generateInvestmentDossier = async (data: DossierData) => {
     doc.text(`Página ${i} de ${totalPages}`, PAGE_WIDTH - MARGIN, 288, { align: "right" });
   }
 
+  return doc;
+};
+
+/** Generate and download dossier PDF */
+export const generateInvestmentDossier = async (data: DossierData) => {
+  const doc = await buildDossierDoc(data);
   doc.save(`IKESA-Dossier-${data.reference}.pdf`);
+};
+
+/** Generate dossier and return as Blob */
+export const generateDossierBlob = async (data: DossierData): Promise<Blob> => {
+  const doc = await buildDossierDoc(data);
+  return doc.output("blob");
 };
 
 function buildAutoDescription(data: DossierData): string {
