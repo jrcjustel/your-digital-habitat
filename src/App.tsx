@@ -47,6 +47,7 @@ const App = () => (
             <Route path="/mi-cuenta" element={<Dashboard />} />
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
+            <Route path="/admin/leads-valoracion" element={<AdminRoute><AdminValuationLeads /></AdminRoute>} />
             <Route path="/inversores" element={<Inversores />} />
             <Route path="/inversores/npl" element={<InversoresNpl />} />
             <Route path="/inversores/cesiones-remate" element={<InversoresCdr />} />
