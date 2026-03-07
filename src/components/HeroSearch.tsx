@@ -54,10 +54,10 @@ const HeroSearch = () => {
               />
             </div>
 
-            <button className="btn-search flex items-center justify-center gap-2 rounded-xl">
+            <a href="/inmuebles" className="btn-search flex items-center justify-center gap-2 rounded-xl">
               <Search className="w-4 h-4" />
               Buscar
-            </button>
+            </a>
           </div>
         </div>
       </div>

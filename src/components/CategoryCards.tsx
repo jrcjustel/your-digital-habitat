@@ -44,9 +44,9 @@ const CategoryCards = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {categories.map((cat) => (
-            <a
+            <Link
               key={cat.title}
-              href={cat.href}
+              to={cat.href}
               className="group relative rounded-2xl overflow-hidden aspect-[16/10] card-elevated"
             >
               <img
@@ -64,7 +64,7 @@ const CategoryCards = () => {
                   {cat.description}
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
