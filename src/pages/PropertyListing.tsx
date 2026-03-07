@@ -194,8 +194,71 @@ const PropertyListing = () => {
     nave: "Nave", edificio: "Edificio", "obra-parada": "Obra parada",
   };
 
+  const ActiveFilterChips = () => {
+    const chips: { label: string; onRemove: () => void }[] = [];
+
+    if (referenceSearch) {
+      chips.push({ label: `"${referenceSearch}"`, onRemove: () => setReferenceSearch("") });
+    }
+    selectedSaleTypes.forEach((st) => {
+      chips.push({
+        label: saleTypes.find((s) => s.value === st)?.label || st,
+        onRemove: () => setSelectedSaleTypes((prev) => prev.filter((v) => v !== st)),
+      });
+    });
+    selectedTypes.forEach((t) => {
+      chips.push({
+        label: typeLabels[t] || t,
+        onRemove: () => setSelectedTypes((prev) => prev.filter((v) => v !== t)),
+      });
+    });
+    selectedCommunities.forEach((c) => {
+      chips.push({ label: c, onRemove: () => setSelectedCommunities((prev) => prev.filter((v) => v !== c)) });
+    });
+    selectedProvinces.forEach((p) => {
+      chips.push({ label: p, onRemove: () => setSelectedProvinces((prev) => prev.filter((v) => v !== p)) });
+    });
+    selectedOccupancy.forEach((o) => {
+      chips.push({
+        label: occupancyLabels[o],
+        onRemove: () => setSelectedOccupancy((prev) => prev.filter((v) => v !== o)),
+      });
+    });
+    if (selectedOperation) {
+      chips.push({
+        label: selectedOperation === "venta" ? "Comprar" : "Alquilar",
+        onRemove: () => setSelectedOperation(""),
+      });
+    }
+
+    if (chips.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-1.5 pb-3 mb-3 border-b border-border">
+        {chips.map((chip, i) => (
+          <span
+            key={i}
+            className="inline-flex items-center gap-1 bg-accent/15 text-accent text-xs font-semibold px-2.5 py-1 rounded-full"
+          >
+            {chip.label}
+            <button onClick={chip.onRemove} className="hover:text-accent-foreground transition-colors">
+              <X className="w-3 h-3" />
+            </button>
+          </span>
+        ))}
+        <button
+          onClick={clearFilters}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors underline ml-1"
+        >
+          Limpiar
+        </button>
+      </div>
+    );
+  };
+
   const SidebarFilters = () => (
     <div className="space-y-4">
+      <ActiveFilterChips />
       <FilterSection title="🔍 Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
         <input
           type="text"
