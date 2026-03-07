@@ -10,6 +10,7 @@ import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
+import SaleTypeBanner from "@/components/SaleTypeBanner";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
