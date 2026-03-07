@@ -30,6 +30,8 @@ export interface Property {
   hasTerrace?: boolean;
   hasElevator?: boolean;
   year?: number;
+  lat: number;
+  lng: number;
 }
 
 export const properties: Property[] = [
