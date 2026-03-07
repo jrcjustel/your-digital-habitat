@@ -388,8 +388,7 @@ const NplDetail = () => {
                   <div className="mt-4 pt-4 border-t border-border">
                     <OfferForm
                       propertyId={asset.id}
-                      propertyRef={asset.referencia_fencia || asset.asset_id || undefined}
-                      propertyTitle={`${asset.tipo_activo || "Activo"} — ${asset.municipio || ""}`}
+                      propertyReference={asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
                     />
                   </div>
                 )}
