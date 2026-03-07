@@ -11,6 +11,7 @@ import DocumentsPanel from "@/components/DocumentsPanel";
 import { generatePropertyPdf } from "@/lib/generatePropertyPdf";
 import { generateInvestmentDossier, propertyToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
+import EnrichedDossierButton from "@/components/EnrichedDossierButton";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
@@ -252,6 +253,7 @@ const PropertyDetail = () => {
                         <FileText className="w-3.5 h-3.5" />
                         Dossier
                       </button>
+                      <EnrichedDossierButton dossierData={propertyToDossier(property)} />
                       <ShareDossierDialog dossierData={propertyToDossier(property)} />
                     </div>
                   </div>
@@ -440,6 +442,7 @@ const PropertyDetail = () => {
                         <FileText className="w-3.5 h-3.5" />
                         Dossier
                       </button>
+                      <EnrichedDossierButton dossierData={propertyToDossier(property)} />
                       <ShareDossierDialog dossierData={propertyToDossier(property)} />
                     </div>
                   </div>

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
+import EnrichedDossierButton from "@/components/EnrichedDossierButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import NdaGate from "@/components/NdaGate";
@@ -385,8 +386,14 @@ const NplDetail = () => {
                   onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}
                 >
                   <Download className="w-4 h-4" />
-                  Descargar Dossier Inversión
+                  Descargar Dossier
                 </Button>
+
+                <EnrichedDossierButton
+                  dossierData={nplAssetToDossier(asset as any)}
+                  variant="outline"
+                  className="w-full mb-3"
+                />
 
                 <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
                   <Button variant="outline" className="w-full gap-2 mb-3">
