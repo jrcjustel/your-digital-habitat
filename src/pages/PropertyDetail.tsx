@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,6 +7,7 @@ import { properties, saleTypes, occupancyLabels, judicialPhaseLabels } from "@/d
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import OfferForm from "@/components/OfferForm";
+import DocumentsPanel from "@/components/DocumentsPanel";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
@@ -300,6 +301,9 @@ const PropertyDetail = () => {
                           <FileText className="w-4 h-4" /> Información deuda
                         </TabsTrigger>
                       )}
+                      <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <FolderOpen className="w-4 h-4" /> Documentos
+                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value="inmueble" className="p-6 mt-0">
                       <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
@@ -347,6 +351,12 @@ const PropertyDetail = () => {
                         </div>
                       </TabsContent>
                     )}
+                    <TabsContent value="documentos" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-accent" /> Documentación del activo
+                      </h3>
+                      <DocumentsPanel propertyId={property.id} compact showFilters />
+                    </TabsContent>
                   </Tabs>
                 </div>
               </NdaGate>
@@ -419,6 +429,9 @@ const PropertyDetail = () => {
                           <FileText className="w-4 h-4" /> Información deuda
                         </TabsTrigger>
                       )}
+                      <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <FolderOpen className="w-4 h-4" /> Documentos
+                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value="inmueble" className="p-6 mt-0">
                       <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
@@ -466,6 +479,12 @@ const PropertyDetail = () => {
                         </div>
                       </TabsContent>
                     )}
+                    <TabsContent value="documentos" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-accent" /> Documentación del activo
+                      </h3>
+                      <DocumentsPanel propertyId={property.id} compact showFilters />
+                    </TabsContent>
                   </Tabs>
                 </div>
               </>
