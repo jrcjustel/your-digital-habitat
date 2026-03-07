@@ -17,10 +17,11 @@ const footerSections = [
   {
     title: "Compañía",
     links: [
-      { label: "Sobre nosotros", href: "/" },
-      { label: "Contacto", href: "/" },
+      { label: "Academia", href: "/academia" },
       { label: "Cómo funciona", href: "/como-funciona" },
       { label: "Valorar mi inmueble", href: "/valorar" },
+      { label: "Análisis de mercado", href: "/analytics" },
+      { label: "Contacto", href: "/" },
     ],
   },
   {
