@@ -71,6 +71,7 @@ const AdminDocuments = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
   const [nplAssetId, setNplAssetId] = useState<string>("none");
+  const [propertyId, setPropertyId] = useState("");
   const [isConfidential, setIsConfidential] = useState(true);
   const [searchAsset, setSearchAsset] = useState("");
 
