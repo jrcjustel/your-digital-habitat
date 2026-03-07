@@ -88,8 +88,8 @@ export default {
         "slide-up": "slide-up 0.6s ease-out",
       },
       fontFamily: {
-        heading: ['"Plus Jakarta Sans"', 'sans-serif'],
-        body: ['"Inter"', 'sans-serif'],
+        heading: ['"Montserrat"', 'Arial', 'sans-serif'],
+        body: ['"Montserrat"', 'Arial', 'sans-serif'],
       },
     },
   },
