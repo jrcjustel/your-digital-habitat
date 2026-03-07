@@ -8,6 +8,7 @@ const navItems = [
   { label: "Particulares", href: "#particulares" },
   { label: "Inversores", href: "#inversores" },
   { label: "Obra Nueva", href: "#obra-nueva" },
+  { label: "Activos NPL", href: "/npl" },
   { label: "Marketplace", href: "#marketplace" },
 ];
 
