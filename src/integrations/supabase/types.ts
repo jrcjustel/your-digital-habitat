@@ -123,94 +123,136 @@ export type Database = {
       }
       npl_assets: {
         Row: {
+          anio_construccion: number | null
           asset_id: string | null
           cartera: string | null
           cesion_credito: boolean | null
           cesion_remate: boolean | null
+          codigo_postal: string | null
+          comision_porcentaje: number | null
           comunidad_autonoma: string | null
           created_at: string
+          deposito_porcentaje: number | null
+          descripcion: string | null
           deuda_ob: number | null
           direccion: string | null
           estado_judicial: string | null
           estado_ocupacional: string | null
+          fase_judicial: string | null
           finca_registral: string | null
           id: string
           importe_preaprobado: number | null
+          judicializado: boolean | null
           municipio: string | null
           name_debtor: string | null
           ndg: string | null
+          num_titulares: number | null
           oferta_aprobada: boolean | null
           persona_tipo: string | null
+          postura_subasta: boolean | null
+          precio_orientativo: number | null
+          propiedad_sin_posesion: boolean | null
           provincia: string | null
           publicado: boolean | null
           rango_deuda: string | null
           ref_catastral: string | null
+          referencia_fencia: string | null
           registro_propiedad: string | null
           servicer: string | null
           sqm: number | null
           tipo_activo: string | null
           tipo_procedimiento: string | null
           valor_activo: number | null
+          valor_mercado: number | null
+          vpo: boolean | null
         }
         Insert: {
+          anio_construccion?: number | null
           asset_id?: string | null
           cartera?: string | null
           cesion_credito?: boolean | null
           cesion_remate?: boolean | null
+          codigo_postal?: string | null
+          comision_porcentaje?: number | null
           comunidad_autonoma?: string | null
           created_at?: string
+          deposito_porcentaje?: number | null
+          descripcion?: string | null
           deuda_ob?: number | null
           direccion?: string | null
           estado_judicial?: string | null
           estado_ocupacional?: string | null
+          fase_judicial?: string | null
           finca_registral?: string | null
           id?: string
           importe_preaprobado?: number | null
+          judicializado?: boolean | null
           municipio?: string | null
           name_debtor?: string | null
           ndg?: string | null
+          num_titulares?: number | null
           oferta_aprobada?: boolean | null
           persona_tipo?: string | null
+          postura_subasta?: boolean | null
+          precio_orientativo?: number | null
+          propiedad_sin_posesion?: boolean | null
           provincia?: string | null
           publicado?: boolean | null
           rango_deuda?: string | null
           ref_catastral?: string | null
+          referencia_fencia?: string | null
           registro_propiedad?: string | null
           servicer?: string | null
           sqm?: number | null
           tipo_activo?: string | null
           tipo_procedimiento?: string | null
           valor_activo?: number | null
+          valor_mercado?: number | null
+          vpo?: boolean | null
         }
         Update: {
+          anio_construccion?: number | null
           asset_id?: string | null
           cartera?: string | null
           cesion_credito?: boolean | null
           cesion_remate?: boolean | null
+          codigo_postal?: string | null
+          comision_porcentaje?: number | null
           comunidad_autonoma?: string | null
           created_at?: string
+          deposito_porcentaje?: number | null
+          descripcion?: string | null
           deuda_ob?: number | null
           direccion?: string | null
           estado_judicial?: string | null
           estado_ocupacional?: string | null
+          fase_judicial?: string | null
           finca_registral?: string | null
           id?: string
           importe_preaprobado?: number | null
+          judicializado?: boolean | null
           municipio?: string | null
           name_debtor?: string | null
           ndg?: string | null
+          num_titulares?: number | null
           oferta_aprobada?: boolean | null
           persona_tipo?: string | null
+          postura_subasta?: boolean | null
+          precio_orientativo?: number | null
+          propiedad_sin_posesion?: boolean | null
           provincia?: string | null
           publicado?: boolean | null
           rango_deuda?: string | null
           ref_catastral?: string | null
+          referencia_fencia?: string | null
           registro_propiedad?: string | null
           servicer?: string | null
           sqm?: number | null
           tipo_activo?: string | null
           tipo_procedimiento?: string | null
           valor_activo?: number | null
+          valor_mercado?: number | null
+          vpo?: boolean | null
         }
         Relationships: []
       }
