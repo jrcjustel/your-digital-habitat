@@ -6,8 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
-  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash
+  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download
 } from "lucide-react";
+import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import NdaGate from "@/components/NdaGate";
@@ -375,6 +376,15 @@ const NplDetail = () => {
                 >
                   <Euro className="w-4 h-4" />
                   {showOffer ? "Ocultar formulario" : "Presentar oferta"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 mb-3"
+                  onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}
+                >
+                  <Download className="w-4 h-4" />
+                  Descargar Dossier Inversión
                 </Button>
 
                 <Button variant="outline" className="w-full gap-2" asChild>
