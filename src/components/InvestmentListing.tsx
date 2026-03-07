@@ -23,7 +23,7 @@ interface NplAsset {
   cartera: string | null;
   valor_mercado: number;
   precio_orientativo: number;
-  referencia_fencia: string | null;
+  referencia_interna: string | null;
 }
 
 interface InvestmentListingProps {

@@ -48,7 +48,7 @@ interface NplAsset {
   vpo: boolean;
   judicializado: boolean;
   fase_judicial: string | null;
-  referencia_fencia: string | null;
+  referencia_interna: string | null;
   valor_mercado: number;
   precio_orientativo: number;
   num_titulares: number;
