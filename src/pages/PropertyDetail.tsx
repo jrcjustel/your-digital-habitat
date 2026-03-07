@@ -324,6 +324,55 @@ const PropertyDetail = () => {
                         <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
                         <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
                       </div>
+                      {/* CEE - Certificado Eficiencia Energética (obligatorio RD 235/2013) */}
+                      <div className="mt-6 p-4 bg-secondary rounded-xl">
+                        <h4 className="text-sm font-bold text-foreground mb-3">Certificado de Eficiencia Energética (CEE)</h4>
+                        {property.cee ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold text-lg text-primary-foreground ${
+                                property.cee.rating === "A" ? "bg-[hsl(142,71%,45%)]" :
+                                property.cee.rating === "B" ? "bg-[hsl(142,50%,55%)]" :
+                                property.cee.rating === "C" ? "bg-[hsl(80,60%,50%)]" :
+                                property.cee.rating === "D" ? "bg-[hsl(48,90%,50%)]" :
+                                property.cee.rating === "E" ? "bg-[hsl(30,90%,50%)]" :
+                                property.cee.rating === "F" ? "bg-[hsl(15,80%,50%)]" :
+                                property.cee.rating === "G" ? "bg-destructive" :
+                                "bg-muted text-muted-foreground"
+                              }`}>
+                                {property.cee.rating === "exento" ? "EX" :
+                                 property.cee.rating === "en_tramite" ? "⏳" :
+                                 property.cee.rating === "no_disponible" ? "–" :
+                                 property.cee.rating}
+                              </span>
+                              <div>
+                                <p className="text-sm font-semibold text-foreground">
+                                  {property.cee.rating === "exento" ? "Exento de calificación energética" :
+                                   property.cee.rating === "en_tramite" ? "Certificado en trámite" :
+                                   property.cee.rating === "no_disponible" ? "Pendiente de obtención" :
+                                   `Calificación energética: ${property.cee.rating}`}
+                                </p>
+                                {property.cee.consumption && (
+                                  <p className="text-xs text-muted-foreground">Consumo: {property.cee.consumption} kWh/m²·año</p>
+                                )}
+                                {property.cee.emissions && (
+                                  <p className="text-xs text-muted-foreground">Emisiones: {property.cee.emissions} kgCO₂/m²·año</p>
+                                )}
+                              </div>
+                            </div>
+                            {property.cee.rating === "exento" && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Inmueble exento según RD 235/2013, art. 2.2 (edificio a demoler, reforma integral pendiente, o uso &lt;4 meses/año).
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted font-bold">–</span>
+                            <p className="text-sm">Certificado en proceso de obtención. Obligatorio según RD 235/2013.</p>
+                          </div>
+                        )}
+                      </div>
                     </TabsContent>
                     <TabsContent value="judicial" className="p-6 mt-0">
                       <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
@@ -451,6 +500,55 @@ const PropertyDetail = () => {
                         <InfoRow label="Estado ocupacional" value={occupancyLabels[property.occupancyStatus]} />
                         <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
                         <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
+                      </div>
+                      {/* CEE - Certificado Eficiencia Energética (obligatorio RD 235/2013) */}
+                      <div className="mt-6 p-4 bg-secondary rounded-xl">
+                        <h4 className="text-sm font-bold text-foreground mb-3">Certificado de Eficiencia Energética (CEE)</h4>
+                        {property.cee ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold text-lg text-primary-foreground ${
+                                property.cee.rating === "A" ? "bg-[hsl(142,71%,45%)]" :
+                                property.cee.rating === "B" ? "bg-[hsl(142,50%,55%)]" :
+                                property.cee.rating === "C" ? "bg-[hsl(80,60%,50%)]" :
+                                property.cee.rating === "D" ? "bg-[hsl(48,90%,50%)]" :
+                                property.cee.rating === "E" ? "bg-[hsl(30,90%,50%)]" :
+                                property.cee.rating === "F" ? "bg-[hsl(15,80%,50%)]" :
+                                property.cee.rating === "G" ? "bg-destructive" :
+                                "bg-muted text-muted-foreground"
+                              }`}>
+                                {property.cee.rating === "exento" ? "EX" :
+                                 property.cee.rating === "en_tramite" ? "⏳" :
+                                 property.cee.rating === "no_disponible" ? "–" :
+                                 property.cee.rating}
+                              </span>
+                              <div>
+                                <p className="text-sm font-semibold text-foreground">
+                                  {property.cee.rating === "exento" ? "Exento de calificación energética" :
+                                   property.cee.rating === "en_tramite" ? "Certificado en trámite" :
+                                   property.cee.rating === "no_disponible" ? "Pendiente de obtención" :
+                                   `Calificación energética: ${property.cee.rating}`}
+                                </p>
+                                {property.cee.consumption && (
+                                  <p className="text-xs text-muted-foreground">Consumo: {property.cee.consumption} kWh/m²·año</p>
+                                )}
+                                {property.cee.emissions && (
+                                  <p className="text-xs text-muted-foreground">Emisiones: {property.cee.emissions} kgCO₂/m²·año</p>
+                                )}
+                              </div>
+                            </div>
+                            {property.cee.rating === "exento" && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Inmueble exento según RD 235/2013, art. 2.2 (edificio a demoler, reforma integral pendiente, o uso &lt;4 meses/año).
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-muted font-bold">–</span>
+                            <p className="text-sm">Certificado en proceso de obtención. Obligatorio según RD 235/2013.</p>
+                          </div>
+                        )}
                       </div>
                     </TabsContent>
                     <TabsContent value="judicial" className="p-6 mt-0">
