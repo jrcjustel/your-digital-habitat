@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { properties, saleTypes, occupancyLabels, judicialPhaseLabels } from "@/data/properties";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import NdaGate from "@/components/NdaGate";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -17,6 +18,10 @@ const PropertyDetail = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [ndaSigned, setNdaSigned] = useState(false);
+  const [ndaLoading, setNdaLoading] = useState(true);
+
+  const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
   useEffect(() => {
     if (user && id) {
@@ -25,6 +30,18 @@ const PropertyDetail = () => {
       });
     }
   }, [user, id]);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("nda_signed").eq("user_id", user.id).single().then(({ data }) => {
+        setNdaSigned(!!(data as any)?.nda_signed);
+        setNdaLoading(false);
+      });
+    } else {
+      setNdaSigned(false);
+      setNdaLoading(false);
+    }
+  }, [user]);
 
   const toggleFavorite = async () => {
     if (!user) {
