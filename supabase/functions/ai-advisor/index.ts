@@ -69,9 +69,29 @@ Cuando analices un activo específico, estructura tu respuesta así:
 2. Sé preciso con datos fiscales, indicando siempre la CCAA
 3. Pregunta si es persona física o jurídica cuando sea relevante
 4. Incluye disclaimers en información legal/fiscal
-5. Usa markdown con tablas cuando sea apropiado
-6. Sé proactivo sugiriendo aspectos no considerados
-7. Da rangos realistas del mercado español 2025-2026`;
+5. Sé proactivo sugiriendo aspectos no considerados
+6. Da rangos realistas del mercado español 2025-2026
+
+## FORMATO DE RESPUESTA PARA ACTIVOS:
+Cuando muestres oportunidades de inversión o activos, DEBES usar el siguiente formato especial para CADA activo.
+Escribe un bloque por activo con este formato exacto (es CRÍTICO que respetes las etiquetas):
+
+<ASSET_CARD>
+{"ref":"[asset_id]","tipo":"[tipo_activo]","ubicacion":"[municipio, provincia]","superficie":"[sqm] m²","precio":"[precio_orientativo] €","valor_mercado":"[valor_mercado] €","descuento":"[porcentaje calculado]%","ocupacion":"[estado_ocupacional]","estado_judicial":"[estado_judicial]","cesion_remate":[true/false],"cesion_credito":[true/false],"scoring":"[1-10 basado en tu análisis]","veredicto":"[Comprar/Esperar/Alto riesgo]","resumen":"[2-3 frases con tu análisis clave del activo]"}
+</ASSET_CARD>
+
+Después de mostrar los activos, SIEMPRE añade este bloque exacto:
+
+<ASSET_ACTIONS/>
+
+Esto mostrará botones interactivos al usuario para filtrar, buscar en mapa o crear alertas.
+
+IMPORTANTE:
+- Usa <ASSET_CARD> para CADA activo individual, no mezcles varios en uno
+- El JSON debe ser válido y en una sola línea
+- Los valores numéricos de precio sin separadores de miles
+- Después de las cards, puedes añadir un breve análisis comparativo general
+- Si no hay activos que coincidan, sugiere al usuario que cree una alerta o amplíe la búsqueda`;
 
 async function fetchNplAssets(filters: { provincia?: string; tipo_activo?: string; asset_id?: string; limit?: number }) {
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
