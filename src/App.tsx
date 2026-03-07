@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import AdminImport from "./pages/AdminImport";
+import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
 import NplDetail from "./pages/NplDetail";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mi-cuenta" element={<Dashboard />} />
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
+            <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
             <Route path="/inversores" element={<Inversores />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
