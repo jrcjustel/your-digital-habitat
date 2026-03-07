@@ -87,6 +87,23 @@ const PropertyDetail = () => {
     nave: "Nave industrial", edificio: "Edificio", "obra-parada": "Obra parada",
   };
 
+  const operationLabels: Record<string, string> = {
+    venta: "Venta",
+    alquiler: "Alquiler",
+  };
+
+  const saleTypeColors: Record<string, string> = {
+    compraventa: "bg-primary text-primary-foreground",
+    npl: "bg-destructive text-destructive-foreground",
+    "cesion-remate": "bg-accent text-accent-foreground",
+    ocupado: "bg-muted-foreground text-background",
+  };
+
+  const operationColors: Record<string, string> = {
+    venta: "bg-primary/20 text-primary border border-primary/30",
+    alquiler: "bg-accent/20 text-accent border border-accent/30",
+  };
+
   const saleTypeLabel = saleTypes.find((s) => s.value === property.saleType)?.label || property.saleType;
   const discount = property.marketValue ? Math.round(((property.marketValue - property.price) / property.marketValue) * 100) : 0;
 
@@ -133,10 +150,18 @@ const PropertyDetail = () => {
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <span className="text-sm font-semibold text-accent">{saleTypeLabel}</span>
-              <div className="flex items-center gap-3 mt-1">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${saleTypeColors[property.saleType] || "bg-secondary text-foreground"}`}>
+                {saleTypeLabel}
+              </span>
+              <div className="flex items-center gap-2 mt-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
-                <span className="bg-secondary text-xs font-medium px-2.5 py-1 rounded-full text-muted-foreground">{typeLabels[property.type]}</span>
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
+                  {operationLabels[property.operation]}
+                </span>
+                <span className="bg-secondary text-xs font-medium px-2.5 py-1 rounded-full text-muted-foreground flex items-center gap-1">
+                  <Building2 className="w-3 h-3" />
+                  {typeLabels[property.type]}
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -483,9 +508,11 @@ const PropertyDetail = () => {
                   <Link key={p.id} to={`/inmueble/${p.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated">
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                      <div className="absolute top-3 left-3 flex gap-1.5">
-                        <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{p.reference}</span>
-                        <span className="bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{typeLabels[p.type]}</span>
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeColors[p.saleType] || "bg-secondary text-foreground"}`}>
+                          {saleTypes.find((s) => s.value === p.saleType)?.label || p.saleType}
+                        </span>
+                        <span className="bg-card/90 backdrop-blur-sm text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{typeLabels[p.type]}</span>
                       </div>
                       {d > 0 && <span className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">-{d}%</span>}
                     </div>
