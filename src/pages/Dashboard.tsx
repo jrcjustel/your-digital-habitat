@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen } from "lucide-react";
+import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight } from "lucide-react";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -58,6 +58,7 @@ const Dashboard = () => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [saving, setSaving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -124,6 +125,20 @@ const Dashboard = () => {
     property: properties.find((p) => p.id === f.property_id),
   })).filter((f) => f.property);
 
+
+  const handleQuickSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    navigate(`/inmuebles${params.toString() ? `?${params}` : ""}`);
+  };
+
+  const investmentChannels = [
+    { icon: CreditCard, label: "NPL (Crédito)", href: "/inversores/npl", color: "bg-destructive/10 text-destructive" },
+    { icon: Gavel, label: "Cesiones de Remate", href: "/inversores/cesiones-remate", color: "bg-accent/10 text-accent" },
+    { icon: Home, label: "Inmuebles Ocupados", href: "/inversores/ocupados", color: "bg-primary/10 text-primary" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -135,6 +150,45 @@ const Dashboard = () => {
           </div>
           <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
         </div>
+
+        {/* Quick Search Section */}
+        <Card className="mb-8 border-accent/20 bg-gradient-to-r from-secondary to-card">
+          <CardContent className="p-6">
+            <h2 className="font-heading text-lg font-bold text-foreground mb-1">Buscar oportunidades</h2>
+            <p className="text-sm text-muted-foreground mb-4">Encuentra inmuebles y activos de inversión desde tu área privada.</p>
+            <form onSubmit={handleQuickSearch} className="flex gap-2 mb-5">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por localidad, provincia, tipo..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button type="submit" className="gap-2">
+                <Search className="w-4 h-4" /> Buscar inmuebles
+              </Button>
+            </form>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {investmentChannels.map((ch) => (
+                <button
+                  key={ch.label}
+                  onClick={() => navigate(ch.href)}
+                  className="flex items-center gap-3 bg-card rounded-xl p-4 border border-border hover:border-accent/40 transition-all group text-left"
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ch.color}`}>
+                    <ch.icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">{ch.label}</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         <Tabs defaultValue="favorites" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 max-w-2xl">
