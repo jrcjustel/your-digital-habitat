@@ -349,6 +349,81 @@ export type Database = {
         }
         Relationships: []
       }
+      valuation_leads: {
+        Row: {
+          anio_construccion: number | null
+          banos: number | null
+          codigo_postal: string | null
+          created_at: string
+          direccion: string
+          email: string
+          estado: string | null
+          habitaciones: number | null
+          id: string
+          municipio: string | null
+          nombre: string
+          planta: number | null
+          provincia: string | null
+          superficie_m2: number
+          telefono: string | null
+          tiene_ascensor: boolean | null
+          tiene_garaje: boolean | null
+          tiene_trastero: boolean | null
+          tipo_inmueble: string
+          valor_estimado_max: number | null
+          valor_estimado_medio: number | null
+          valor_estimado_min: number | null
+        }
+        Insert: {
+          anio_construccion?: number | null
+          banos?: number | null
+          codigo_postal?: string | null
+          created_at?: string
+          direccion: string
+          email: string
+          estado?: string | null
+          habitaciones?: number | null
+          id?: string
+          municipio?: string | null
+          nombre: string
+          planta?: number | null
+          provincia?: string | null
+          superficie_m2: number
+          telefono?: string | null
+          tiene_ascensor?: boolean | null
+          tiene_garaje?: boolean | null
+          tiene_trastero?: boolean | null
+          tipo_inmueble: string
+          valor_estimado_max?: number | null
+          valor_estimado_medio?: number | null
+          valor_estimado_min?: number | null
+        }
+        Update: {
+          anio_construccion?: number | null
+          banos?: number | null
+          codigo_postal?: string | null
+          created_at?: string
+          direccion?: string
+          email?: string
+          estado?: string | null
+          habitaciones?: number | null
+          id?: string
+          municipio?: string | null
+          nombre?: string
+          planta?: number | null
+          provincia?: string | null
+          superficie_m2?: number
+          telefono?: string | null
+          tiene_ascensor?: boolean | null
+          tiene_garaje?: boolean | null
+          tiene_trastero?: boolean | null
+          tipo_inmueble?: string
+          valor_estimado_max?: number | null
+          valor_estimado_medio?: number | null
+          valor_estimado_min?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

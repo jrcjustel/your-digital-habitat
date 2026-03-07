@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.import-npl]
 verify_jwt = false
+
+[functions.valorar-inmueble]
+verify_jwt = false
