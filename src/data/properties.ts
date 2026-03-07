@@ -506,6 +506,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "E", consumption: 175, emissions: 40 },
     judicialInfo: {
       judicializado: true,
       phase: "demanda",
@@ -545,6 +546,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "D", consumption: 155, emissions: 38 },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
@@ -589,6 +591,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "G", consumption: 310, emissions: 75 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -628,6 +631,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 230, emissions: 55 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -662,6 +666,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "C", consumption: 88, emissions: 22 },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
@@ -703,6 +708,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 210, emissions: 50 },
     judicialInfo: {
       judicializado: true,
       phase: "demanda",
@@ -741,6 +747,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "C", consumption: 92, emissions: 23 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -779,6 +786,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "en_tramite" },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
