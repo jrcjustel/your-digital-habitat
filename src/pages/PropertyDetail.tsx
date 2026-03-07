@@ -452,7 +452,14 @@ const PropertyDetail = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Offer CTA */}
-            <OfferForm propertyId={property.id} propertyReference={property.reference} />
+            {isRestricted && (!user || !ndaSigned) ? (
+              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 text-center">
+                <Lock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Regístrate y firma el NDA para enviar ofertas en productos NPL/CDR.</p>
+              </div>
+            ) : (
+              <OfferForm propertyId={property.id} propertyReference={property.reference} />
+            )}
 
             {/* Reference card */}
             <div className="bg-card border border-border rounded-2xl p-5 text-center">
