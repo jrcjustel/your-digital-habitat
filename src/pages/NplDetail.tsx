@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
-  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download
+  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
+import ShareDossierDialog from "@/components/ShareDossierDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import NdaGate from "@/components/NdaGate";
@@ -386,6 +387,13 @@ const NplDetail = () => {
                   <Download className="w-4 h-4" />
                   Descargar Dossier Inversión
                 </Button>
+
+                <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
+                  <Button variant="outline" className="w-full gap-2 mb-3">
+                    <Mail className="w-4 h-4" />
+                    Enviar Dossier por Email
+                  </Button>
+                </ShareDossierDialog>
 
                 <Button variant="outline" className="w-full gap-2" asChild>
                   <a href="#contacto">

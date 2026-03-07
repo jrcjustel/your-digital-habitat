@@ -10,6 +10,7 @@ import OfferForm from "@/components/OfferForm";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import { generatePropertyPdf } from "@/lib/generatePropertyPdf";
 import { generateInvestmentDossier, propertyToDossier } from "@/lib/dossier";
+import ShareDossierDialog from "@/components/ShareDossierDialog";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
@@ -249,8 +250,9 @@ const PropertyDetail = () => {
                       </button>
                       <button onClick={() => generateInvestmentDossier(propertyToDossier(property))} className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-medium transition-colors">
                         <FileText className="w-3.5 h-3.5" />
-                        Dossier Inversión
+                        Dossier
                       </button>
+                      <ShareDossierDialog dossierData={propertyToDossier(property)} />
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
@@ -436,8 +438,9 @@ const PropertyDetail = () => {
                       </button>
                       <button onClick={() => generateInvestmentDossier(propertyToDossier(property))} className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-medium transition-colors">
                         <FileText className="w-3.5 h-3.5" />
-                        Dossier Inversión
+                        Dossier
                       </button>
+                      <ShareDossierDialog dossierData={propertyToDossier(property)} />
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
