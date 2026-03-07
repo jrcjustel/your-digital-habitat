@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,10 +36,13 @@ interface InvestmentListingProps {
 const PAGE_SIZE = 25;
 
 const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) => {
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+
   const [assets, setAssets] = useState<NplAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialQuery);
   const [provincia, setProvincia] = useState("all");
   const [tipo, setTipo] = useState("all");
   const [page, setPage] = useState(1);
