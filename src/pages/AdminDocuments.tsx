@@ -71,6 +71,7 @@ const AdminDocuments = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
   const [nplAssetId, setNplAssetId] = useState<string>("none");
+  const [propertyId, setPropertyId] = useState("");
   const [isConfidential, setIsConfidential] = useState(true);
   const [searchAsset, setSearchAsset] = useState("");
 
@@ -121,6 +122,7 @@ const AdminDocuments = () => {
         mime_type: file.type,
         category,
         npl_asset_id: nplAssetId !== "none" ? nplAssetId : null,
+        property_id: propertyId.trim() || null,
         is_confidential: isConfidential,
       } as any);
 
@@ -134,6 +136,7 @@ const AdminDocuments = () => {
       setDescription("");
       setCategory("general");
       setNplAssetId("none");
+      setPropertyId("");
       setIsConfidential(true);
 
       // Reset file input
@@ -309,6 +312,18 @@ const AdminDocuments = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                  </div>
+
+                  {/* Property ID link */}
+                  <div className="space-y-2">
+                    <Label htmlFor="property-id">Vincular a inmueble (property_id)</Label>
+                    <Input
+                      id="property-id"
+                      value={propertyId}
+                      onChange={(e) => setPropertyId(e.target.value)}
+                      placeholder="Ej: 1, 2, 3..."
+                    />
+                    <p className="text-xs text-muted-foreground">ID del inmueble del catálogo estático</p>
                   </div>
 
                   {/* Confidential */}
