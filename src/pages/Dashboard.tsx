@@ -12,7 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX } from "lucide-react";
+import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen } from "lucide-react";
+import DocumentsPanel from "@/components/DocumentsPanel";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -136,9 +137,10 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="favorites" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-lg">
+          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
             <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Favoritos</TabsTrigger>
             <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
+            <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Documentos</TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Alertas</TabsTrigger>
             <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Perfil</TabsTrigger>
           </TabsList>
@@ -240,6 +242,18 @@ const Dashboard = () => {
               </div>
             )}
           </TabsContent>
+          <TabsContent value="documents">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-heading text-lg font-bold text-foreground">Centro de documentación</h2>
+                  <p className="text-sm text-muted-foreground">Documentos compartidos contigo por el equipo de ikesa.</p>
+                </div>
+              </div>
+              <DocumentsPanel showFilters={true} />
+            </div>
+          </TabsContent>
+
           <TabsContent value="alerts">
             {alerts.length === 0 ? (
               <Card><CardContent className="py-12 text-center">
