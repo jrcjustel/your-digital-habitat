@@ -136,6 +136,7 @@ const AdminDocuments = () => {
       setDescription("");
       setCategory("general");
       setNplAssetId("none");
+      setPropertyId("");
       setIsConfidential(true);
 
       // Reset file input
