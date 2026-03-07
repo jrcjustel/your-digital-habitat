@@ -324,6 +324,7 @@ export const properties: Property[] = [
     lng: -6.4370,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "C", consumption: 95, emissions: 24 },
   },
   {
     id: "8",
