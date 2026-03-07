@@ -9,17 +9,9 @@ const footerSections = [
       { label: "Oficinas", href: "/inmuebles?type=oficina" },
       { label: "Terrenos", href: "/inmuebles?type=terreno" },
       { label: "Naves", href: "/inmuebles?type=nave" },
-      { label: "Edificios", href: "/inmuebles?type=edificio" },
-    ],
-  },
-  {
-    title: "Inversión",
-    links: [
-      { label: "NPL (Deuda)", href: "/inversores/npl" },
-      { label: "Cesiones de Remate", href: "/inversores/cesiones-remate" },
-      { label: "Activos Ocupados", href: "/inversores/ocupados" },
-      { label: "Cómo funciona", href: "/como-funciona" },
-      { label: "Marketplace", href: "/inversores" },
+      { label: "NPL (Deuda)", href: "/inmuebles?saleType=npl" },
+      { label: "Cesiones de Remate", href: "/inmuebles?saleType=cesion-remate" },
+      { label: "Activos Ocupados", href: "/inmuebles?saleType=ocupado" },
     ],
   },
   {
@@ -27,6 +19,7 @@ const footerSections = [
     links: [
       { label: "Sobre nosotros", href: "/" },
       { label: "Contacto", href: "/" },
+      { label: "Cómo funciona", href: "/como-funciona" },
       { label: "Valorar mi inmueble", href: "/valorar" },
     ],
   },
@@ -45,8 +38,8 @@ const popularSearches = [
   { label: "Viviendas en Cádiz", href: "/inmuebles?q=cádiz&type=vivienda" },
   { label: "Locales en Sevilla", href: "/inmuebles?q=sevilla&type=local" },
   { label: "Terrenos en Huelva", href: "/inmuebles?q=huelva&type=terreno" },
-  { label: "Inversión en Málaga", href: "/inversores" },
-  { label: "NPLs España", href: "/inversores/npl" },
+  { label: "Inversión en Málaga", href: "/inmuebles?q=málaga&saleType=npl" },
+  { label: "NPLs España", href: "/inmuebles?saleType=npl" },
 ];
 
 const Footer = () => {

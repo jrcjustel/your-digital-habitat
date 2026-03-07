@@ -5,8 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ikesaLogo from "@/assets/ikesa-logo-color.png";
 
 const navItems = [
-  { label: "Particulares", href: "/inmuebles" },
-  { label: "Inversores", href: "/inversores" },
+  { label: "Inmuebles", href: "/inmuebles" },
   { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Valorar inmueble", href: "/valorar" },
 ];
