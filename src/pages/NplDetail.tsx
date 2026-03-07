@@ -97,12 +97,29 @@ const NplDetail = () => {
   const [showOffer, setShowOffer] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      supabase.from("npl_assets").select("*").eq("id", id).single().then(({ data }) => {
+    if (!id) return;
+    // Try by UUID first, then by asset_id
+    const fetchAsset = async () => {
+      // Check if id looks like a UUID
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      
+      if (isUuid) {
+        const { data } = await supabase.from("npl_assets").select("*").eq("id", id).single();
         setAsset(data as unknown as NplAsset);
-        setLoading(false);
-      });
-    }
+      } else {
+        // Search by asset_id (reference)
+        const { data } = await supabase.from("npl_assets").select("*").eq("asset_id", id).maybeSingle();
+        if (data) {
+          setAsset(data as unknown as NplAsset);
+        } else {
+          // Try ilike as fallback
+          const { data: fuzzy } = await supabase.from("npl_assets").select("*").ilike("asset_id", `%${id}%`).limit(1).maybeSingle();
+          setAsset(fuzzy as unknown as NplAsset);
+        }
+      }
+      setLoading(false);
+    };
+    fetchAsset();
   }, [id]);
 
   useEffect(() => {
