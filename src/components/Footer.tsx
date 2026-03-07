@@ -48,7 +48,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <span className="font-heading text-2xl font-extrabold text-primary-foreground">ikesa</span>
             <span className="block text-xs text-accent mt-0.5 font-medium">Inmobiliaria / Real Estate</span>
