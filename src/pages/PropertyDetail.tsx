@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import OfferForm from "@/components/OfferForm";
 import DocumentsPanel from "@/components/DocumentsPanel";
+import { generatePropertyPdf } from "@/lib/generatePropertyPdf";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
@@ -237,7 +238,7 @@ const PropertyDetail = () => {
                 <div className="bg-card rounded-2xl border border-border p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
-                    <button className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                    <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
                       <Download className="w-3.5 h-3.5" />
                       Descargar ficha
                     </button>
@@ -366,7 +367,7 @@ const PropertyDetail = () => {
                 <div className="bg-card rounded-2xl border border-border p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
-                    <button className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                    <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
                       <Download className="w-3.5 h-3.5" />
                       Descargar ficha
                     </button>
