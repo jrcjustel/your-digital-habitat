@@ -28,6 +28,7 @@ import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import Academia from "./pages/Academia";
 import AcademiaArticle from "./pages/AcademiaArticle";
+import AcademiaRuta from "./pages/AcademiaRuta";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/academia" element={<Academia />} />
+            <Route path="/academia/ruta/:rutaSlug" element={<AcademiaRuta />} />
             <Route path="/academia/:slug" element={<AcademiaArticle />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
