@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { toast } from "@/components/ui/sonner";
@@ -606,6 +607,51 @@ const AiChatWidget = () => {
                 )}
                 <div ref={messagesEndRef} />
               </div>
+
+              {/* Alert form */}
+              {showAlertForm && (
+                <div className="border-t border-border px-3 py-3 bg-secondary/50 flex-shrink-0 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Bell className="w-3.5 h-3.5 text-primary" /> Crear alerta de inversión
+                    </p>
+                    <button onClick={() => setShowAlertForm(false)} className="text-muted-foreground hover:text-foreground">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <Input
+                    placeholder="Provincia (ej: Madrid)"
+                    value={alertFilters.provincia}
+                    onChange={(e) => setAlertFilters((f) => ({ ...f, provincia: e.target.value }))}
+                    className="h-8 text-xs"
+                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={alertFilters.tipo_activo}
+                      onChange={(e) => setAlertFilters((f) => ({ ...f, tipo_activo: e.target.value }))}
+                      className="flex-1 h-8 text-xs rounded-md border border-input bg-background px-2"
+                    >
+                      <option value="">Tipo de activo</option>
+                      <option value="vivienda">Vivienda</option>
+                      <option value="local">Local</option>
+                      <option value="garaje">Garaje</option>
+                      <option value="terreno">Terreno</option>
+                      <option value="nave">Nave</option>
+                      <option value="oficina">Oficina</option>
+                    </select>
+                    <Input
+                      placeholder="Precio máx. €"
+                      type="number"
+                      value={alertFilters.precio_max}
+                      onChange={(e) => setAlertFilters((f) => ({ ...f, precio_max: e.target.value }))}
+                      className="flex-1 h-8 text-xs"
+                    />
+                  </div>
+                  <Button onClick={handleCreateAlert} size="sm" className="w-full h-8 text-xs gap-1.5">
+                    <Bell className="w-3 h-3" /> Activar alerta
+                  </Button>
+                </div>
+              )}
 
               {/* Input */}
               <div className="border-t border-border px-3 py-2 bg-background/50 flex-shrink-0">
