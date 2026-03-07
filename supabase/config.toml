@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.valorar-inmueble]
 verify_jwt = false
+
+[functions.catastro-lookup]
+verify_jwt = false
