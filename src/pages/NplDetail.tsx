@@ -155,7 +155,7 @@ const NplDetail = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        {/* ===== HEADER CARD (Estilo Fencia) ===== */}
+        {/* ===== HEADER CARD ===== */}
         <div className="bg-card rounded-2xl border border-border overflow-hidden mb-6">
           {/* Top accent bar */}
           <div className="h-1.5 bg-gradient-to-r from-accent to-primary" />
@@ -231,7 +231,7 @@ const NplDetail = () => {
               </p>
             )}
 
-            {/* 4 Transaction type indicators (estilo Fencia) */}
+            {/* 4 Transaction type indicators */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <TransactionIndicator
                 icon={CreditCard}
