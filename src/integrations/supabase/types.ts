@@ -65,6 +65,99 @@ export type Database = {
         }
         Relationships: []
       }
+      npl_assets: {
+        Row: {
+          asset_id: string | null
+          cartera: string | null
+          cesion_credito: boolean | null
+          cesion_remate: boolean | null
+          comunidad_autonoma: string | null
+          created_at: string
+          deuda_ob: number | null
+          direccion: string | null
+          estado_judicial: string | null
+          estado_ocupacional: string | null
+          finca_registral: string | null
+          id: string
+          importe_preaprobado: number | null
+          municipio: string | null
+          name_debtor: string | null
+          ndg: string | null
+          oferta_aprobada: boolean | null
+          persona_tipo: string | null
+          provincia: string | null
+          publicado: boolean | null
+          rango_deuda: string | null
+          ref_catastral: string | null
+          registro_propiedad: string | null
+          servicer: string | null
+          sqm: number | null
+          tipo_activo: string | null
+          tipo_procedimiento: string | null
+          valor_activo: number | null
+        }
+        Insert: {
+          asset_id?: string | null
+          cartera?: string | null
+          cesion_credito?: boolean | null
+          cesion_remate?: boolean | null
+          comunidad_autonoma?: string | null
+          created_at?: string
+          deuda_ob?: number | null
+          direccion?: string | null
+          estado_judicial?: string | null
+          estado_ocupacional?: string | null
+          finca_registral?: string | null
+          id?: string
+          importe_preaprobado?: number | null
+          municipio?: string | null
+          name_debtor?: string | null
+          ndg?: string | null
+          oferta_aprobada?: boolean | null
+          persona_tipo?: string | null
+          provincia?: string | null
+          publicado?: boolean | null
+          rango_deuda?: string | null
+          ref_catastral?: string | null
+          registro_propiedad?: string | null
+          servicer?: string | null
+          sqm?: number | null
+          tipo_activo?: string | null
+          tipo_procedimiento?: string | null
+          valor_activo?: number | null
+        }
+        Update: {
+          asset_id?: string | null
+          cartera?: string | null
+          cesion_credito?: boolean | null
+          cesion_remate?: boolean | null
+          comunidad_autonoma?: string | null
+          created_at?: string
+          deuda_ob?: number | null
+          direccion?: string | null
+          estado_judicial?: string | null
+          estado_ocupacional?: string | null
+          finca_registral?: string | null
+          id?: string
+          importe_preaprobado?: number | null
+          municipio?: string | null
+          name_debtor?: string | null
+          ndg?: string | null
+          oferta_aprobada?: boolean | null
+          persona_tipo?: string | null
+          provincia?: string | null
+          publicado?: boolean | null
+          rango_deuda?: string | null
+          ref_catastral?: string | null
+          registro_propiedad?: string | null
+          servicer?: string | null
+          sqm?: number | null
+          tipo_activo?: string | null
+          tipo_procedimiento?: string | null
+          valor_activo?: number | null
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           created_at: string
