@@ -140,14 +140,16 @@ const PropertyDetail = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header card - sale type + reference + prices */}
+        {/* Sale type context banner */}
+        <div className="mb-6">
+          <SaleTypeBanner saleType={property.saleType} />
+        </div>
+
+        {/* Header card - reference + prices */}
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${saleTypeColors[property.saleType] || "bg-secondary text-foreground"}`}>
-                {saleTypeLabel}
-              </span>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
                 <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
                   {operationLabels[property.operation]}
