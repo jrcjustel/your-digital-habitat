@@ -32,7 +32,7 @@ const BlogSection = () => {
           </div>
           <a
             href="#blog"
-            className="hidden md:inline-flex text-sm font-semibold text-primary hover:underline"
+            className="hidden md:inline-flex text-sm font-semibold text-accent hover:underline"
           >
             Ver Blog →
           </a>
@@ -48,12 +48,12 @@ const BlogSection = () => {
               <div className="aspect-[16/9] bg-secondary" />
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-xs font-semibold text-primary bg-secondary px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-semibold text-accent bg-secondary px-2.5 py-1 rounded-full">
                     {post.category}
                   </span>
                   <span className="text-xs text-muted-foreground">{post.date}</span>
                 </div>
-                <h3 className="font-heading font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
+                <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
                   {post.title}
                 </h3>
               </div>
@@ -62,7 +62,7 @@ const BlogSection = () => {
         </div>
 
         <div className="text-center mt-8 md:hidden">
-          <a href="#blog" className="text-sm font-semibold text-primary hover:underline">
+          <a href="#blog" className="text-sm font-semibold text-accent hover:underline">
             Ver Blog →
           </a>
         </div>

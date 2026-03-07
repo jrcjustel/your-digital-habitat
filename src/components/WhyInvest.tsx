@@ -41,7 +41,7 @@ const WhyInvest = () => {
               className="text-center bg-card rounded-2xl p-8 card-elevated"
             >
               <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-5">
-                <feat.icon className="w-6 h-6 text-primary" />
+                <feat.icon className="w-6 h-6 text-accent" />
               </div>
               <h3 className="font-heading text-lg font-bold text-foreground mb-2">
                 {feat.title}

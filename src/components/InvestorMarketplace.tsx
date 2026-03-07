@@ -30,10 +30,10 @@ const InvestorMarketplace = () => {
               href={asset.href}
               className="flex items-center gap-4 bg-card rounded-xl p-5 card-elevated group"
             >
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <asset.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors">
+                <asset.icon className="w-5 h-5 text-accent group-hover:text-accent-foreground transition-colors" />
               </div>
-              <span className="font-heading font-semibold text-foreground group-hover:text-primary transition-colors">
+              <span className="font-heading font-semibold text-foreground group-hover:text-accent transition-colors">
                 {asset.label}
               </span>
             </a>
