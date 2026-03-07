@@ -1,47 +1,151 @@
 import { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, MapPin, Bed, Bath, Maximize, TrendingUp, ChevronDown, LayoutGrid, List, Map as MapIcon } from "lucide-react";
+import { Search, MapPin, Bed, Bath, Maximize, TrendingUp, ChevronDown, ChevronUp, LayoutGrid, List, Map as MapIcon, X, Heart } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyMap from "@/components/PropertyMap";
-import { properties, propertyTypes, provinces, type PropertyType, type OperationType } from "@/data/properties";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/sonner";
+import {
+  properties,
+  propertyTypes,
+  provinces,
+  communities,
+  saleTypes,
+  occupancyLabels,
+  type PropertyType,
+  type OperationType,
+  type SaleType,
+  type OccupancyStatus,
+} from "@/data/properties";
 
 type ViewMode = "grid" | "list" | "map";
 
+const FilterSection = ({
+  title,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) => (
+  <div className="border-b border-border pb-4">
+    <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-sm font-bold text-foreground">
+      {title}
+      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+    </button>
+    {isOpen && <div className="mt-2 space-y-1.5">{children}</div>}
+  </div>
+);
+
+const CheckboxFilter = ({
+  label,
+  count,
+  checked,
+  onChange,
+}: {
+  label: string;
+  count: number;
+  checked: boolean;
+  onChange: () => void;
+}) => (
+  <label className="flex items-center justify-between cursor-pointer group text-sm">
+    <span className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="rounded border-border text-accent focus:ring-accent"
+      />
+      <span className="text-foreground group-hover:text-accent transition-colors">{label}</span>
+    </span>
+    <span className="text-xs text-muted-foreground">({count})</span>
+  </label>
+);
+
 const PropertyListing = () => {
   const [searchParams] = useSearchParams();
-  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [sortBy, setSortBy] = useState("recent");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const [filters, setFilters] = useState({
-    operation: (searchParams.get("operation") || "") as OperationType | "",
-    type: (searchParams.get("type") || "") as PropertyType | "",
-    province: searchParams.get("province") || "",
-    search: searchParams.get("q") || "",
-    priceMin: "",
-    priceMax: "",
-    bedroomsMin: "",
-    areaMin: "",
-    profitabilityMin: "",
+  // Filter states
+  const [referenceSearch, setReferenceSearch] = useState(searchParams.get("q") || "");
+  const [selectedSaleTypes, setSelectedSaleTypes] = useState<SaleType[]>(
+    searchParams.get("saleType") ? [searchParams.get("saleType") as SaleType] : []
+  );
+  const [selectedTypes, setSelectedTypes] = useState<PropertyType[]>(
+    searchParams.get("type") ? [searchParams.get("type") as PropertyType] : []
+  );
+  const [selectedCommunities, setSelectedCommunities] = useState<string[]>([]);
+  const [selectedProvinces, setSelectedProvinces] = useState<string[]>(
+    searchParams.get("province") ? [searchParams.get("province")!] : []
+  );
+  const [selectedOccupancy, setSelectedOccupancy] = useState<OccupancyStatus[]>([]);
+  const [selectedOperation, setSelectedOperation] = useState<OperationType | "">(
+    (searchParams.get("operation") || "") as OperationType | ""
+  );
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+
+  // Section open states
+  const [openSections, setOpenSections] = useState({
+    reference: true,
+    price: true,
+    saleType: true,
+    community: true,
+    province: true,
+    propertyType: true,
+    occupancy: true,
+    operation: true,
   });
 
-  const [sortBy, setSortBy] = useState("recent");
+  const toggleSection = (key: keyof typeof openSections) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleArrayFilter = <T extends string>(arr: T[], value: T, setter: (v: T[]) => void) => {
+    setter(arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]);
+  };
+
+  // Counts for filters
+  const getCounts = (key: string, values: string[]) => {
+    const counts: Record<string, number> = {};
+    values.forEach((v) => {
+      counts[v] = properties.filter((p) => (p as any)[key] === v).length;
+    });
+    return counts;
+  };
+
+  const typeCounts = getCounts("type", propertyTypes.map((t) => t.value));
+  const provinceCounts = getCounts("province", provinces);
+  const communityCounts = getCounts("community", communities);
+  const saleTypeCounts = getCounts("saleType", saleTypes.map((t) => t.value));
+  const occupancyCounts: Record<string, number> = {};
+  (["libre", "ocupado-con-derecho", "ocupado-sin-derecho", "desconocido"] as OccupancyStatus[]).forEach((s) => {
+    const c = properties.filter((p) => p.occupancyStatus === s).length;
+    if (c > 0) occupancyCounts[s] = c;
+  });
 
   const filtered = useMemo(() => {
     let result = properties.filter((p) => {
-      if (filters.operation && p.operation !== filters.operation) return false;
-      if (filters.type && p.type !== filters.type) return false;
-      if (filters.province && p.province !== filters.province) return false;
-      if (filters.search) {
-        const q = filters.search.toLowerCase();
-        const searchable = `${p.title} ${p.location} ${p.province} ${p.description} ${p.features.join(" ")} ${p.reference}`.toLowerCase();
+      if (selectedOperation && p.operation !== selectedOperation) return false;
+      if (selectedSaleTypes.length > 0 && !selectedSaleTypes.includes(p.saleType)) return false;
+      if (selectedTypes.length > 0 && !selectedTypes.includes(p.type)) return false;
+      if (selectedProvinces.length > 0 && !selectedProvinces.includes(p.province)) return false;
+      if (selectedCommunities.length > 0 && !selectedCommunities.includes(p.community)) return false;
+      if (selectedOccupancy.length > 0 && !selectedOccupancy.includes(p.occupancyStatus)) return false;
+      if (referenceSearch) {
+        const q = referenceSearch.toLowerCase();
+        const searchable = `${p.title} ${p.location} ${p.province} ${p.description} ${p.reference} ${p.features.join(" ")} ${p.municipality}`.toLowerCase();
         if (!searchable.includes(q)) return false;
       }
-      if (filters.priceMin && p.price < Number(filters.priceMin)) return false;
-      if (filters.priceMax && p.price > Number(filters.priceMax)) return false;
-      if (filters.bedroomsMin && (p.bedrooms ?? 0) < Number(filters.bedroomsMin)) return false;
-      if (filters.areaMin && p.area < Number(filters.areaMin)) return false;
-      if (filters.profitabilityMin && (p.profitability ?? 0) < Number(filters.profitabilityMin)) return false;
+      if (priceMin && p.price < Number(priceMin)) return false;
+      if (priceMax && p.price > Number(priceMax)) return false;
       return true;
     });
 
@@ -49,20 +153,40 @@ const PropertyListing = () => {
     if (sortBy === "price-desc") result.sort((a, b) => b.price - a.price);
     if (sortBy === "area") result.sort((a, b) => b.area - a.area);
     if (sortBy === "profitability") result.sort((a, b) => (b.profitability ?? 0) - (a.profitability ?? 0));
+    if (sortBy === "discount") result.sort((a, b) => {
+      const discA = a.marketValue ? ((a.marketValue - a.price) / a.marketValue) * 100 : 0;
+      const discB = b.marketValue ? ((b.marketValue - b.price) / b.marketValue) * 100 : 0;
+      return discB - discA;
+    });
 
     return result;
-  }, [filters, sortBy]);
+  }, [referenceSearch, selectedSaleTypes, selectedTypes, selectedProvinces, selectedCommunities, selectedOccupancy, selectedOperation, priceMin, priceMax, sortBy]);
 
   const clearFilters = () => {
-    setFilters({ operation: "", type: "", province: "", search: "", priceMin: "", priceMax: "", bedroomsMin: "", areaMin: "", profitabilityMin: "" });
+    setReferenceSearch("");
+    setSelectedSaleTypes([]);
+    setSelectedTypes([]);
+    setSelectedProvinces([]);
+    setSelectedCommunities([]);
+    setSelectedOccupancy([]);
+    setSelectedOperation("");
+    setPriceMin("");
+    setPriceMax("");
   };
 
-  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const activeFilterCount =
+    selectedSaleTypes.length + selectedTypes.length + selectedProvinces.length +
+    selectedCommunities.length + selectedOccupancy.length +
+    (selectedOperation ? 1 : 0) + (priceMin ? 1 : 0) + (priceMax ? 1 : 0) + (referenceSearch ? 1 : 0);
 
-  const formatPrice = (price: number, operation: OperationType) => {
-    return operation === "alquiler"
-      ? `${price.toLocaleString("es-ES")} €/mes`
-      : `${price.toLocaleString("es-ES")} €`;
+  const formatPrice = (price: number, operation: OperationType) =>
+    operation === "alquiler" ? `${price.toLocaleString("es-ES")} €/mes` : `${price.toLocaleString("es-ES")} €`;
+
+  const saleTypeLabels: Record<string, string> = {
+    compraventa: "Compraventa",
+    npl: "NPL",
+    "cesion-remate": "Cesión remate",
+    ocupado: "Ocupado",
   };
 
   const typeLabels: Record<string, string> = {
@@ -70,254 +194,328 @@ const PropertyListing = () => {
     nave: "Nave", edificio: "Edificio", "obra-parada": "Obra parada",
   };
 
-  const PropertyCard = ({ property }: { property: typeof properties[0] }) => (
-    <Link
-      to={`/inmueble/${property.id}`}
-      className="group bg-card rounded-2xl overflow-hidden card-elevated"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className="bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
-            {property.operation === "venta" ? "Venta" : "Alquiler"}
-          </span>
-          {property.isNew && <span className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full">Nuevo</span>}
+  const SidebarFilters = () => (
+    <div className="space-y-4">
+      <FilterSection title="🔍 Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
+        <input
+          type="text"
+          placeholder="Buscar referencia, ubicación..."
+          value={referenceSearch}
+          onChange={(e) => setReferenceSearch(e.target.value)}
+          className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+        />
+      </FilterSection>
+
+      <FilterSection title="€ Precio orientativo" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
+        <div className="flex gap-2">
+          <input type="number" placeholder="Min" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+          <input type="number" placeholder="Máx" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
         </div>
-        {property.profitability && (
-          <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />{property.profitability}%
-          </div>
-        )}
-      </div>
-      <div className="p-5">
-        <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-2">
-          <MapPin className="w-3 h-3" />{property.location}, {property.province}
-        </div>
-        <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-3 leading-snug">{property.title}</h3>
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-          <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{property.area.toLocaleString("es-ES")} m²</span>
-          {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" />{property.bedrooms} hab.</span>}
-          {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} baños</span>}
-        </div>
-        <div className="flex items-end justify-between">
-          <p className="font-heading text-xl font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
-          <span className="text-xs text-muted-foreground">Ref: {property.reference}</span>
-        </div>
-      </div>
-    </Link>
+      </FilterSection>
+
+      <FilterSection title="📋 Operación" isOpen={openSections.operation} onToggle={() => toggleSection("operation")}>
+        <select value={selectedOperation} onChange={(e) => setSelectedOperation(e.target.value as any)} className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+          <option value="">Todas</option>
+          <option value="venta">Comprar</option>
+          <option value="alquiler">Alquilar</option>
+        </select>
+      </FilterSection>
+
+      <FilterSection title="📑 Tipo de venta" isOpen={openSections.saleType} onToggle={() => toggleSection("saleType")}>
+        {saleTypes.map((st) => (
+          <CheckboxFilter
+            key={st.value}
+            label={st.label}
+            count={saleTypeCounts[st.value] || 0}
+            checked={selectedSaleTypes.includes(st.value)}
+            onChange={() => toggleArrayFilter(selectedSaleTypes, st.value, setSelectedSaleTypes)}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="📍 Comunidad autónoma" isOpen={openSections.community} onToggle={() => toggleSection("community")}>
+        {communities.map((c) => (
+          <CheckboxFilter
+            key={c}
+            label={c}
+            count={communityCounts[c] || 0}
+            checked={selectedCommunities.includes(c)}
+            onChange={() => toggleArrayFilter(selectedCommunities, c, setSelectedCommunities)}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="📍 Provincia" isOpen={openSections.province} onToggle={() => toggleSection("province")}>
+        {provinces.map((p) => (
+          <CheckboxFilter
+            key={p}
+            label={p}
+            count={provinceCounts[p] || 0}
+            checked={selectedProvinces.includes(p)}
+            onChange={() => toggleArrayFilter(selectedProvinces, p, setSelectedProvinces)}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="🏠 Tipo de propiedad" isOpen={openSections.propertyType} onToggle={() => toggleSection("propertyType")}>
+        {propertyTypes.map((t) => (
+          <CheckboxFilter
+            key={t.value}
+            label={t.label}
+            count={typeCounts[t.value] || 0}
+            checked={selectedTypes.includes(t.value)}
+            onChange={() => toggleArrayFilter(selectedTypes, t.value, setSelectedTypes)}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="🔑 Estado ocupacional" isOpen={openSections.occupancy} onToggle={() => toggleSection("occupancy")}>
+        {Object.entries(occupancyCounts).map(([key, count]) => (
+          <CheckboxFilter
+            key={key}
+            label={occupancyLabels[key as OccupancyStatus]}
+            count={count}
+            checked={selectedOccupancy.includes(key as OccupancyStatus)}
+            onChange={() => toggleArrayFilter(selectedOccupancy, key as OccupancyStatus, setSelectedOccupancy)}
+          />
+        ))}
+      </FilterSection>
+
+      {activeFilterCount > 0 && (
+        <button onClick={clearFilters} className="w-full text-sm text-accent hover:underline py-2">
+          Limpiar todos los filtros ({activeFilterCount})
+        </button>
+      )}
+    </div>
   );
 
-  const PropertyListItem = ({ property }: { property: typeof properties[0] }) => (
-    <Link
-      to={`/inmueble/${property.id}`}
-      className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row"
-    >
-      <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0">
-        <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className="bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
-            {property.operation === "venta" ? "Venta" : "Alquiler"}
-          </span>
-          {property.isNew && <span className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full">Nuevo</span>}
-        </div>
-      </div>
-      <div className="p-5 flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-              <MapPin className="w-3 h-3" />{property.location}, {property.province}
+  const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
+    const discount = property.marketValue
+      ? Math.round(((property.marketValue - property.price) / property.marketValue) * 100)
+      : 0;
+
+    return (
+      <Link to={`/inmueble/${property.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated">
+        <div className="relative aspect-[16/10] overflow-hidden">
+          <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+            <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{property.reference}</span>
+            <span className="bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{saleTypeLabels[property.saleType]}</span>
+            <span className="bg-card/90 text-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">{typeLabels[property.type]}</span>
+          </div>
+          {discount > 0 && (
+            <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+              -{discount}%
             </div>
-            <span className="text-xs text-muted-foreground">Ref: {property.reference}</span>
-          </div>
-          <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug">{property.title}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{property.description}</p>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-3">
-            <span className="bg-secondary px-2.5 py-1 rounded-full">{typeLabels[property.type]}</span>
-            <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{property.area.toLocaleString("es-ES")} m²</span>
-            {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" />{property.bedrooms} hab.</span>}
-            {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} baños</span>}
-          </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <p className="font-heading text-xl font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
-          {property.profitability && (
-            <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
-              <TrendingUp className="w-3.5 h-3.5 text-accent" />
-              <span className="text-xs font-bold text-foreground">{property.profitability}% rent.</span>
+          )}
+          {property.isNew && (
+            <div className="absolute bottom-3 left-3 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+              Nuevo
             </div>
           )}
         </div>
-      </div>
-    </Link>
-  );
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <MapPin className="w-3 h-3" />{property.municipality}, {property.province}
+            </div>
+            <Heart className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug text-sm">{property.title}</h3>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+            <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{property.area.toLocaleString("es-ES")} m²</span>
+            {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms}</span>}
+            {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{property.bathrooms}</span>}
+          </div>
+          <div className="flex items-end justify-between border-t border-border pt-3">
+            <div>
+              {property.marketValue && (
+                <p className="text-xs text-muted-foreground line-through">{property.marketValue.toLocaleString("es-ES")} €</p>
+              )}
+              <p className="font-heading text-lg font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
+            </div>
+            {property.profitability && (
+              <div className="flex items-center gap-1 text-xs font-bold text-accent">
+                <TrendingUp className="w-3 h-3" />{property.profitability}%
+              </div>
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
+  const PropertyListItem = ({ property }: { property: typeof properties[0] }) => {
+    const discount = property.marketValue
+      ? Math.round(((property.marketValue - property.price) / property.marketValue) * 100)
+      : 0;
+
+    return (
+      <Link to={`/inmueble/${property.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row">
+        <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0">
+          <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+            <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{property.reference}</span>
+            <span className="bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{saleTypeLabels[property.saleType]}</span>
+          </div>
+          {discount > 0 && (
+            <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+              -{discount}%
+            </div>
+          )}
+        </div>
+        <div className="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3" />{property.municipality}, {property.province}</span>
+              <span className="text-[10px] bg-secondary px-2 py-0.5 rounded-full text-muted-foreground">{typeLabels[property.type]}</span>
+            </div>
+            <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 text-sm">{property.title}</h3>
+            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{property.description}</p>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{property.area.toLocaleString("es-ES")} m²</span>
+              {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms} hab.</span>}
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary">{occupancyLabels[property.occupancyStatus]}</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+            <div>
+              {property.marketValue && <p className="text-xs text-muted-foreground line-through">{property.marketValue.toLocaleString("es-ES")} € mercado</p>}
+              <p className="font-heading text-lg font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
+            </div>
+            {property.profitability && (
+              <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
+                <TrendingUp className="w-3.5 h-3.5 text-accent" />
+                <span className="text-xs font-bold text-foreground">{property.profitability}% rent.</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Header */}
-      <div className="hero-section py-10">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary-foreground mb-2">
-            Buscador de inmuebles
-          </h1>
-          <p className="text-primary-foreground/60 text-sm">
-            {filtered.length} inmuebles encontrados
-          </p>
+      {/* Breadcrumb */}
+      <div className="bg-secondary border-b border-border">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
+            <span>/</span>
+            <span className="text-foreground font-medium">Oportunidades</span>
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Title */}
+        <div className="mb-6">
+          <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">
+            Descubre nuestras oportunidades
+          </h1>
+          <p className="text-sm text-muted-foreground max-w-3xl">
+            Invierte en oportunidades exclusivas: NPLs, cesiones de remate, inmuebles ocupados y compraventa directa. Accede a información verificada y análisis financiero con proyecciones de rentabilidad.
+          </p>
+        </div>
+
         {/* Top bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar por ubicación, tipo, referencia, características..."
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full pl-11 pr-4 py-3 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-5 py-3 bg-card border border-border rounded-xl text-sm font-medium hover:bg-secondary transition-colors"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            Filtros
-            {activeFilterCount > 0 && (
-              <span className="bg-accent text-accent-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-
-          {/* View mode toggle */}
-          <div className="flex items-center bg-card border border-border rounded-xl overflow-hidden">
-            {([
-              { mode: "grid" as ViewMode, icon: LayoutGrid, label: "Grid" },
-              { mode: "list" as ViewMode, icon: List, label: "Lista" },
-              { mode: "map" as ViewMode, icon: MapIcon, label: "Mapa" },
-            ]).map(({ mode, icon: Icon, label }) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                title={label}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-card border border-border rounded-xl px-5 py-3 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">{filtered.length}</strong> oportunidades encontradas
+          </p>
+          <div className="flex items-center gap-3">
+            {/* Mobile filter button */}
+            <button
+              onClick={() => setShowMobileFilters(true)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl text-sm font-medium"
             >
-              <option value="recent">Más recientes</option>
-              <option value="price-asc">Precio: menor a mayor</option>
-              <option value="price-desc">Precio: mayor a menor</option>
-              <option value="area">Mayor superficie</option>
-              <option value="profitability">Mayor rentabilidad</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+              Filtros {activeFilterCount > 0 && <span className="bg-accent text-accent-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center">{activeFilterCount}</span>}
+            </button>
+
+            {/* View toggle */}
+            <div className="flex items-center bg-card border border-border rounded-xl overflow-hidden">
+              {([
+                { mode: "grid" as ViewMode, icon: LayoutGrid },
+                { mode: "list" as ViewMode, icon: List },
+                { mode: "map" as ViewMode, icon: MapIcon },
+              ]).map(({ mode, icon: Icon }) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`p-2.5 transition-colors ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Icon className="w-4 h-4" />
+                </button>
+              ))}
+            </div>
+
+            {/* Sort */}
+            <div className="relative hidden sm:block">
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="appearance-none bg-card border border-border rounded-xl px-4 py-2.5 pr-8 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent">
+                <option value="recent">Más recientes</option>
+                <option value="price-asc">Precio ↑</option>
+                <option value="price-desc">Precio ↓</option>
+                <option value="discount">Mayor descuento</option>
+                <option value="profitability">Mayor rentabilidad</option>
+                <option value="area">Mayor superficie</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
           </div>
         </div>
 
-        {/* Filters panel */}
-        {showFilters && (
-          <div className="bg-card border border-border rounded-2xl p-6 mb-6 animate-fade-in">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading font-bold text-foreground">Filtros avanzados</h3>
-              <button onClick={clearFilters} className="text-xs text-accent hover:underline">Limpiar filtros</button>
+        <div className="flex gap-8">
+          {/* Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-24 bg-card border border-border rounded-2xl p-5 max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <SidebarFilters />
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Operación</label>
-                <select value={filters.operation} onChange={(e) => setFilters({ ...filters, operation: e.target.value as any })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="">Todas</option>
-                  <option value="venta">Comprar</option>
-                  <option value="alquiler">Alquilar</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Tipo</label>
-                <select value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value as any })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="">Todos</option>
-                  {propertyTypes.map((t) => (<option key={t.value} value={t.value}>{t.label}</option>))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Provincia</label>
-                <select value={filters.province} onChange={(e) => setFilters({ ...filters, province: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="">Todas</option>
-                  {provinces.map((p) => (<option key={p} value={p}>{p}</option>))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Precio mínimo</label>
-                <input type="number" placeholder="Min €" value={filters.priceMin} onChange={(e) => setFilters({ ...filters, priceMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Precio máximo</label>
-                <input type="number" placeholder="Max €" value={filters.priceMax} onChange={(e) => setFilters({ ...filters, priceMax: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Dormitorios mín.</label>
-                <select value={filters.bedroomsMin} onChange={(e) => setFilters({ ...filters, bedroomsMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="">Todos</option>
-                  <option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Superficie mín.</label>
-                <input type="number" placeholder="m²" value={filters.areaMin} onChange={(e) => setFilters({ ...filters, areaMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Rentabilidad mín.</label>
-                <select value={filters.profitabilityMin} onChange={(e) => setFilters({ ...filters, profitabilityMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="">Todas</option>
-                  <option value="3">3%+</option><option value="5">5%+</option><option value="8">8%+</option><option value="10">10%+</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        )}
+          </aside>
 
-        {/* Results */}
-        {filtered.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground text-lg mb-2">No se encontraron inmuebles</p>
-            <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
-          </div>
-        ) : viewMode === "map" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="h-[600px] rounded-2xl overflow-hidden border border-border">
-              <PropertyMap properties={filtered} />
+          {/* Mobile filter drawer */}
+          {showMobileFilters && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div className="absolute inset-0 bg-foreground/50" onClick={() => setShowMobileFilters(false)} />
+              <div className="absolute right-0 top-0 bottom-0 w-80 bg-card p-5 overflow-y-auto animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-foreground">Filtros</h3>
+                  <button onClick={() => setShowMobileFilters(false)}><X className="w-5 h-5" /></button>
+                </div>
+                <SidebarFilters />
+              </div>
             </div>
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-              {filtered.map((property) => (
-                <PropertyListItem key={property.id} property={property} />
-              ))}
-            </div>
+          )}
+
+          {/* Results */}
+          <div className="flex-1 min-w-0">
+            {filtered.length === 0 ? (
+              <div className="text-center py-20 bg-card rounded-2xl border border-border">
+                <p className="text-muted-foreground text-lg mb-2">No se encontraron oportunidades</p>
+                <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
+              </div>
+            ) : viewMode === "map" ? (
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="h-[600px] rounded-2xl overflow-hidden border border-border">
+                  <PropertyMap properties={filtered} />
+                </div>
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                  {filtered.map((p) => <PropertyListItem key={p.id} property={p} />)}
+                </div>
+              </div>
+            ) : viewMode === "list" ? (
+              <div className="space-y-4">
+                {filtered.map((p) => <PropertyListItem key={p.id} property={p} />)}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {filtered.map((p) => <PropertyCard key={p.id} property={p} />)}
+              </div>
+            )}
           </div>
-        ) : viewMode === "list" ? (
-          <div className="space-y-4">
-            {filtered.map((property) => (
-              <PropertyListItem key={property.id} property={property} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
 
       <Footer />
