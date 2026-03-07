@@ -24,6 +24,7 @@ import AvisoLegal from "./pages/AvisoLegal";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
+import Valorador from "./pages/Valorador";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/privacidad" element={<PoliticaPrivacidad />} />
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
+            <Route path="/valorar" element={<Valorador />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
