@@ -225,6 +225,8 @@ const AiChatWidget = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showAlertForm, setShowAlertForm] = useState(false);
+  const [alertFilters, setAlertFilters] = useState({ provincia: "", tipo_activo: "", precio_max: "" });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -374,10 +376,54 @@ const AiChatWidget = () => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
-  const handleViewAssetDetail = (ref: string) => {
-    // Try to navigate to the NPL detail page
-    navigate(`/npl/${ref}`);
+  const handleViewAssetDetail = async (ref: string) => {
+    // Look up the real UUID by asset_id, then navigate
+    const { data } = await supabase
+      .from("npl_assets")
+      .select("id")
+      .eq("asset_id", ref)
+      .maybeSingle();
+    
+    if (data?.id) {
+      navigate(`/npl/${data.id}`);
+    } else {
+      // Fallback: navigate with the ref and let NplDetail handle lookup
+      navigate(`/npl/${encodeURIComponent(ref)}`);
+    }
     setIsOpen(false);
+  };
+
+  const handleCreateAlert = async () => {
+    if (!user) {
+      toast.info("Inicia sesión para crear alertas personalizadas");
+      navigate("/auth");
+      return;
+    }
+
+    const filters: Record<string, string> = {};
+    if (alertFilters.provincia) filters.provincia = alertFilters.provincia;
+    if (alertFilters.tipo_activo) filters.tipo_activo = alertFilters.tipo_activo;
+    if (alertFilters.precio_max) filters.precio_max = alertFilters.precio_max;
+
+    const name = [
+      alertFilters.tipo_activo || "Todos los activos",
+      alertFilters.provincia ? `en ${alertFilters.provincia}` : "",
+      alertFilters.precio_max ? `< ${parseInt(alertFilters.precio_max).toLocaleString("es-ES")} €` : "",
+    ].filter(Boolean).join(" ");
+
+    const { error } = await supabase.from("alerts").insert({
+      user_id: user.id,
+      name,
+      filters,
+    });
+
+    if (error) {
+      toast.error("Error al crear la alerta");
+    } else {
+      toast.success("Alerta creada correctamente. Te avisaremos cuando haya nuevos activos.");
+      setShowAlertForm(false);
+      setAlertFilters({ provincia: "", tipo_activo: "", precio_max: "" });
+    }
   };
 
   const handleAssetAction = (action: string) => {
@@ -387,7 +433,7 @@ const AiChatWidget = () => {
           toast.info("Inicia sesión para crear alertas personalizadas");
           navigate("/auth");
         } else {
-          handleSend("Quiero crear una alerta personalizada. ¿Qué criterios me recomiendas según mi búsqueda?");
+          setShowAlertForm(true);
         }
         break;
       case "map":
