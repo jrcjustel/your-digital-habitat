@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,6 +13,8 @@ import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
 import SaleTypeBanner from "@/components/SaleTypeBanner";
+import ValuationPanel from "@/components/ValuationPanel";
+import InvestmentCalculator from "@/components/InvestmentCalculator";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
