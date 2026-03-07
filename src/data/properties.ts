@@ -46,6 +46,12 @@ export interface Property {
   isHabitualResidence?: boolean;
   ownershipPercent?: number;
   isVPO?: boolean;
+  cee?: {
+    rating: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "exento" | "en_tramite" | "no_disponible";
+    consumption?: number; // kWh/m²·año
+    emissions?: number; // kgCO₂/m²·año
+    expiryDate?: string;
+  };
   judicialInfo?: {
     judicializado: boolean;
     phase?: JudicialPhase;
