@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Sparkles, Trash2 } from "lucide-react";
+import { Send, Bot, User, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
@@ -10,12 +10,12 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-advisor`;
 
 const QUICK_PROMPTS = [
-  { label: "ITP por CCAA", text: "¿Cuáles son los tipos de ITP por comunidad autónoma para persona física?" },
-  { label: "Cesión de remate", text: "Explícame cómo funciona una cesión de remate y qué riesgos tiene" },
-  { label: "Persona física vs jurídica", text: "¿Es mejor comprar un inmueble como persona física o jurídica? Compara fiscalidad" },
-  { label: "Activo ocupado", text: "¿Qué pasos legales debo seguir para recuperar un activo ocupado?" },
-  { label: "Due diligence", text: "¿Qué due diligence debo hacer antes de comprar un activo inmobiliario?" },
-  { label: "Subasta BOE", text: "¿Cómo funciona el proceso de participar en una subasta judicial del BOE?" },
+  { icon: TrendingUp, label: "Mejores oportunidades", text: "Analiza los activos de IKESA y recomiéndame las mejores oportunidades de inversión con mayor descuento y menor riesgo" },
+  { icon: MapPin, label: "Activos en Madrid", text: "¿Qué activos tiene IKESA en Madrid? Analiza cada uno con su rentabilidad y riesgo" },
+  { icon: Building2, label: "Cesiones de remate", text: "Muéstrame los activos de IKESA disponibles como cesión de remate y analiza cuáles son más interesantes" },
+  { icon: Database, label: "Activos ocupados", text: "Analiza los activos ocupados de la cartera IKESA: riesgos legales, costes de recuperación y rentabilidad potencial" },
+  { icon: TrendingUp, label: "Persona física vs jurídica", text: "¿Es mejor comprar un inmueble como persona física o jurídica? Compara fiscalidad por CCAA" },
+  { icon: MapPin, label: "ITP por CCAA", text: "¿Cuáles son los tipos de ITP por comunidad autónoma para persona física y jurídica?" },
 ];
 
 const AiAdvisorChat = () => {
@@ -23,7 +23,6 @@ const AiAdvisorChat = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -119,7 +118,7 @@ const AiAdvisorChat = () => {
           </div>
           <div>
             <h2 className="font-heading font-bold text-foreground">Asesor IA IKESA</h2>
-            <p className="text-xs text-muted-foreground">Experto comercial · Legal · Fiscal inmobiliario</p>
+            <p className="text-xs text-muted-foreground">Experto comercial · Legal · Fiscal · Activos NPL</p>
           </div>
         </div>
         {messages.length > 0 && (
@@ -140,18 +139,25 @@ const AiAdvisorChat = () => {
               ¿En qué puedo ayudarte?
             </h3>
             <p className="text-sm text-muted-foreground mb-6 max-w-md">
-              Soy tu asesor especializado en inversión inmobiliaria. Consulta sobre fiscalidad por CCAA, aspectos legales, cesiones de remate, subastas y mucho más.
+              Tengo acceso a la cartera de activos NPL de IKESA. Puedo analizar oportunidades, comparar activos, calcular fiscalidad por CCAA y darte recomendaciones personalizadas.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
               {QUICK_PROMPTS.map((p) => (
                 <button
                   key={p.label}
                   onClick={() => handleSend(p.text)}
-                  className="text-left px-4 py-3 rounded-xl border border-border bg-secondary/50 hover:bg-secondary transition-colors text-sm text-foreground"
+                  className="flex items-start gap-3 text-left px-4 py-3 rounded-xl border border-border bg-secondary/50 hover:bg-secondary transition-colors text-sm text-foreground group"
                 >
+                  <p.icon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
                   <span className="font-medium">{p.label}</span>
                 </button>
               ))}
+            </div>
+            <div className="mt-4 px-4 py-2 rounded-lg bg-accent/5 border border-accent/20">
+              <p className="text-xs text-muted-foreground">
+                <Database className="w-3 h-3 inline mr-1" />
+                Conectado a la base de datos de activos IKESA en tiempo real
+              </p>
             </div>
           </div>
         ) : (
@@ -191,10 +197,14 @@ const AiAdvisorChat = () => {
               <Bot className="w-4 h-4 text-primary animate-pulse" />
             </div>
             <div className="bg-secondary/70 rounded-2xl px-4 py-3">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="flex items-center gap-2">
+                <Database className="w-3 h-3 text-muted-foreground animate-pulse" />
+                <span className="text-xs text-muted-foreground">Consultando activos...</span>
+                <div className="flex gap-1 ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
               </div>
             </div>
           </div>
@@ -206,11 +216,10 @@ const AiAdvisorChat = () => {
       <div className="border-t border-border px-4 py-3 bg-background/50">
         <div className="flex gap-2 items-end">
           <Textarea
-            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Pregunta sobre fiscalidad, legal, inversión inmobiliaria..."
+            placeholder="Pregunta sobre activos, fiscalidad, legal, inversión..."
             className="min-h-[44px] max-h-[120px] resize-none"
             rows={1}
             disabled={isLoading}
