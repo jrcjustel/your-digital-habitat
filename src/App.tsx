@@ -19,6 +19,7 @@ import Inversores from "./pages/Inversores";
 import InversoresNpl from "./pages/InversoresNpl";
 import InversoresCdr from "./pages/InversoresCdr";
 import InversoresOcupados from "./pages/InversoresOcupados";
+import ComoFunciona from "./pages/ComoFunciona";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/inversores/npl" element={<InversoresNpl />} />
             <Route path="/inversores/cesiones-remate" element={<InversoresCdr />} />
             <Route path="/inversores/ocupados" element={<InversoresOcupados />} />
+            <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             <Route path="*" element={<NotFound />} />
