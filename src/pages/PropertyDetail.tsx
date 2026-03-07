@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { properties, saleTypes, occupancyLabels, judicialPhaseLabels } from "@/data/properties";
@@ -10,6 +10,16 @@ import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
+
+const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
+  if (value === undefined || value === null) return null;
+  return (
+    <div className="flex justify-between py-2.5 border-b border-border last:border-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium text-foreground">{value}</span>
+    </div>
+  );
+};
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -87,15 +97,7 @@ const PropertyDetail = () => {
   const prevProperty = currentIdx > 0 ? properties[currentIdx - 1] : null;
   const nextProperty = currentIdx < properties.length - 1 ? properties[currentIdx + 1] : null;
 
-  const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
-    if (value === undefined || value === null) return null;
-    return (
-      <div className="flex justify-between py-2.5 border-b border-border last:border-0">
-        <span className="text-sm text-muted-foreground">{label}</span>
-        <span className="text-sm font-medium text-foreground">{value}</span>
-      </div>
-    );
-  };
+  // InfoRow moved outside component to avoid ref warnings
 
   return (
     <div className="min-h-screen bg-background">

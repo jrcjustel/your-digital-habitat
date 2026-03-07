@@ -38,14 +38,14 @@ const NplListing = () => {
   const [tipos, setTipos] = useState<string[]>([]);
 
   useEffect(() => {
-    // Load filter options
-    supabase.from("npl_assets").select("provincia").then(({ data }) => {
+    // Load filter options — use distinct-like approach to avoid 1000 row limit
+    supabase.from("npl_assets").select("provincia").limit(10000).then(({ data }) => {
       if (data) {
         const unique = [...new Set(data.map((d: any) => d.provincia).filter(Boolean))].sort() as string[];
         setProvincias(unique);
       }
     });
-    supabase.from("npl_assets").select("tipo_activo").then(({ data }) => {
+    supabase.from("npl_assets").select("tipo_activo").limit(10000).then(({ data }) => {
       if (data) {
         const unique = [...new Set(data.map((d: any) => d.tipo_activo).filter(Boolean))].sort() as string[];
         setTipos(unique);

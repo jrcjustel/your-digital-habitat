@@ -1,7 +1,22 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSearch = () => {
+  const navigate = useNavigate();
+  const [operation, setOperation] = useState("venta");
+  const [type, setType] = useState("");
+  const [query, setQuery] = useState("");
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (operation === "alquiler") params.set("operation", "alquiler");
+    if (type) params.set("type", type);
+    if (query.trim()) params.set("q", query.trim());
+    navigate(`/inmuebles${params.toString() ? `?${params}` : ""}`);
+  };
+
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
@@ -23,25 +38,36 @@ const HeroSearch = () => {
         </p>
 
         <div className="max-w-4xl mx-auto bg-card rounded-2xl shadow-xl p-2 animate-slide-up">
-          <div className="flex flex-col md:flex-row items-stretch gap-2">
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+            className="flex flex-col md:flex-row items-stretch gap-2"
+          >
             <div className="relative flex-shrink-0">
-              <select className="appearance-none w-full md:w-40 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent">
-                <option>Comprar</option>
-                <option>Alquilar</option>
+              <select
+                value={operation}
+                onChange={(e) => setOperation(e.target.value)}
+                className="appearance-none w-full md:w-40 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                <option value="venta">Comprar</option>
+                <option value="alquiler">Alquilar</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
 
             <div className="relative flex-shrink-0">
-              <select className="appearance-none w-full md:w-44 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent">
-                <option>Vivienda</option>
-                <option>Local</option>
-                <option>Oficina</option>
-                <option>Garaje</option>
-                <option>Terreno</option>
-                <option>Nave</option>
-                <option>Edificio</option>
-                <option>Obra parada</option>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="appearance-none w-full md:w-44 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                <option value="">Todos los tipos</option>
+                <option value="vivienda">Vivienda</option>
+                <option value="local">Local</option>
+                <option value="oficina">Oficina</option>
+                <option value="terreno">Terreno</option>
+                <option value="nave">Nave</option>
+                <option value="edificio">Edificio</option>
+                <option value="obra-parada">Obra parada</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
@@ -49,16 +75,18 @@ const HeroSearch = () => {
             <div className="flex-1 relative">
               <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Población, zona, provincia..."
                 className="w-full bg-transparent text-foreground rounded-xl px-4 py-3.5 text-sm placeholder:text-muted-foreground focus:outline-none"
               />
             </div>
 
-            <a href="/inmuebles" className="btn-search flex items-center justify-center gap-2 rounded-xl">
+            <button type="submit" className="btn-search flex items-center justify-center gap-2 rounded-xl">
               <Search className="w-4 h-4" />
               Buscar
-            </a>
-          </div>
+            </button>
+          </form>
         </div>
       </div>
     </section>
