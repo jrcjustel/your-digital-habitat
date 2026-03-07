@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import PropertyListing from "./pages/PropertyListing";
@@ -16,10 +16,6 @@ import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
 import CookieConsent from "./components/CookieConsent";
 import NplDetail from "./pages/NplDetail";
-import Inversores from "./pages/Inversores";
-import InversoresNpl from "./pages/InversoresNpl";
-import InversoresCdr from "./pages/InversoresCdr";
-import InversoresOcupados from "./pages/InversoresOcupados";
 import ComoFunciona from "./pages/ComoFunciona";
 import AvisoLegal from "./pages/AvisoLegal";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
@@ -48,10 +44,11 @@ const App = () => (
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
             <Route path="/admin/leads-valoracion" element={<AdminRoute><AdminValuationLeads /></AdminRoute>} />
-            <Route path="/inversores" element={<Inversores />} />
-            <Route path="/inversores/npl" element={<InversoresNpl />} />
-            <Route path="/inversores/cesiones-remate" element={<InversoresCdr />} />
-            <Route path="/inversores/ocupados" element={<InversoresOcupados />} />
+            {/* Redirects from old investor routes */}
+            <Route path="/inversores" element={<Navigate to="/inmuebles" replace />} />
+            <Route path="/inversores/npl" element={<Navigate to="/inmuebles?saleType=npl" replace />} />
+            <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
+            <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
