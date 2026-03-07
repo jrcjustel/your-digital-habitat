@@ -9,17 +9,9 @@ const footerSections = [
       { label: "Oficinas", href: "/inmuebles?type=oficina" },
       { label: "Terrenos", href: "/inmuebles?type=terreno" },
       { label: "Naves", href: "/inmuebles?type=nave" },
-      { label: "Edificios", href: "/inmuebles?type=edificio" },
-    ],
-  },
-  {
-    title: "Inversión",
-    links: [
-      { label: "NPL (Deuda)", href: "/inversores/npl" },
-      { label: "Cesiones de Remate", href: "/inversores/cesiones-remate" },
-      { label: "Activos Ocupados", href: "/inversores/ocupados" },
-      { label: "Cómo funciona", href: "/como-funciona" },
-      { label: "Marketplace", href: "/inversores" },
+      { label: "NPL (Deuda)", href: "/inmuebles?saleType=npl" },
+      { label: "Cesiones de Remate", href: "/inmuebles?saleType=cesion-remate" },
+      { label: "Activos Ocupados", href: "/inmuebles?saleType=ocupado" },
     ],
   },
   {
@@ -27,6 +19,7 @@ const footerSections = [
     links: [
       { label: "Sobre nosotros", href: "/" },
       { label: "Contacto", href: "/" },
+      { label: "Cómo funciona", href: "/como-funciona" },
       { label: "Valorar mi inmueble", href: "/valorar" },
     ],
   },
@@ -45,8 +38,8 @@ const popularSearches = [
   { label: "Viviendas en Cádiz", href: "/inmuebles?q=cádiz&type=vivienda" },
   { label: "Locales en Sevilla", href: "/inmuebles?q=sevilla&type=local" },
   { label: "Terrenos en Huelva", href: "/inmuebles?q=huelva&type=terreno" },
-  { label: "Inversión en Málaga", href: "/inversores" },
-  { label: "NPLs España", href: "/inversores/npl" },
+  { label: "Inversión en Málaga", href: "/inmuebles?q=málaga&saleType=npl" },
+  { label: "NPLs España", href: "/inmuebles?saleType=npl" },
 ];
 
 const Footer = () => {
@@ -55,7 +48,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
             <span className="font-heading text-2xl font-extrabold text-primary-foreground">ikesa</span>
             <span className="block text-xs text-accent mt-0.5 font-medium">Inmobiliaria / Real Estate</span>
