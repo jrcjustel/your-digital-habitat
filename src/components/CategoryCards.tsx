@@ -7,25 +7,25 @@ import categoryOficinas from "@/assets/category-oficinas.jpg";
 const categories = [
   {
     title: "Pisos y Casas",
-    description: "El hogar que imaginas con las mejores oportunidades de inversión.",
+    description: "Accede a viviendas con descuentos reales sobre mercado. Oportunidades antes reservadas a fondos.",
     image: categoryViviendas,
     href: "/inmuebles?type=vivienda",
   },
   {
     title: "Terrenos",
-    description: "Residenciales, rústicos e industriales. Tenemos el que se adapta a ti.",
+    description: "Suelo residencial, rústico e industrial a precios competitivos. Invierte en el activo más estable.",
     image: categoryTerrenos,
     href: "/inmuebles?type=terreno",
   },
   {
     title: "Locales Comerciales",
-    description: "Miles de espacios en venta para convertir tus ideas en un buen negocio.",
+    description: "Rentabilidades atractivas en retail. Diversifica tu cartera con activos comerciales accesibles.",
     image: categoryLocales,
     href: "/inmuebles?type=local",
   },
   {
     title: "Oficinas y Naves",
-    description: "Espacios profesionales con alta rentabilidad para tu cartera.",
+    description: "Activos profesionales de alta rentabilidad. Inversión institucional al alcance de todos.",
     image: categoryOficinas,
     href: "/inmuebles?type=nave",
   },
@@ -36,9 +36,9 @@ const CategoryCards = () => {
     <section className="py-16 md:py-20" id="particulares">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="section-label">Portal Particulares</span>
+          <span className="section-label">Activos para todos los perfiles</span>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
-            Encuentra el inmueble de tus sueños
+            Oportunidades inmobiliarias sin barreras de entrada
           </h2>
         </div>
 

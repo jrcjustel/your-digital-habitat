@@ -6,10 +6,10 @@ const Newsletter = () => {
       <div className="container mx-auto px-4 text-center">
         <Mail className="w-10 h-10 text-accent mx-auto mb-4" />
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-3">
-          No te pierdas las últimas novedades
+          Recibe oportunidades de inversión antes que nadie
         </h2>
         <p className="text-primary-foreground/60 mb-8 max-w-lg mx-auto">
-          Estate al día de todas las novedades y recibe consejos para la búsqueda de tu inmueble ideal
+          Suscríbete y accede a análisis de mercado, nuevos activos y estrategias de inversión inmobiliaria democratizada.
         </p>
 
         <form className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
