@@ -304,6 +304,7 @@ const PropertyDetail = () => {
                       <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
                         <FolderOpen className="w-4 h-4" /> Documentos
                       </TabsTrigger>
+                    </TabsList>
                     <TabsContent value="inmueble" className="p-6 mt-0">
                       <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-accent" /> Colateral / Inmueble Principal
