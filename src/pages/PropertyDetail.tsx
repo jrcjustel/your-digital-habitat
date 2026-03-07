@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale } from "lucide-react";
-import { useState, useEffect } from "react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { properties, saleTypes, occupancyLabels, judicialPhaseLabels } from "@/data/properties";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import NdaGate from "@/components/NdaGate";
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -17,6 +18,10 @@ const PropertyDetail = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [ndaSigned, setNdaSigned] = useState(false);
+  const [ndaLoading, setNdaLoading] = useState(true);
+
+  const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
   useEffect(() => {
     if (user && id) {
@@ -25,6 +30,18 @@ const PropertyDetail = () => {
       });
     }
   }, [user, id]);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("nda_signed").eq("user_id", user.id).single().then(({ data }) => {
+        setNdaSigned(!!(data as any)?.nda_signed);
+        setNdaLoading(false);
+      });
+    } else {
+      setNdaSigned(false);
+      setNdaLoading(false);
+    }
+  }, [user]);
 
   const toggleFavorite = async () => {
     if (!user) {
@@ -190,138 +207,259 @@ const PropertyDetail = () => {
               )}
             </div>
 
-            {/* Analysis section */}
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
-                <button className="flex items-center gap-2 btn-search text-xs py-2 px-4">
-                  <Download className="w-3.5 h-3.5" />
-                  Descargar ficha
-                </button>
-              </div>
-              <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
-
-              {/* Description */}
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">{property.description}</p>
-
-              {/* Key specs */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                <div className="bg-secondary rounded-xl p-3 text-center">
-                  <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
-                  <p className="text-sm font-bold text-foreground">{property.area.toLocaleString("es-ES")} m²</p>
-                  <p className="text-[10px] text-muted-foreground">Construidos</p>
+            {/* Analysis section + Tabs - gated for NPL/CDR */}
+            {isRestricted ? (
+              <NdaGate user={user} ndaSigned={ndaSigned} onNdaSigned={() => setNdaSigned(true)}>
+                <div className="bg-card rounded-2xl border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
+                    <button className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                      <Download className="w-3.5 h-3.5" />
+                      Descargar ficha
+                    </button>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">{property.description}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="bg-secondary rounded-xl p-3 text-center">
+                      <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
+                      <p className="text-sm font-bold text-foreground">{property.area.toLocaleString("es-ES")} m²</p>
+                      <p className="text-[10px] text-muted-foreground">Construidos</p>
+                    </div>
+                    {property.landArea && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.landArea.toLocaleString("es-ES")} m²</p>
+                        <p className="text-[10px] text-muted-foreground">Suelo</p>
+                      </div>
+                    )}
+                    {property.bedrooms && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Bed className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.bedrooms}</p>
+                        <p className="text-[10px] text-muted-foreground">Dormitorios</p>
+                      </div>
+                    )}
+                    {property.bathrooms && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Bath className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.bathrooms}</p>
+                        <p className="text-[10px] text-muted-foreground">Baños</p>
+                      </div>
+                    )}
+                    {property.year && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Calendar className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.year}</p>
+                        <p className="text-[10px] text-muted-foreground">Año const.</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {property.features.map((f) => (
+                      <span key={f} className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full">{f}</span>
+                    ))}
+                  </div>
                 </div>
-                {property.landArea && (
-                  <div className="bg-secondary rounded-xl p-3 text-center">
-                    <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
-                    <p className="text-sm font-bold text-foreground">{property.landArea.toLocaleString("es-ES")} m²</p>
-                    <p className="text-[10px] text-muted-foreground">Suelo</p>
-                  </div>
-                )}
-                {property.bedrooms && (
-                  <div className="bg-secondary rounded-xl p-3 text-center">
-                    <Bed className="w-4 h-4 text-accent mx-auto mb-1" />
-                    <p className="text-sm font-bold text-foreground">{property.bedrooms}</p>
-                    <p className="text-[10px] text-muted-foreground">Dormitorios</p>
-                  </div>
-                )}
-                {property.bathrooms && (
-                  <div className="bg-secondary rounded-xl p-3 text-center">
-                    <Bath className="w-4 h-4 text-accent mx-auto mb-1" />
-                    <p className="text-sm font-bold text-foreground">{property.bathrooms}</p>
-                    <p className="text-[10px] text-muted-foreground">Baños</p>
-                  </div>
-                )}
-                {property.year && (
-                  <div className="bg-secondary rounded-xl p-3 text-center">
-                    <Calendar className="w-4 h-4 text-accent mx-auto mb-1" />
-                    <p className="text-sm font-bold text-foreground">{property.year}</p>
-                    <p className="text-[10px] text-muted-foreground">Año const.</p>
-                  </div>
-                )}
-              </div>
 
-              {/* Features */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {property.features.map((f) => (
-                  <span key={f} className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full">{f}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Tabs: Inmueble / Judicial / Deuda */}
-            <div className="bg-card rounded-2xl border border-border overflow-hidden">
-              <Tabs defaultValue="inmueble">
-                <TabsList className="w-full justify-start rounded-none border-b border-border bg-secondary/50 p-0 h-auto">
-                  <TabsTrigger value="inmueble" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                    <Home className="w-4 h-4" /> Información del inmueble
-                  </TabsTrigger>
-                  <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                    <Scale className="w-4 h-4" /> Información judicial
-                  </TabsTrigger>
-                  {property.debtInfo && (
-                    <TabsTrigger value="deuda" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                      <FileText className="w-4 h-4" /> Información deuda
-                    </TabsTrigger>
-                  )}
-                </TabsList>
-
-                <TabsContent value="inmueble" className="p-6 mt-0">
-                  <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-accent" /> Colateral / Inmueble Principal
-                  </h3>
-                  <div className="divide-y divide-border">
-                    <InfoRow label="Comunidad autónoma" value={property.community} />
-                    <InfoRow label="Provincia" value={property.province} />
-                    <InfoRow label="Municipio" value={property.municipality} />
-                    <InfoRow label="Código postal" value={property.postalCode} />
-                    <InfoRow label="Metros construidos" value={`${property.area} m²`} />
-                    {property.landArea && <InfoRow label="Metros suelo" value={`${property.landArea} m²`} />}
-                    <InfoRow label="VPO" value={property.isVPO ? "SÍ" : "NO"} />
-                    <InfoRow label="Año construcción" value={property.year} />
-                    {property.catastralRef && <InfoRow label="Referencia catastral" value={property.catastralRef} />}
-                    <InfoRow label="Estado ocupacional" value={occupancyLabels[property.occupancyStatus]} />
-                    <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
-                    <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
+                {/* Tabs: Inmueble / Judicial / Deuda */}
+                <div className="bg-card rounded-2xl border border-border overflow-hidden mt-6">
+                  <Tabs defaultValue="inmueble">
+                    <TabsList className="w-full justify-start rounded-none border-b border-border bg-secondary/50 p-0 h-auto">
+                      <TabsTrigger value="inmueble" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <Home className="w-4 h-4" /> Información del inmueble
+                      </TabsTrigger>
+                      <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <Scale className="w-4 h-4" /> Información judicial
+                      </TabsTrigger>
+                      {property.debtInfo && (
+                        <TabsTrigger value="deuda" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                          <FileText className="w-4 h-4" /> Información deuda
+                        </TabsTrigger>
+                      )}
+                    </TabsList>
+                    <TabsContent value="inmueble" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-accent" /> Colateral / Inmueble Principal
+                      </h3>
+                      <div className="divide-y divide-border">
+                        <InfoRow label="Comunidad autónoma" value={property.community} />
+                        <InfoRow label="Provincia" value={property.province} />
+                        <InfoRow label="Municipio" value={property.municipality} />
+                        <InfoRow label="Código postal" value={property.postalCode} />
+                        <InfoRow label="Metros construidos" value={`${property.area} m²`} />
+                        {property.landArea && <InfoRow label="Metros suelo" value={`${property.landArea} m²`} />}
+                        <InfoRow label="VPO" value={property.isVPO ? "SÍ" : "NO"} />
+                        <InfoRow label="Año construcción" value={property.year} />
+                        {property.catastralRef && <InfoRow label="Referencia catastral" value={property.catastralRef} />}
+                        <InfoRow label="Estado ocupacional" value={occupancyLabels[property.occupancyStatus]} />
+                        <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
+                        <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="judicial" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Gavel className="w-4 h-4 text-accent" /> Información judicial
+                      </h3>
+                      {property.judicialInfo ? (
+                        <div className="divide-y divide-border">
+                          <InfoRow label="Judicializado" value={property.judicialInfo.judicializado ? "SÍ" : "NO"} />
+                          {property.judicialInfo.phase && <InfoRow label="Fase judicial actual" value={judicialPhaseLabels[property.judicialInfo.phase]} />}
+                          {property.judicialInfo.court && <InfoRow label="Juzgado" value={property.judicialInfo.court} />}
+                          {property.judicialInfo.proceedingNumber && <InfoRow label="Nº procedimiento" value={property.judicialInfo.proceedingNumber} />}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No hay información judicial disponible para este activo.</p>
+                      )}
+                    </TabsContent>
+                    {property.debtInfo && (
+                      <TabsContent value="deuda" className="p-6 mt-0">
+                        <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-accent" /> Información de la deuda
+                        </h3>
+                        <div className="divide-y divide-border">
+                          {property.debtInfo.debtType && <InfoRow label="Tipo de deuda" value={property.debtInfo.debtType} />}
+                          {property.debtInfo.guaranteeType && <InfoRow label="Tipo de garantía" value={property.debtInfo.guaranteeType} />}
+                          {property.debtInfo.outstandingDebt && <InfoRow label="Deuda pendiente" value={`${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`} />}
+                        </div>
+                      </TabsContent>
+                    )}
+                  </Tabs>
+                </div>
+              </NdaGate>
+            ) : (
+              <>
+                {/* Non-restricted: show analysis + tabs normally */}
+                <div className="bg-card rounded-2xl border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
+                    <button className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                      <Download className="w-3.5 h-3.5" />
+                      Descargar ficha
+                    </button>
                   </div>
-                </TabsContent>
-
-                <TabsContent value="judicial" className="p-6 mt-0">
-                  <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Gavel className="w-4 h-4 text-accent" /> Información judicial
-                  </h3>
-                  {property.judicialInfo ? (
-                    <div className="divide-y divide-border">
-                      <InfoRow label="Judicializado" value={property.judicialInfo.judicializado ? "SÍ" : "NO"} />
-                      {property.judicialInfo.phase && <InfoRow label="Fase judicial actual" value={judicialPhaseLabels[property.judicialInfo.phase]} />}
-                      {property.judicialInfo.court && <InfoRow label="Juzgado" value={property.judicialInfo.court} />}
-                      {property.judicialInfo.proceedingNumber && <InfoRow label="Nº procedimiento" value={property.judicialInfo.proceedingNumber} />}
+                  <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">{property.description}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="bg-secondary rounded-xl p-3 text-center">
+                      <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
+                      <p className="text-sm font-bold text-foreground">{property.area.toLocaleString("es-ES")} m²</p>
+                      <p className="text-[10px] text-muted-foreground">Construidos</p>
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No hay información judicial disponible para este activo.</p>
-                  )}
-                </TabsContent>
+                    {property.landArea && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.landArea.toLocaleString("es-ES")} m²</p>
+                        <p className="text-[10px] text-muted-foreground">Suelo</p>
+                      </div>
+                    )}
+                    {property.bedrooms && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Bed className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.bedrooms}</p>
+                        <p className="text-[10px] text-muted-foreground">Dormitorios</p>
+                      </div>
+                    )}
+                    {property.bathrooms && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Bath className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.bathrooms}</p>
+                        <p className="text-[10px] text-muted-foreground">Baños</p>
+                      </div>
+                    )}
+                    {property.year && (
+                      <div className="bg-secondary rounded-xl p-3 text-center">
+                        <Calendar className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-sm font-bold text-foreground">{property.year}</p>
+                        <p className="text-[10px] text-muted-foreground">Año const.</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {property.features.map((f) => (
+                      <span key={f} className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full">{f}</span>
+                    ))}
+                  </div>
+                </div>
 
-                {property.debtInfo && (
-                  <TabsContent value="deuda" className="p-6 mt-0">
-                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-accent" /> Información de la deuda
-                    </h3>
-                    <div className="divide-y divide-border">
-                      {property.debtInfo.debtType && <InfoRow label="Tipo de deuda" value={property.debtInfo.debtType} />}
-                      {property.debtInfo.guaranteeType && <InfoRow label="Tipo de garantía" value={property.debtInfo.guaranteeType} />}
-                      {property.debtInfo.outstandingDebt && <InfoRow label="Deuda pendiente" value={`${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`} />}
-                    </div>
-                  </TabsContent>
-                )}
-              </Tabs>
-            </div>
+                <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                  <Tabs defaultValue="inmueble">
+                    <TabsList className="w-full justify-start rounded-none border-b border-border bg-secondary/50 p-0 h-auto">
+                      <TabsTrigger value="inmueble" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <Home className="w-4 h-4" /> Información del inmueble
+                      </TabsTrigger>
+                      <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                        <Scale className="w-4 h-4" /> Información judicial
+                      </TabsTrigger>
+                      {property.debtInfo && (
+                        <TabsTrigger value="deuda" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
+                          <FileText className="w-4 h-4" /> Información deuda
+                        </TabsTrigger>
+                      )}
+                    </TabsList>
+                    <TabsContent value="inmueble" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-accent" /> Colateral / Inmueble Principal
+                      </h3>
+                      <div className="divide-y divide-border">
+                        <InfoRow label="Comunidad autónoma" value={property.community} />
+                        <InfoRow label="Provincia" value={property.province} />
+                        <InfoRow label="Municipio" value={property.municipality} />
+                        <InfoRow label="Código postal" value={property.postalCode} />
+                        <InfoRow label="Metros construidos" value={`${property.area} m²`} />
+                        {property.landArea && <InfoRow label="Metros suelo" value={`${property.landArea} m²`} />}
+                        <InfoRow label="VPO" value={property.isVPO ? "SÍ" : "NO"} />
+                        <InfoRow label="Año construcción" value={property.year} />
+                        {property.catastralRef && <InfoRow label="Referencia catastral" value={property.catastralRef} />}
+                        <InfoRow label="Estado ocupacional" value={occupancyLabels[property.occupancyStatus]} />
+                        <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
+                        <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="judicial" className="p-6 mt-0">
+                      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Gavel className="w-4 h-4 text-accent" /> Información judicial
+                      </h3>
+                      {property.judicialInfo ? (
+                        <div className="divide-y divide-border">
+                          <InfoRow label="Judicializado" value={property.judicialInfo.judicializado ? "SÍ" : "NO"} />
+                          {property.judicialInfo.phase && <InfoRow label="Fase judicial actual" value={judicialPhaseLabels[property.judicialInfo.phase]} />}
+                          {property.judicialInfo.court && <InfoRow label="Juzgado" value={property.judicialInfo.court} />}
+                          {property.judicialInfo.proceedingNumber && <InfoRow label="Nº procedimiento" value={property.judicialInfo.proceedingNumber} />}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No hay información judicial disponible para este activo.</p>
+                      )}
+                    </TabsContent>
+                    {property.debtInfo && (
+                      <TabsContent value="deuda" className="p-6 mt-0">
+                        <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-accent" /> Información de la deuda
+                        </h3>
+                        <div className="divide-y divide-border">
+                          {property.debtInfo.debtType && <InfoRow label="Tipo de deuda" value={property.debtInfo.debtType} />}
+                          {property.debtInfo.guaranteeType && <InfoRow label="Tipo de garantía" value={property.debtInfo.guaranteeType} />}
+                          {property.debtInfo.outstandingDebt && <InfoRow label="Deuda pendiente" value={`${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`} />}
+                        </div>
+                      </TabsContent>
+                    )}
+                  </Tabs>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Offer CTA */}
-            <OfferForm propertyId={property.id} propertyReference={property.reference} />
+            {isRestricted && (!user || !ndaSigned) ? (
+              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 text-center">
+                <Lock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Regístrate y firma el NDA para enviar ofertas en productos NPL/CDR.</p>
+              </div>
+            ) : (
+              <OfferForm propertyId={property.id} propertyReference={property.reference} />
+            )}
 
             {/* Reference card */}
             <div className="bg-card border border-border rounded-2xl p-5 text-center">
