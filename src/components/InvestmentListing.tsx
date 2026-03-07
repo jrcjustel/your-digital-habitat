@@ -161,7 +161,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                     </span>
                     {a.referencia_fencia && (
                       <span className="text-xs font-mono text-muted-foreground">
-                        {a.referencia_fencia}
+                        Ref: {a.referencia_fencia}
                       </span>
                     )}
                     {a.cesion_remate && (
