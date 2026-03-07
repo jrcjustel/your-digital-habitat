@@ -25,20 +25,26 @@ const InvestorMarketplace = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {assets.map((asset) => (
-            <a
-              key={asset.label}
-              href={asset.href}
-              className="flex items-center gap-4 bg-card rounded-xl p-5 card-elevated group"
-            >
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors">
-                <asset.icon className="w-5 h-5 text-accent group-hover:text-accent-foreground transition-colors" />
-              </div>
-              <span className="font-heading font-semibold text-foreground group-hover:text-accent transition-colors">
-                {asset.label}
-              </span>
-            </a>
-          ))}
+          {assets.map((asset) => {
+            const isInternal = asset.href.startsWith("/");
+            const Wrapper = isInternal ? Link : "a";
+            const linkProps = isInternal ? { to: asset.href } : { href: asset.href };
+
+            return (
+              <Wrapper
+                key={asset.label}
+                {...(linkProps as any)}
+                className="flex items-center gap-4 bg-card rounded-xl p-5 card-elevated group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors">
+                  <asset.icon className="w-5 h-5 text-accent group-hover:text-accent-foreground transition-colors" />
+                </div>
+                <span className="font-heading font-semibold text-foreground group-hover:text-accent transition-colors">
+                  {asset.label}
+                </span>
+              </Wrapper>
+            );
+          })}
         </div>
       </div>
     </section>
