@@ -417,7 +417,6 @@ const PropertyDetail = () => {
               <InvestmentCalculator property={property} />
               </>
             ) : (
-            ) : (
               <>
                 {/* Non-restricted: show analysis + tabs normally */}
                 <div className="bg-card rounded-2xl border border-border p-6">
@@ -596,7 +595,7 @@ const PropertyDetail = () => {
               </>
             )}
 
-            {/* Valuation & Calculator for non-restricted */}
+            {/* Valuation & Calculator - always visible for non-restricted */}
             {!isRestricted && (
               <>
                 <ValuationPanel property={property} />
