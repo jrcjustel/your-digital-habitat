@@ -1,14 +1,32 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, User, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, ChevronLeft, X, Minus } from "lucide-react";
+import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; updated_at: string };
+
+interface AssetCard {
+  ref: string;
+  tipo: string;
+  ubicacion: string;
+  superficie: string;
+  precio: string;
+  valor_mercado: string;
+  descuento: string;
+  ocupacion: string;
+  estado_judicial: string;
+  cesion_remate: boolean;
+  cesion_credito: boolean;
+  scoring: string;
+  veredicto: string;
+  resumen: string;
+}
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-advisor`;
 
@@ -29,8 +47,177 @@ function timeAgo(dateStr: string) {
   return `hace ${Math.floor(hrs / 24)}d`;
 }
 
+// Scoring badge color
+function scoringColor(score: number) {
+  if (score >= 8) return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30";
+  if (score >= 5) return "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30";
+  return "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30";
+}
+
+function verdictColor(veredicto: string) {
+  const v = veredicto.toLowerCase();
+  if (v.includes("comprar")) return "text-emerald-600 dark:text-emerald-400";
+  if (v.includes("esperar")) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
+}
+
+// Parse asset cards and actions from message content
+function parseAssetContent(content: string): { segments: Array<{ type: "text" | "card" | "actions"; data?: AssetCard; text?: string }> } {
+  const segments: Array<{ type: "text" | "card" | "actions"; data?: AssetCard; text?: string }> = [];
+  let remaining = content;
+
+  while (remaining.length > 0) {
+    const cardStart = remaining.indexOf("<ASSET_CARD>");
+    const actionsIdx = remaining.indexOf("<ASSET_ACTIONS/>");
+
+    const nextSpecial = Math.min(
+      cardStart === -1 ? Infinity : cardStart,
+      actionsIdx === -1 ? Infinity : actionsIdx
+    );
+
+    if (nextSpecial === Infinity) {
+      if (remaining.trim()) segments.push({ type: "text", text: remaining });
+      break;
+    }
+
+    // Text before the next special
+    const before = remaining.slice(0, nextSpecial);
+    if (before.trim()) segments.push({ type: "text", text: before });
+
+    if (nextSpecial === cardStart) {
+      const cardEnd = remaining.indexOf("</ASSET_CARD>", cardStart);
+      if (cardEnd === -1) {
+        segments.push({ type: "text", text: remaining.slice(cardStart) });
+        break;
+      }
+      const jsonStr = remaining.slice(cardStart + "<ASSET_CARD>".length, cardEnd).trim();
+      try {
+        const data = JSON.parse(jsonStr) as AssetCard;
+        segments.push({ type: "card", data });
+      } catch {
+        segments.push({ type: "text", text: jsonStr });
+      }
+      remaining = remaining.slice(cardEnd + "</ASSET_CARD>".length);
+    } else {
+      segments.push({ type: "actions" });
+      remaining = remaining.slice(actionsIdx + "<ASSET_ACTIONS/>".length);
+    }
+  }
+
+  return { segments };
+}
+
+// Asset card component
+const AssetCardComponent = ({ asset, onViewDetail }: { asset: AssetCard; onViewDetail: (ref: string) => void }) => {
+  const [expanded, setExpanded] = useState(false);
+  const score = parseInt(asset.scoring) || 0;
+
+  return (
+    <div className="border border-border rounded-xl bg-card overflow-hidden my-1.5 hover:shadow-md transition-shadow">
+      {/* Header */}
+      <div className="px-3 py-2 flex items-center justify-between gap-2 cursor-pointer" onClick={() => setExpanded(!expanded)}>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${scoringColor(score)}`}>
+            {score}/10
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-foreground truncate">{asset.tipo} — {asset.ubicacion}</p>
+            <p className="text-[10px] text-muted-foreground">Ref: {asset.ref} · {asset.superficie}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className={`text-xs font-bold ${verdictColor(asset.veredicto)}`}>{asset.veredicto}</span>
+          {expanded ? <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />}
+        </div>
+      </div>
+
+      {/* Price bar */}
+      <div className="px-3 pb-2 flex items-center gap-3">
+        <div>
+          <span className="text-[10px] text-muted-foreground">Precio</span>
+          <p className="text-xs font-bold text-foreground">{formatCurrency(asset.precio)}</p>
+        </div>
+        <div>
+          <span className="text-[10px] text-muted-foreground">Mercado</span>
+          <p className="text-xs font-medium text-muted-foreground line-through">{formatCurrency(asset.valor_mercado)}</p>
+        </div>
+        {asset.descuento && (
+          <div className="ml-auto bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold">
+            -{asset.descuento}
+          </div>
+        )}
+      </div>
+
+      {/* Expanded details */}
+      {expanded && (
+        <div className="border-t border-border px-3 py-2 space-y-2 bg-secondary/30">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+            <div><span className="text-muted-foreground">Ocupación:</span> <span className="font-medium text-foreground">{asset.ocupacion || "N/A"}</span></div>
+            <div><span className="text-muted-foreground">Judicial:</span> <span className="font-medium text-foreground">{asset.estado_judicial || "N/A"}</span></div>
+            <div><span className="text-muted-foreground">Cesión remate:</span> <span className="font-medium text-foreground">{asset.cesion_remate ? "Sí" : "No"}</span></div>
+            <div><span className="text-muted-foreground">Cesión crédito:</span> <span className="font-medium text-foreground">{asset.cesion_credito ? "Sí" : "No"}</span></div>
+          </div>
+          <p className="text-[11px] text-foreground leading-relaxed">{asset.resumen}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full h-7 text-[11px] gap-1.5"
+            onClick={(e) => { e.stopPropagation(); onViewDetail(asset.ref); }}
+          >
+            <ExternalLink className="w-3 h-3" /> Ver ficha completa
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+function formatCurrency(val: string) {
+  const num = parseInt(val?.replace(/[^\d]/g, "") || "0");
+  if (!num) return val || "N/A";
+  return num.toLocaleString("es-ES") + " €";
+}
+
+// Action buttons after assets
+const AssetActionsBar = ({ onAction }: { onAction: (action: string) => void }) => (
+  <div className="my-2 space-y-1.5">
+    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider px-1">¿Qué quieres hacer?</p>
+    <div className="grid grid-cols-2 gap-1.5">
+      <button
+        onClick={() => onAction("alert")}
+        className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-border bg-card hover:bg-secondary transition-colors text-[11px] text-foreground"
+      >
+        <Bell className="w-3.5 h-3.5 text-primary" />
+        <span className="font-medium">Crear alerta</span>
+      </button>
+      <button
+        onClick={() => onAction("map")}
+        className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-border bg-card hover:bg-secondary transition-colors text-[11px] text-foreground"
+      >
+        <Map className="w-3.5 h-3.5 text-primary" />
+        <span className="font-medium">Ver en mapa</span>
+      </button>
+      <button
+        onClick={() => onAction("filter")}
+        className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-border bg-card hover:bg-secondary transition-colors text-[11px] text-foreground"
+      >
+        <SlidersHorizontal className="w-3.5 h-3.5 text-primary" />
+        <span className="font-medium">Filtrar más</span>
+      </button>
+      <button
+        onClick={() => onAction("search")}
+        className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-border bg-card hover:bg-secondary transition-colors text-[11px] text-foreground"
+      >
+        <Search className="w-3.5 h-3.5 text-primary" />
+        <span className="font-medium">Buscar otro</span>
+      </button>
+    </div>
+  </div>
+);
+
 const AiChatWidget = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -187,6 +374,55 @@ const AiChatWidget = () => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
+  const handleViewAssetDetail = (ref: string) => {
+    // Try to navigate to the NPL detail page
+    navigate(`/npl/${ref}`);
+    setIsOpen(false);
+  };
+
+  const handleAssetAction = (action: string) => {
+    switch (action) {
+      case "alert":
+        if (!user) {
+          toast.info("Inicia sesión para crear alertas personalizadas");
+          navigate("/auth");
+        } else {
+          handleSend("Quiero crear una alerta personalizada. ¿Qué criterios me recomiendas según mi búsqueda?");
+        }
+        break;
+      case "map":
+        navigate("/inmuebles");
+        setIsOpen(false);
+        toast.info("Usa el mapa interactivo para explorar por ubicación");
+        break;
+      case "filter":
+        handleSend("Ayúdame a refinar la búsqueda. Quiero filtrar por precio, tipo de activo, provincia o tipo de operación (cesión de remate, crédito, subasta). ¿Qué criterios quieres aplicar?");
+        break;
+      case "search":
+        handleSend("Busca otro tipo de activo diferente. ¿Qué zona, rango de precio o tipo de inmueble te interesa?");
+        break;
+    }
+  };
+
+  const renderMessageContent = (content: string) => {
+    const { segments } = parseAssetContent(content);
+
+    return segments.map((seg, i) => {
+      if (seg.type === "card" && seg.data) {
+        return <AssetCardComponent key={i} asset={seg.data} onViewDetail={handleViewAssetDetail} />;
+      }
+      if (seg.type === "actions") {
+        return <AssetActionsBar key={i} onAction={handleAssetAction} />;
+      }
+      // Text segment — render as markdown
+      return (
+        <div key={i} className="prose prose-xs dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs">
+          <ReactMarkdown>{seg.text || ""}</ReactMarkdown>
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       {/* Floating button */}
@@ -204,7 +440,7 @@ const AiChatWidget = () => {
 
       {/* Chat window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-[9998] w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-card rounded-2xl border border-border shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed bottom-24 right-6 z-[9998] w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-8rem)] bg-card rounded-2xl border border-border shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-gradient-to-r from-primary/5 to-accent/5 flex-shrink-0">
             <div className="flex items-center gap-2">
@@ -300,14 +536,10 @@ const AiChatWidget = () => {
                           <Bot className="w-3 h-3 text-primary" />
                         </div>
                       )}
-                      <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs ${
+                      <div className={`max-w-[90%] rounded-xl px-3 py-2 text-xs ${
                         m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary/70 text-foreground"
                       }`}>
-                        {m.role === "assistant" ? (
-                          <div className="prose prose-xs dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs">
-                            <ReactMarkdown>{m.content}</ReactMarkdown>
-                          </div>
-                        ) : (
+                        {m.role === "assistant" ? renderMessageContent(m.content) : (
                           <p className="whitespace-pre-wrap">{m.content}</p>
                         )}
                       </div>
