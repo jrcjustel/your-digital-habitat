@@ -412,10 +412,10 @@ const PropertyDetail = () => {
                   </Tabs>
                 </div>
               </NdaGate>
-
-              {/* Valuation & Calculator - always visible */}
               <ValuationPanel property={property} />
               <InvestmentCalculator property={property} />
+            </>
+            ) : (
             ) : (
               <>
                 {/* Non-restricted: show analysis + tabs normally */}
