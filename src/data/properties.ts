@@ -823,6 +823,7 @@ export const properties: Property[] = [
     lng: -0.4580,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "exento" },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
