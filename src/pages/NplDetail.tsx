@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
-  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download
+  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
