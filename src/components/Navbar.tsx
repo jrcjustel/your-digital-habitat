@@ -7,7 +7,6 @@ import ikesaLogo from "@/assets/ikesa-logo-color.png";
 const navItems = [
   { label: "Inmuebles", href: "/inmuebles" },
   { label: "Análisis", href: "/analytics" },
-  { label: "Asesor IA", href: "/asesor-ia" },
   { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Valorar inmueble", href: "/valorar" },
 ];
