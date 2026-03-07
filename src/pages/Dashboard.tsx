@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro } from "lucide-react";
+import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -35,12 +35,25 @@ interface Alert {
   created_at: string;
 }
 
+interface Offer {
+  id: string;
+  property_id: string;
+  property_reference: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  offer_amount: number;
+  status: string;
+  created_at: string;
+}
+
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile>({ display_name: "", phone: "", avatar_url: "" });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [offers, setOffers] = useState<Offer[]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -56,14 +69,16 @@ const Dashboard = () => {
   }, [user]);
 
   const loadData = async () => {
-    const [profileRes, favRes, alertRes] = await Promise.all([
+    const [profileRes, favRes, alertRes, offersRes] = await Promise.all([
       supabase.from("profiles").select("display_name, phone, avatar_url").eq("user_id", user!.id).single(),
       supabase.from("favorites").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("alerts").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
+      supabase.from("offers").select("*").order("created_at", { ascending: false }),
     ]);
     if (profileRes.data) setProfile(profileRes.data);
     if (favRes.data) setFavorites(favRes.data);
     if (alertRes.data) setAlerts(alertRes.data);
+    if (offersRes.data) setOffers(offersRes.data as unknown as Offer[]);
   };
 
   const saveProfile = async () => {
@@ -119,8 +134,9 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="favorites" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-4 max-w-lg">
             <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Favoritos</TabsTrigger>
+            <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Alertas</TabsTrigger>
             <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Perfil</TabsTrigger>
           </TabsList>
@@ -165,6 +181,63 @@ const Dashboard = () => {
             )}
           </TabsContent>
 
+          <TabsContent value="offers">
+            {offers.length === 0 ? (
+              <Card><CardContent className="py-12 text-center">
+                <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+                <p className="text-muted-foreground">No has enviado ofertas todavía.</p>
+                <Button className="mt-4" onClick={() => navigate("/inmuebles")}>Explorar inmuebles</Button>
+              </CardContent></Card>
+            ) : (
+              <div className="grid gap-4">
+                {offers.map((offer) => {
+                  const prop = properties.find((p) => p.id === offer.property_id);
+                  const statusConfig: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
+                    pending: { label: "Pendiente", icon: <Clock className="w-4 h-4" />, className: "text-yellow-600 bg-yellow-50" },
+                    accepted: { label: "Aceptada", icon: <CheckCircle className="w-4 h-4" />, className: "text-green-600 bg-green-50" },
+                    rejected: { label: "Rechazada", icon: <XCircle className="w-4 h-4" />, className: "text-destructive bg-destructive/10" },
+                  };
+                  const st = statusConfig[offer.status] || statusConfig.pending;
+
+                  return (
+                    <Card key={offer.id}>
+                      <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4">
+                        {prop && (
+                          <img
+                            src={prop.images[0]}
+                            alt={prop.title}
+                            className="w-full sm:w-24 h-20 object-cover rounded-lg cursor-pointer shrink-0"
+                            onClick={() => navigate(`/inmueble/${prop.id}`)}
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-semibold text-accent">{offer.property_reference || offer.property_id}</span>
+                            <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${st.className}`}>
+                              {st.icon} {st.label}
+                            </span>
+                          </div>
+                          <h3
+                            className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent"
+                            onClick={() => navigate(`/inmueble/${offer.property_id}`)}
+                          >
+                            {prop?.title || `Inmueble ${offer.property_id}`}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(offer.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-lg font-bold text-foreground">{offer.offer_amount.toLocaleString("es-ES")} €</p>
+                          <p className="text-xs text-muted-foreground">Tu oferta</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
           <TabsContent value="alerts">
             {alerts.length === 0 ? (
               <Card><CardContent className="py-12 text-center">
