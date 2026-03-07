@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import categoryViviendas from "@/assets/category-viviendas.jpg";
 import categoryTerrenos from "@/assets/category-terrenos.jpg";
 import categoryLocales from "@/assets/category-locales.jpg";
@@ -8,25 +9,25 @@ const categories = [
     title: "Pisos y Casas",
     description: "El hogar que imaginas con las mejores oportunidades de inversión.",
     image: categoryViviendas,
-    href: "#viviendas",
+    href: "/inmuebles?type=vivienda",
   },
   {
     title: "Terrenos",
     description: "Residenciales, rústicos e industriales. Tenemos el que se adapta a ti.",
     image: categoryTerrenos,
-    href: "#terrenos",
+    href: "/inmuebles?type=terreno",
   },
   {
     title: "Locales Comerciales",
     description: "Miles de espacios en venta para convertir tus ideas en un buen negocio.",
     image: categoryLocales,
-    href: "#locales",
+    href: "/inmuebles?type=local",
   },
   {
     title: "Oficinas y Naves",
     description: "Espacios profesionales con alta rentabilidad para tu cartera.",
     image: categoryOficinas,
-    href: "#oficinas",
+    href: "/inmuebles?type=nave",
   },
 ];
 
@@ -43,9 +44,9 @@ const CategoryCards = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {categories.map((cat) => (
-            <a
+            <Link
               key={cat.title}
-              href={cat.href}
+              to={cat.href}
               className="group relative rounded-2xl overflow-hidden aspect-[16/10] card-elevated"
             >
               <img
@@ -63,7 +64,7 @@ const CategoryCards = () => {
                   {cat.description}
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
