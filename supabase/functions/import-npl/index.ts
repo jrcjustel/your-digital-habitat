@@ -12,7 +12,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify auth
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -26,17 +25,14 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Verify user is authenticated
     const supabaseUser = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: claimsData, error: claimsError } = await supabaseUser.auth.getClaims(
-      authHeader.replace("Bearer ", "")
-    );
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -52,18 +48,25 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Optionally clear existing data
     if (clearExisting) {
       await supabaseAdmin.from("npl_assets").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     }
 
-    // Parse currency strings like "201.524,16 €" to number
     const parseCurrency = (val: string): number => {
       if (!val || val === "" || val === "0") return 0;
       return parseFloat(val.replace(/[€\s]/g, "").replace(/\./g, "").replace(",", ".")) || 0;
     };
 
-    // Insert in batches of 500
+    const parsePercent = (val: string): number => {
+      if (!val || val === "" || val === "0") return 0;
+      return parseFloat(val.replace(/[%\s]/g, "").replace(",", ".")) || 0;
+    };
+
+    const parseBool = (val: string): boolean => {
+      const v = (val || "").trim().toUpperCase();
+      return v === "SI" || v === "SÍ" || v === "TRUE" || v === "1";
+    };
+
     const BATCH_SIZE = 500;
     let inserted = 0;
     let errors = 0;
@@ -81,7 +84,7 @@ Deno.serve(async (req) => {
         deuda_ob: parseCurrency(r.deuda_ob || "0"),
         servicer: r.servicer || null,
         cartera: r.cartera || null,
-        publicado: r.publicado === "SI" || r.publicado === "SÍ",
+        publicado: parseBool(r.publicado || ""),
         ndg: r.ndg || null,
         asset_id: r.asset_id || null,
         name_debtor: r.name_debtor || null,
@@ -92,10 +95,24 @@ Deno.serve(async (req) => {
         estado_ocupacional: r.estado_ocupacional || null,
         tipo_procedimiento: r.tipo_procedimiento || null,
         estado_judicial: r.estado_judicial || null,
-        cesion_remate: r.cesion_remate === "SI" || r.cesion_remate === "SÍ",
-        cesion_credito: r.cesion_credito === "SI" || r.cesion_credito === "SÍ",
+        cesion_remate: parseBool(r.cesion_remate || ""),
+        cesion_credito: parseBool(r.cesion_credito || ""),
         importe_preaprobado: parseCurrency(r.importe_preaprobado || "0"),
-        oferta_aprobada: r.oferta_aprobada === "SI" || r.oferta_aprobada === "SÍ",
+        oferta_aprobada: parseBool(r.oferta_aprobada || ""),
+        postura_subasta: parseBool(r.postura_subasta || ""),
+        propiedad_sin_posesion: parseBool(r.propiedad_sin_posesion || ""),
+        valor_mercado: parseCurrency(r.valor_mercado || "0"),
+        precio_orientativo: parseCurrency(r.precio_orientativo || "0"),
+        referencia_fencia: r.referencia_interna || null,
+        codigo_postal: r.codigo_postal || null,
+        fase_judicial: r.fase_judicial || null,
+        deposito_porcentaje: parsePercent(r.deposito_porcentaje || "0"),
+        comision_porcentaje: parsePercent(r.comision_porcentaje || "0"),
+        descripcion: r.descripcion || null,
+        anio_construccion: parseInt(String(r.anio_construccion || "0")) || null,
+        vpo: parseBool(r.vpo || ""),
+        judicializado: parseBool(r.judicializado || ""),
+        num_titulares: parseInt(String(r.num_titulares || "1")) || 1,
       }));
 
       const { error } = await supabaseAdmin.from("npl_assets").insert(batch);

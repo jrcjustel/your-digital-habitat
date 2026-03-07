@@ -44,6 +44,20 @@ const COLUMN_MAP: Record<string, string> = {
   "Cesion de Credito": "cesion_credito",
   "Importe Pre-Aprobado": "importe_preaprobado",
   "Oferta Aprobada": "oferta_aprobada",
+  "Postura Subasta": "postura_subasta",
+  "Propiedad Sin Posesion": "propiedad_sin_posesion",
+  "Valor Mercado": "valor_mercado",
+  "Precio Orientativo": "precio_orientativo",
+  "Referencia": "referencia_interna",
+  "Codigo Postal": "codigo_postal",
+  "Fase Judicial": "fase_judicial",
+  "Deposito (%)": "deposito_porcentaje",
+  "Comision (%)": "comision_porcentaje",
+  "Descripcion": "descripcion",
+  "Año Construccion": "anio_construccion",
+  "VPO": "vpo",
+  "Judicializado": "judicializado",
+  "Num Titulares": "num_titulares",
 };
 
 const AdminImport = () => {
