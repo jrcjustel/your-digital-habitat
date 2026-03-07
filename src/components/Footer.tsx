@@ -59,7 +59,7 @@ const Footer = () => {
             <span className="font-heading text-2xl font-extrabold text-primary-foreground">ikesa</span>
             <span className="block text-xs text-accent mt-0.5 font-medium">Inmobiliaria / Real Estate</span>
             <p className="text-primary-foreground/50 text-sm leading-relaxed mt-2">
-              Inversiones inteligentes para inversores exigentes. Tu partner inmobiliario de confianza.
+              Democratizamos la inversión inmobiliaria. Acceso transparente a oportunidades de alta rentabilidad para todos.
             </p>
           </div>
           {footerSections.map((section) => (

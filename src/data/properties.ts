@@ -46,6 +46,12 @@ export interface Property {
   isHabitualResidence?: boolean;
   ownershipPercent?: number;
   isVPO?: boolean;
+  cee?: {
+    rating: "A" | "B" | "C" | "D" | "E" | "F" | "G" | "exento" | "en_tramite" | "no_disponible";
+    consumption?: number; // kWh/m²·año
+    emissions?: number; // kgCO₂/m²·año
+    expiryDate?: string;
+  };
   judicialInfo?: {
     judicializado: boolean;
     phase?: JudicialPhase;
@@ -115,6 +121,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "B", consumption: 45, emissions: 12 },
   },
   {
     id: "2",
@@ -146,6 +153,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "E", consumption: 185, emissions: 42 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -190,6 +198,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "A", consumption: 22, emissions: 5 },
   },
   {
     id: "4",
@@ -217,6 +226,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "D", consumption: 130, emissions: 32 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -248,6 +258,7 @@ export const properties: Property[] = [
     lng: -5.6411,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "exento" },
   },
   {
     id: "6",
@@ -274,6 +285,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "en_tramite" },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
@@ -312,6 +324,7 @@ export const properties: Property[] = [
     lng: -6.4370,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "C", consumption: 95, emissions: 24 },
   },
   {
     id: "8",
@@ -341,6 +354,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 220, emissions: 55 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -378,6 +392,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "G", consumption: 280, emissions: 68 },
     judicialInfo: {
       judicializado: false,
     },
@@ -414,6 +429,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "D", consumption: 140, emissions: 35 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -452,6 +468,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "C", consumption: 98, emissions: 25 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -489,6 +506,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "E", consumption: 175, emissions: 40 },
     judicialInfo: {
       judicializado: true,
       phase: "demanda",
@@ -528,6 +546,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "D", consumption: 155, emissions: 38 },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
@@ -572,6 +591,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "G", consumption: 310, emissions: 75 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -611,6 +631,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 230, emissions: 55 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -645,6 +666,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "C", consumption: 88, emissions: 22 },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
@@ -686,6 +708,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 210, emissions: 50 },
     judicialInfo: {
       judicializado: true,
       phase: "demanda",
@@ -724,6 +747,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "C", consumption: 92, emissions: 23 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -762,6 +786,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "en_tramite" },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
@@ -798,6 +823,7 @@ export const properties: Property[] = [
     lng: -0.4580,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "exento" },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",

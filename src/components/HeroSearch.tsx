@@ -48,15 +48,15 @@ const HeroSearch = () => {
 
       <div className="relative container mx-auto px-4 py-20 md:py-28 text-center">
         <p className="text-primary-foreground/70 text-sm font-medium mb-3 animate-fade-in tracking-wider uppercase">
-          Aquí, tienes un inmueble para ti.
+          Democratizamos la inversión inmobiliaria
         </p>
         <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground mb-4 animate-slide-up">
-          Inversiones inteligentes para
+          Inversión inmobiliaria
           <br />
-          inversores exigentes
+          accesible para todos
         </h1>
         <p className="text-primary-foreground/60 text-lg mb-10 max-w-2xl mx-auto animate-slide-up">
-          Encuentra tu inmueble ideal entre miles de activos disponibles
+          Accede a oportunidades antes reservadas a grandes fondos. Transparencia, tecnología y acompañamiento experto al alcance de cualquier inversor.
         </p>
 
         <div className="max-w-5xl mx-auto bg-card rounded-2xl shadow-xl p-2 animate-slide-up">

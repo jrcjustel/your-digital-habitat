@@ -14,6 +14,7 @@ import AdminImport from "./pages/AdminImport";
 import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
+import CookieConsent from "./components/CookieConsent";
 import NplDetail from "./pages/NplDetail";
 import Inversores from "./pages/Inversores";
 import InversoresNpl from "./pages/InversoresNpl";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/valorar" element={<Valorador />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CookieConsent />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

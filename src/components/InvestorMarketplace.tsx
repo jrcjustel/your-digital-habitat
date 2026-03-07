@@ -20,8 +20,11 @@ const InvestorMarketplace = () => {
         <div className="text-center mb-12">
           <span className="section-label">Marketplace de Inversión</span>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
-            Para inversores exigentes. Alta rentabilidad
+            Inversión inmobiliaria al alcance de todos
           </h2>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+            Accede a activos de alta rentabilidad que antes solo estaban disponibles para grandes fondos e inversores institucionales.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
