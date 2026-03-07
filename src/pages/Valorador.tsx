@@ -304,12 +304,12 @@ const Valorador = () => {
                   {valuation.factores_positivos?.length > 0 && (
                     <div>
                       <h3 className="font-semibold text-foreground flex items-center gap-2 mb-3">
-                        <TrendingUp className="w-4 h-4 text-green-600" /> Factores positivos
+                        <TrendingUp className="w-4 h-4 text-accent" /> Factores positivos
                       </h3>
                       <ul className="space-y-1">
                         {valuation.factores_positivos.map((f, i) => (
                           <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                            <span className="text-green-600 mt-0.5">✓</span> {f}
+                            <span className="text-accent mt-0.5">✓</span> {f}
                           </li>
                         ))}
                       </ul>
