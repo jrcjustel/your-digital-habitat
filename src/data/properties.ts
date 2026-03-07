@@ -354,6 +354,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "F", consumption: 220, emissions: 55 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
