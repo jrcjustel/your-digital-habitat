@@ -10,6 +10,7 @@ import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
+import SaleTypeBanner from "@/components/SaleTypeBanner";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
@@ -92,13 +93,6 @@ const PropertyDetail = () => {
     alquiler: "Alquiler",
   };
 
-  const saleTypeColors: Record<string, string> = {
-    compraventa: "bg-primary text-primary-foreground",
-    npl: "bg-destructive text-destructive-foreground",
-    "cesion-remate": "bg-accent text-accent-foreground",
-    ocupado: "bg-muted-foreground text-background",
-  };
-
   const operationColors: Record<string, string> = {
     venta: "bg-primary/20 text-primary border border-primary/30",
     alquiler: "bg-accent/20 text-accent border border-accent/30",
@@ -146,14 +140,16 @@ const PropertyDetail = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header card - sale type + reference + prices */}
+        {/* Sale type context banner */}
+        <div className="mb-6">
+          <SaleTypeBanner saleType={property.saleType} />
+        </div>
+
+        {/* Header card - reference + prices */}
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${saleTypeColors[property.saleType] || "bg-secondary text-foreground"}`}>
-                {saleTypeLabel}
-              </span>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center flex-wrap gap-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
                 <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
                   {operationLabels[property.operation]}
@@ -509,9 +505,7 @@ const PropertyDetail = () => {
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeColors[p.saleType] || "bg-secondary text-foreground"}`}>
-                          {saleTypes.find((s) => s.value === p.saleType)?.label || p.saleType}
-                        </span>
+                        <SaleTypeBanner saleType={p.saleType} compact />
                         <span className="bg-card/90 backdrop-blur-sm text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{typeLabels[p.type]}</span>
                       </div>
                       {d > 0 && <span className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">-{d}%</span>}
