@@ -15,13 +15,15 @@ const footerSections = [
     ],
   },
   {
-    title: "Compañía",
+    title: "Academia",
     links: [
-      { label: "Academia", href: "/academia" },
+      { label: "Ruta Ocupados", href: "/academia/ruta/ruta-inmuebles-ocupados" },
+      { label: "Ruta Cesiones de Remate", href: "/academia/ruta/ruta-cesiones-remate" },
+      { label: "Ruta Subastas BOE", href: "/academia/ruta/ruta-subastas-boe" },
+      { label: "Ruta Deuda / NPL", href: "/academia/ruta/ruta-deuda-npl" },
+      { label: "Todos los artículos", href: "/academia" },
       { label: "Cómo funciona", href: "/como-funciona" },
       { label: "Valorar mi inmueble", href: "/valorar" },
-      { label: "Análisis de mercado", href: "/analytics" },
-      { label: "Contacto", href: "/" },
     ],
   },
   {
