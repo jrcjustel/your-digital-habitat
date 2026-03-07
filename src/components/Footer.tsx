@@ -1,5 +1,3 @@
-import ikesaLogoWhite from "@/assets/ikesa-logo-white.png";
-
 const footerLinks = {
   "Inmuebles": ["Viviendas", "Locales", "Oficinas", "Terrenos", "Naves", "Garajes"],
   "Inversión": ["Obra Parada", "Edificios", "NPL (Deuda)", "Cesiones de Remate", "Grandes Lotes", "Activos Ocupados"],
@@ -18,7 +16,8 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="col-span-2 md:col-span-1">
-            <img src={ikesaLogoWhite} alt="ikesa" className="h-10 mb-4" />
+            <span className="font-heading text-2xl font-extrabold text-primary-foreground">ikesa</span>
+            <span className="block text-xs text-accent mt-0.5 font-medium">Inmobiliaria / Real Estate</span>
             <p className="text-primary-foreground/50 text-sm leading-relaxed">
               Inversiones inteligentes para inversores exigentes. Tu partner inmobiliario de confianza.
             </p>
