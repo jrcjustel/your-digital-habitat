@@ -314,6 +314,18 @@ const AdminDocuments = () => {
                     </div>
                   </div>
 
+                  {/* Property ID link */}
+                  <div className="space-y-2">
+                    <Label htmlFor="property-id">Vincular a inmueble (property_id)</Label>
+                    <Input
+                      id="property-id"
+                      value={propertyId}
+                      onChange={(e) => setPropertyId(e.target.value)}
+                      placeholder="Ej: 1, 2, 3..."
+                    />
+                    <p className="text-xs text-muted-foreground">ID del inmueble del catálogo estático</p>
+                  </div>
+
                   {/* Confidential */}
                   <div className="flex items-center justify-between">
                     <Label htmlFor="confidential" className="flex items-center gap-2">
