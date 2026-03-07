@@ -159,9 +159,9 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                     <span className="text-xs font-bold bg-accent/10 text-accent px-2 py-0.5 rounded-full">
                       {a.tipo_activo || "Activo"}
                     </span>
-                    {a.referencia_fencia && (
+                    {a.referencia_interna && (
                       <span className="text-xs font-mono text-muted-foreground">
-                        {a.referencia_fencia}
+                        {a.referencia_interna}
                       </span>
                     )}
                     {a.cesion_remate && (

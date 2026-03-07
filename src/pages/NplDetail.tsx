@@ -149,7 +149,7 @@ const NplDetail = () => {
           <Link to="/npl" className="hover:text-accent transition-colors">Oportunidades</Link>
           <span>/</span>
           <span className="text-foreground font-medium truncate max-w-[200px]">
-            {asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
+            {asset.referencia_interna || asset.asset_id || asset.id.slice(0, 8)}
           </span>
         </div>
       </div>
@@ -166,9 +166,9 @@ const NplDetail = () => {
               <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
                 {asset.tipo_activo || "Activo"}
               </span>
-              {asset.referencia_fencia && (
+              {asset.referencia_interna && (
                 <span className="text-xs font-mono text-muted-foreground">
-                  Ref: {asset.referencia_fencia}
+                  Ref: {asset.referencia_interna}
                 </span>
               )}
               {asset.cartera && (
@@ -327,7 +327,7 @@ const NplDetail = () => {
                       <InfoRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} highlight={asset.judicializado} />
                       <InfoRow label="Fase judicial actual" value={asset.fase_judicial || asset.estado_judicial} />
                       <InfoRow label="Tipo de procedimiento" value={asset.tipo_procedimiento} />
-                      <InfoRow label="Referencia" value={asset.referencia_fencia} />
+                      <InfoRow label="Referencia" value={asset.referencia_interna} />
                       <InfoRow label="Cesión de remate" value={asset.cesion_remate ? "SÍ" : "NO"} />
                       <InfoRow label="Cesión de crédito" value={asset.cesion_credito ? "SÍ" : "NO"} />
                       <InfoRow label="Postura en subasta" value={asset.postura_subasta ? "SÍ" : "NO"} />
@@ -388,7 +388,7 @@ const NplDetail = () => {
                   <div className="mt-4 pt-4 border-t border-border">
                     <OfferForm
                       propertyId={asset.id}
-                      propertyReference={asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
+                      propertyReference={asset.referencia_interna || asset.asset_id || asset.id.slice(0, 8)}
                     />
                   </div>
                 )}
