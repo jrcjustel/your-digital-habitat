@@ -20,6 +20,10 @@ import InversoresNpl from "./pages/InversoresNpl";
 import InversoresCdr from "./pages/InversoresCdr";
 import InversoresOcupados from "./pages/InversoresOcupados";
 import ComoFunciona from "./pages/ComoFunciona";
+import AvisoLegal from "./pages/AvisoLegal";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
+import PoliticaCookies from "./pages/PoliticaCookies";
+import CanalDenuncias from "./pages/CanalDenuncias";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +51,11 @@ const App = () => (
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
+            {/* Legal */}
+            <Route path="/aviso-legal" element={<AvisoLegal />} />
+            <Route path="/privacidad" element={<PoliticaPrivacidad />} />
+            <Route path="/cookies" element={<PoliticaCookies />} />
+            <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
