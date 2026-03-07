@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
+import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   direccion: z.string().min(3, "Introduce una dirección válida").max(200),
@@ -80,15 +81,66 @@ const estados = [
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
+type InputMode = "direccion" | "catastral";
+
 const Valorador = () => {
   const [loading, setLoading] = useState(false);
   const [valuation, setValuation] = useState<Valuation | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [inputMode, setInputMode] = useState<InputMode>("direccion");
+  const [refCatastral, setRefCatastral] = useState("");
+  const [lookingUp, setLookingUp] = useState(false);
+  const [catastroFilled, setCatastroFilled] = useState(false);
 
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: { tiene_garaje: false, tiene_trastero: false, tiene_ascensor: false },
   });
+
+  const handleCatastroLookup = async () => {
+    if (!refCatastral.trim()) {
+      toast.error("Introduce una referencia catastral");
+      return;
+    }
+
+    setLookingUp(true);
+    setCatastroFilled(false);
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("catastro-lookup", {
+        body: { ref_catastral: refCatastral.trim() },
+      });
+
+      if (fnError) throw fnError;
+      if (!data?.success) throw new Error(data?.error || "No se encontraron datos");
+
+      const d = data.data;
+
+      if (d.direccion) setValue("direccion", d.direccion);
+      if (d.municipio) setValue("municipio", d.municipio);
+      if (d.provincia) {
+        // Try to match province name
+        const match = provincias.find(
+          (p) => p.toLowerCase() === d.provincia.toLowerCase() ||
+            d.provincia.toLowerCase().includes(p.toLowerCase()) ||
+            p.toLowerCase().includes(d.provincia.toLowerCase())
+        );
+        if (match) setValue("provincia", match);
+      }
+      if (d.codigo_postal) setValue("codigo_postal", d.codigo_postal);
+      if (d.tipo_inmueble) setValue("tipo_inmueble", d.tipo_inmueble);
+      if (d.superficie_m2 && d.superficie_m2 > 0) setValue("superficie_m2", d.superficie_m2);
+      if (d.anio_construccion) setValue("anio_construccion", d.anio_construccion);
+      if (d.planta !== null && d.planta !== undefined) setValue("planta", d.planta);
+
+      setCatastroFilled(true);
+      toast.success("Datos del Catastro cargados correctamente");
+    } catch (e: any) {
+      toast.error(e.message || "Error consultando el Catastro");
+    } finally {
+      setLookingUp(false);
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -105,6 +157,12 @@ const Valorador = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const switchMode = (mode: InputMode) => {
+    setInputMode(mode);
+    setCatastroFilled(false);
+    setRefCatastral("");
   };
 
   return (
@@ -130,38 +188,108 @@ const Valorador = () => {
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         {!valuation ? (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-            {/* Ubicación */}
+            {/* Input mode toggle */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <MapPin className="w-5 h-5 text-accent" /> Ubicación
+                  <MapPin className="w-5 h-5 text-accent" /> Identificación del inmueble
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <Label htmlFor="direccion">Dirección *</Label>
-                  <Input id="direccion" placeholder="Calle, número, piso…" {...register("direccion")} />
-                  {errors.direccion && <p className="text-sm text-destructive mt-1">{errors.direccion.message}</p>}
+              <CardContent className="space-y-5">
+                {/* Mode selector */}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={inputMode === "direccion" ? "default" : "outline"}
+                    className="flex-1 gap-2"
+                    onClick={() => switchMode("direccion")}
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Por dirección
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={inputMode === "catastral" ? "default" : "outline"}
+                    className="flex-1 gap-2"
+                    onClick={() => switchMode("catastral")}
+                  >
+                    <FileText className="w-4 h-4" />
+                    Por referencia catastral
+                  </Button>
                 </div>
-                <div>
-                  <Label htmlFor="municipio">Municipio *</Label>
-                  <Input id="municipio" placeholder="Ej: Madrid" {...register("municipio")} />
-                  {errors.municipio && <p className="text-sm text-destructive mt-1">{errors.municipio.message}</p>}
-                </div>
-                <div>
-                  <Label>Provincia *</Label>
-                  <Select onValueChange={(v) => setValue("provincia", v)}>
-                    <SelectTrigger><SelectValue placeholder="Selecciona provincia" /></SelectTrigger>
-                    <SelectContent>
-                      {provincias.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  {errors.provincia && <p className="text-sm text-destructive mt-1">{errors.provincia.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="codigo_postal">Código postal</Label>
-                  <Input id="codigo_postal" placeholder="28001" {...register("codigo_postal")} />
-                  {errors.codigo_postal && <p className="text-sm text-destructive mt-1">{errors.codigo_postal.message}</p>}
+
+                {/* Catastral lookup */}
+                {inputMode === "catastral" && (
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="ref_catastral">Referencia catastral</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          id="ref_catastral"
+                          placeholder="Ej: 9872023VH5797S0001WX"
+                          value={refCatastral}
+                          onChange={(e) => setRefCatastral(e.target.value.toUpperCase())}
+                          className="flex-1 font-mono"
+                          maxLength={20}
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleCatastroLookup}
+                          disabled={lookingUp || !refCatastral.trim()}
+                          className="gap-2 shrink-0"
+                        >
+                          {lookingUp ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Search className="w-4 h-4" />
+                          )}
+                          {lookingUp ? "Consultando…" : "Consultar Catastro"}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1.5">
+                        Puedes encontrarla en tu escritura, recibo del IBI o en{" "}
+                        <a href="https://www.sedecatastro.gob.es" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
+                          sedecatastro.gob.es
+                        </a>
+                      </p>
+                    </div>
+
+                    {catastroFilled && (
+                      <div className="flex items-center gap-2 text-sm text-accent bg-accent/10 px-3 py-2 rounded-lg">
+                        <CheckCircle className="w-4 h-4 shrink-0" />
+                        Datos cargados del Catastro. Revisa y completa los campos necesarios.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Address fields — always visible (filled manually or from Catastro) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <Label htmlFor="direccion">Dirección *</Label>
+                    <Input id="direccion" placeholder="Calle, número, piso…" {...register("direccion")} />
+                    {errors.direccion && <p className="text-sm text-destructive mt-1">{errors.direccion.message}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="municipio">Municipio *</Label>
+                    <Input id="municipio" placeholder="Ej: Madrid" {...register("municipio")} />
+                    {errors.municipio && <p className="text-sm text-destructive mt-1">{errors.municipio.message}</p>}
+                  </div>
+                  <div>
+                    <Label>Provincia *</Label>
+                    <Select value={watch("provincia") || ""} onValueChange={(v) => setValue("provincia", v)}>
+                      <SelectTrigger><SelectValue placeholder="Selecciona provincia" /></SelectTrigger>
+                      <SelectContent>
+                        {provincias.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    {errors.provincia && <p className="text-sm text-destructive mt-1">{errors.provincia.message}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="codigo_postal">Código postal</Label>
+                    <Input id="codigo_postal" placeholder="28001" {...register("codigo_postal")} />
+                    {errors.codigo_postal && <p className="text-sm text-destructive mt-1">{errors.codigo_postal.message}</p>}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -176,7 +304,7 @@ const Valorador = () => {
               <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <Label>Tipo de inmueble *</Label>
-                  <Select onValueChange={(v) => setValue("tipo_inmueble", v)}>
+                  <Select value={watch("tipo_inmueble") || ""} onValueChange={(v) => setValue("tipo_inmueble", v)}>
                     <SelectTrigger><SelectValue placeholder="Selecciona tipo" /></SelectTrigger>
                     <SelectContent>
                       {tiposInmueble.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
@@ -344,7 +472,7 @@ const Valorador = () => {
                 ¿Quieres una tasación más precisa? Nuestros expertos pueden ayudarte.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" onClick={() => setValuation(null)}>
+                <Button size="lg" onClick={() => { setValuation(null); setCatastroFilled(false); }}>
                   Valorar otro inmueble
                 </Button>
                 <Button size="lg" variant="outline" asChild>
