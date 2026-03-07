@@ -247,10 +247,10 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="font-heading text-lg font-bold text-foreground">Centro de documentación</h2>
-                  <p className="text-sm text-muted-foreground">Documentos compartidos contigo por el equipo de ikesa.</p>
+                  <p className="text-sm text-muted-foreground">Documentos compartidos y tu documentación personal. Sube DNI, escrituras, justificantes u otros archivos necesarios.</p>
                 </div>
               </div>
-              <DocumentsPanel showFilters={true} />
+              <DocumentsPanel showFilters={true} allowUpload={true} />
             </div>
           </TabsContent>
 
