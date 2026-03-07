@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
+import Disclaimer from "@/components/Disclaimer";
 import { Gavel, Scale, Home, FileText } from "lucide-react";
 
 const highlights = [
@@ -13,14 +14,10 @@ const highlights = [
 const InversoresCdr = () => (
   <div className="min-h-screen bg-background">
     <Navbar />
-
-    {/* Hero */}
     <section className="bg-gradient-to-b from-primary to-primary/90 text-primary-foreground py-14 md:py-20">
       <div className="container mx-auto px-4 max-w-4xl">
         <span className="text-xs font-bold uppercase tracking-widest text-accent mb-4 block">Inversión en Cesiones de Remate</span>
-        <h1 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-          Cesiones de Remate
-        </h1>
+        <h1 className="font-heading text-3xl md:text-4xl font-bold mb-4">Cesiones de Remate</h1>
         <p className="text-primary-foreground/80 text-base md:text-lg max-w-2xl mb-8">
           Cuando la subasta queda desierta o el ejecutante resulta mejor postor, éste puede ceder
           su derecho de adjudicación a un tercero. El inmueble se adquiere al precio de adjudicación
@@ -36,12 +33,10 @@ const InversoresCdr = () => (
         </div>
       </div>
     </section>
-
-    {/* Listing */}
     <div className="container mx-auto px-4 py-8">
       <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
+      <Disclaimer type="cesion-remate" />
     </div>
-
     <Footer />
   </div>
 );
