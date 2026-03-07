@@ -1,14 +1,43 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, Phone, Mail, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { properties } from "@/data/properties";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/sonner";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const property = properties.find((p) => p.id === id);
   const [currentImage, setCurrentImage] = useState(0);
+  const { user } = useAuth();
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    if (user && id) {
+      supabase.from("favorites").select("id").eq("user_id", user.id).eq("property_id", id).maybeSingle().then(({ data }) => {
+        setIsFavorite(!!data);
+      });
+    }
+  }, [user, id]);
+
+  const toggleFavorite = async () => {
+    if (!user) {
+      toast.error("Inicia sesión para guardar favoritos");
+      return;
+    }
+    if (isFavorite) {
+      await supabase.from("favorites").delete().eq("user_id", user.id).eq("property_id", id!);
+      setIsFavorite(false);
+      toast.success("Eliminado de favoritos");
+    } else {
+      await supabase.from("favorites").insert({ user_id: user.id, property_id: id! });
+      setIsFavorite(true);
+      toast.success("Añadido a favoritos");
+    }
+  };
 
   if (!property) {
     return (
@@ -80,8 +109,8 @@ const PropertyDetail = () => {
             )}
           </div>
           <div className="absolute bottom-4 right-4 flex gap-2">
-            <button className="bg-card/80 backdrop-blur-sm p-2.5 rounded-full hover:bg-card transition-colors">
-              <Heart className="w-5 h-5 text-foreground" />
+            <button onClick={toggleFavorite} className="bg-card/80 backdrop-blur-sm p-2.5 rounded-full hover:bg-card transition-colors">
+              <Heart className={`w-5 h-5 ${isFavorite ? "fill-destructive text-destructive" : "text-foreground"}`} />
             </button>
             <button className="bg-card/80 backdrop-blur-sm p-2.5 rounded-full hover:bg-card transition-colors">
               <Share2 className="w-5 h-5 text-foreground" />
