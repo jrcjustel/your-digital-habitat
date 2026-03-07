@@ -26,6 +26,7 @@ import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
 import Valorador from "./pages/Valorador";
+import AdminValuationLeads from "./pages/AdminValuationLeads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
