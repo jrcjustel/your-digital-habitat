@@ -1,13 +1,17 @@
 import { useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, X, MapPin, Bed, Bath, Maximize, TrendingUp, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, MapPin, Bed, Bath, Maximize, TrendingUp, ChevronDown, LayoutGrid, List, Map as MapIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PropertyMap from "@/components/PropertyMap";
 import { properties, propertyTypes, provinces, type PropertyType, type OperationType } from "@/data/properties";
+
+type ViewMode = "grid" | "list" | "map";
 
 const PropertyListing = () => {
   const [searchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const [filters, setFilters] = useState({
     operation: (searchParams.get("operation") || "") as OperationType | "",
@@ -28,7 +32,11 @@ const PropertyListing = () => {
       if (filters.operation && p.operation !== filters.operation) return false;
       if (filters.type && p.type !== filters.type) return false;
       if (filters.province && p.province !== filters.province) return false;
-      if (filters.search && !p.title.toLowerCase().includes(filters.search.toLowerCase()) && !p.location.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (filters.search) {
+        const q = filters.search.toLowerCase();
+        const searchable = `${p.title} ${p.location} ${p.province} ${p.description} ${p.features.join(" ")} ${p.reference}`.toLowerCase();
+        if (!searchable.includes(q)) return false;
+      }
       if (filters.priceMin && p.price < Number(filters.priceMin)) return false;
       if (filters.priceMax && p.price > Number(filters.priceMax)) return false;
       if (filters.bedroomsMin && (p.bedrooms ?? 0) < Number(filters.bedroomsMin)) return false;
@@ -57,6 +65,92 @@ const PropertyListing = () => {
       : `${price.toLocaleString("es-ES")} €`;
   };
 
+  const typeLabels: Record<string, string> = {
+    vivienda: "Vivienda", local: "Local", oficina: "Oficina", terreno: "Terreno",
+    nave: "Nave", edificio: "Edificio", "obra-parada": "Obra parada",
+  };
+
+  const PropertyCard = ({ property }: { property: typeof properties[0] }) => (
+    <Link
+      to={`/inmueble/${property.id}`}
+      className="group bg-card rounded-2xl overflow-hidden card-elevated"
+    >
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className="bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
+            {property.operation === "venta" ? "Venta" : "Alquiler"}
+          </span>
+          {property.isNew && <span className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full">Nuevo</span>}
+        </div>
+        {property.profitability && (
+          <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+            <TrendingUp className="w-3 h-3" />{property.profitability}%
+          </div>
+        )}
+      </div>
+      <div className="p-5">
+        <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-2">
+          <MapPin className="w-3 h-3" />{property.location}, {property.province}
+        </div>
+        <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-3 leading-snug">{property.title}</h3>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+          <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{property.area.toLocaleString("es-ES")} m²</span>
+          {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" />{property.bedrooms} hab.</span>}
+          {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} baños</span>}
+        </div>
+        <div className="flex items-end justify-between">
+          <p className="font-heading text-xl font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
+          <span className="text-xs text-muted-foreground">Ref: {property.reference}</span>
+        </div>
+      </div>
+    </Link>
+  );
+
+  const PropertyListItem = ({ property }: { property: typeof properties[0] }) => (
+    <Link
+      to={`/inmueble/${property.id}`}
+      className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row"
+    >
+      <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0">
+        <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className="bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
+            {property.operation === "venta" ? "Venta" : "Alquiler"}
+          </span>
+          {property.isNew && <span className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full">Nuevo</span>}
+        </div>
+      </div>
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <MapPin className="w-3 h-3" />{property.location}, {property.province}
+            </div>
+            <span className="text-xs text-muted-foreground">Ref: {property.reference}</span>
+          </div>
+          <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug">{property.title}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{property.description}</p>
+          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground mb-3">
+            <span className="bg-secondary px-2.5 py-1 rounded-full">{typeLabels[property.type]}</span>
+            <span className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" />{property.area.toLocaleString("es-ES")} m²</span>
+            {property.bedrooms && <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" />{property.bedrooms} hab.</span>}
+            {property.bathrooms && <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" />{property.bathrooms} baños</span>}
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="font-heading text-xl font-bold text-foreground">{formatPrice(property.price, property.operation)}</p>
+          {property.profitability && (
+            <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
+              <TrendingUp className="w-3.5 h-3.5 text-accent" />
+              <span className="text-xs font-bold text-foreground">{property.profitability}% rent.</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -80,7 +174,7 @@ const PropertyListing = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Buscar por ubicación, título..."
+              placeholder="Buscar por ubicación, tipo, referencia, características..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               className="w-full pl-11 pr-4 py-3 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -98,6 +192,26 @@ const PropertyListing = () => {
               </span>
             )}
           </button>
+
+          {/* View mode toggle */}
+          <div className="flex items-center bg-card border border-border rounded-xl overflow-hidden">
+            {([
+              { mode: "grid" as ViewMode, icon: LayoutGrid, label: "Grid" },
+              { mode: "list" as ViewMode, icon: List, label: "Lista" },
+              { mode: "map" as ViewMode, icon: MapIcon, label: "Mapa" },
+            ]).map(({ mode, icon: Icon, label }) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                title={label}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            ))}
+          </div>
+
           <div className="relative">
             <select
               value={sortBy}
@@ -119,9 +233,7 @@ const PropertyListing = () => {
           <div className="bg-card border border-border rounded-2xl p-6 mb-6 animate-fade-in">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-heading font-bold text-foreground">Filtros avanzados</h3>
-              <button onClick={clearFilters} className="text-xs text-accent hover:underline">
-                Limpiar filtros
-              </button>
+              <button onClick={clearFilters} className="text-xs text-accent hover:underline">Limpiar filtros</button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <div>
@@ -136,18 +248,14 @@ const PropertyListing = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Tipo</label>
                 <select value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value as any })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                   <option value="">Todos</option>
-                  {propertyTypes.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
+                  {propertyTypes.map((t) => (<option key={t.value} value={t.value}>{t.label}</option>))}
                 </select>
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Provincia</label>
                 <select value={filters.province} onChange={(e) => setFilters({ ...filters, province: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                   <option value="">Todas</option>
-                  {provinces.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
+                  {provinces.map((p) => (<option key={p} value={p}>{p}</option>))}
                 </select>
               </div>
               <div>
@@ -162,10 +270,7 @@ const PropertyListing = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Dormitorios mín.</label>
                 <select value={filters.bedroomsMin} onChange={(e) => setFilters({ ...filters, bedroomsMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                   <option value="">Todos</option>
-                  <option value="1">1+</option>
-                  <option value="2">2+</option>
-                  <option value="3">3+</option>
-                  <option value="4">4+</option>
+                  <option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option>
                 </select>
               </div>
               <div>
@@ -176,95 +281,40 @@ const PropertyListing = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Rentabilidad mín.</label>
                 <select value={filters.profitabilityMin} onChange={(e) => setFilters({ ...filters, profitabilityMin: e.target.value })} className="w-full bg-secondary rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
                   <option value="">Todas</option>
-                  <option value="3">3%+</option>
-                  <option value="5">5%+</option>
-                  <option value="8">8%+</option>
-                  <option value="10">10%+</option>
+                  <option value="3">3%+</option><option value="5">5%+</option><option value="8">8%+</option><option value="10">10%+</option>
                 </select>
               </div>
             </div>
           </div>
         )}
 
-        {/* Results grid */}
+        {/* Results */}
         {filtered.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground text-lg mb-2">No se encontraron inmuebles</p>
-            <button onClick={clearFilters} className="text-sm text-accent hover:underline">
-              Limpiar filtros
-            </button>
+            <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
+          </div>
+        ) : viewMode === "map" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="h-[600px] rounded-2xl overflow-hidden border border-border">
+              <PropertyMap properties={filtered} />
+            </div>
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+              {filtered.map((property) => (
+                <PropertyListItem key={property.id} property={property} />
+              ))}
+            </div>
+          </div>
+        ) : viewMode === "list" ? (
+          <div className="space-y-4">
+            {filtered.map((property) => (
+              <PropertyListItem key={property.id} property={property} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((property) => (
-              <Link
-                key={property.id}
-                to={`/inmueble/${property.id}`}
-                className="group bg-card rounded-2xl overflow-hidden card-elevated"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img
-                    src={property.images[0]}
-                    alt={property.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className="bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
-                      {property.operation === "venta" ? "Venta" : "Alquiler"}
-                    </span>
-                    {property.isNew && (
-                      <span className="bg-primary text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full">
-                        Nuevo
-                      </span>
-                    )}
-                  </div>
-                  {property.profitability && (
-                    <div className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" />
-                      {property.profitability}%
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-5">
-                  <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-2">
-                    <MapPin className="w-3 h-3" />
-                    {property.location}, {property.province}
-                  </div>
-                  <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-3 leading-snug">
-                    {property.title}
-                  </h3>
-
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-                    <span className="flex items-center gap-1">
-                      <Maximize className="w-3.5 h-3.5" />
-                      {property.area.toLocaleString("es-ES")} m²
-                    </span>
-                    {property.bedrooms && (
-                      <span className="flex items-center gap-1">
-                        <Bed className="w-3.5 h-3.5" />
-                        {property.bedrooms} hab.
-                      </span>
-                    )}
-                    {property.bathrooms && (
-                      <span className="flex items-center gap-1">
-                        <Bath className="w-3.5 h-3.5" />
-                        {property.bathrooms} baños
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-end justify-between">
-                    <p className="font-heading text-xl font-bold text-foreground">
-                      {formatPrice(property.price, property.operation)}
-                    </p>
-                    <span className="text-xs text-muted-foreground">
-                      Ref: {property.reference}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         )}
