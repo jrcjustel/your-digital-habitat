@@ -25,9 +25,9 @@ const BlogSection = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <span className="section-label">Nuestro Blog</span>
+            <span className="section-label">Conocimiento abierto</span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
-              Últimas noticias del sector
+              Formación e inteligencia de mercado para todos
             </h2>
           </div>
           <a
