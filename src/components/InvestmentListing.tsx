@@ -23,7 +23,7 @@ interface NplAsset {
   cartera: string | null;
   valor_mercado: number;
   precio_orientativo: number;
-  referencia_interna: string | null;
+  referencia_fencia: string | null;
 }
 
 interface InvestmentListingProps {
@@ -159,9 +159,9 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                     <span className="text-xs font-bold bg-accent/10 text-accent px-2 py-0.5 rounded-full">
                       {a.tipo_activo || "Activo"}
                     </span>
-                    {a.referencia_interna && (
+                    {a.referencia_fencia && (
                       <span className="text-xs font-mono text-muted-foreground">
-                        {a.referencia_interna}
+                        {a.referencia_fencia}
                       </span>
                     )}
                     {a.cesion_remate && (
