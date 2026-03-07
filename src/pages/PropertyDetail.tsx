@@ -505,9 +505,7 @@ const PropertyDetail = () => {
                     <div className="relative aspect-[16/10] overflow-hidden">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeColors[p.saleType] || "bg-secondary text-foreground"}`}>
-                          {saleTypes.find((s) => s.value === p.saleType)?.label || p.saleType}
-                        </span>
+                        <SaleTypeBanner saleType={p.saleType} compact />
                         <span className="bg-card/90 backdrop-blur-sm text-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{typeLabels[p.type]}</span>
                       </div>
                       {d > 0 && <span className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">-{d}%</span>}
