@@ -258,6 +258,7 @@ export const properties: Property[] = [
     lng: -5.6411,
     occupancyStatus: "libre",
     ownershipPercent: 100,
+    cee: { rating: "exento" },
   },
   {
     id: "6",
@@ -284,6 +285,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "en_tramite" },
     judicialInfo: {
       judicializado: true,
       phase: "subasta",
