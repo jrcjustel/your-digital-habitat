@@ -30,6 +30,8 @@ export interface Property {
   hasTerrace?: boolean;
   hasElevator?: boolean;
   year?: number;
+  lat: number;
+  lng: number;
 }
 
 export const properties: Property[] = [
@@ -52,6 +54,8 @@ export const properties: Property[] = [
     hasTerrace: true,
     hasElevator: true,
     year: 2022,
+    lat: 36.5271,
+    lng: -6.2886,
   },
   {
     id: "2",
@@ -71,6 +75,8 @@ export const properties: Property[] = [
     reference: "IKE-002",
     hasGarage: true,
     year: 1995,
+    lat: 36.6850,
+    lng: -6.1261,
   },
   {
     id: "3",
@@ -93,6 +99,8 @@ export const properties: Property[] = [
     hasTerrace: true,
     year: 2024,
     isNew: true,
+    lat: 36.6213,
+    lng: -6.3500,
   },
   {
     id: "4",
@@ -109,6 +117,8 @@ export const properties: Property[] = [
     profitability: 8.3,
     reference: "IKE-004",
     year: 2018,
+    lat: 37.3886,
+    lng: -5.9823,
   },
   {
     id: "5",
@@ -124,6 +134,8 @@ export const properties: Property[] = [
     images: [property5],
     profitability: 3.2,
     reference: "IKE-005",
+    lat: 37.4711,
+    lng: -5.6411,
   },
   {
     id: "6",
@@ -139,6 +151,8 @@ export const properties: Property[] = [
     images: [property6],
     profitability: 12.5,
     reference: "IKE-006",
+    lat: 37.2614,
+    lng: -6.9447,
   },
   {
     id: "7",
@@ -158,6 +172,8 @@ export const properties: Property[] = [
     hasPool: true,
     hasTerrace: true,
     year: 2010,
+    lat: 36.7369,
+    lng: -6.4370,
   },
   {
     id: "8",
@@ -174,6 +190,8 @@ export const properties: Property[] = [
     profitability: 7.1,
     reference: "IKE-008",
     year: 2015,
+    lat: 37.2831,
+    lng: -5.9222,
   },
   {
     id: "9",
@@ -193,6 +211,8 @@ export const properties: Property[] = [
     reference: "IKE-009",
     hasElevator: true,
     year: 1975,
+    lat: 37.1760,
+    lng: -3.5986,
   },
 ];
 
