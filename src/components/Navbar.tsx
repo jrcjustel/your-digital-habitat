@@ -6,7 +6,7 @@ import ikesaLogo from "@/assets/ikesa-logo-color.png";
 
 const navItems = [
   { label: "Particulares", href: "#particulares" },
-  { label: "Inversores", href: "/npl" },
+  { label: "Inversores", href: "/inversores" },
   { label: "Obra Nueva", href: "#obra-nueva" },
   { label: "Marketplace", href: "#marketplace" },
 ];

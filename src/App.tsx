@@ -14,6 +14,7 @@ import AdminImport from "./pages/AdminImport";
 import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
 import NplDetail from "./pages/NplDetail";
+import Inversores from "./pages/Inversores";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mi-cuenta" element={<Dashboard />} />
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
+            <Route path="/inversores" element={<Inversores />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             <Route path="*" element={<NotFound />} />
