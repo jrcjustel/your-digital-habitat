@@ -1,11 +1,12 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, Phone, Mail, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { properties, saleTypes, occupancyLabels, judicialPhaseLabels } from "@/data/properties";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import OfferForm from "@/components/OfferForm";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -320,29 +321,7 @@ const PropertyDetail = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Offer CTA */}
-            <div className="bg-primary rounded-2xl p-6 text-primary-foreground sticky top-24">
-              <h3 className="font-heading text-xl font-bold mb-2">¡Haz tu oferta!</h3>
-              <p className="text-sm text-primary-foreground/70 mb-5">
-                Contacta con nuestro equipo para realizar una oferta por este activo.
-              </p>
-              <form className="space-y-3">
-                <input type="text" placeholder="Nombre completo" className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent" />
-                <input type="email" placeholder="Email" className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent" />
-                <input type="tel" placeholder="Teléfono" className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent" />
-                <input type="text" placeholder="Importe de tu oferta (€)" className="w-full bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent" />
-                <button type="submit" className="w-full btn-search rounded-xl text-sm">
-                  Enviar oferta
-                </button>
-              </form>
-              <div className="mt-5 pt-5 border-t border-primary-foreground/20 space-y-3">
-                <a href="tel:+34956000000" className="flex items-center gap-3 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  <Phone className="w-4 h-4" /> +34 956 000 000
-                </a>
-                <a href="mailto:info@ikesa.net" className="flex items-center gap-3 text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-                  <Mail className="w-4 h-4" /> info@ikesa.net
-                </a>
-              </div>
-            </div>
+            <OfferForm propertyId={property.id} propertyReference={property.reference} />
 
             {/* Reference card */}
             <div className="bg-card border border-border rounded-2xl p-5 text-center">
