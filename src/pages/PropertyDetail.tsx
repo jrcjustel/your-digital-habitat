@@ -236,6 +236,7 @@ const PropertyDetail = () => {
 
             {/* Analysis section + Tabs - gated for NPL/CDR */}
             {isRestricted ? (
+              <>
               <NdaGate user={user} ndaSigned={ndaSigned} onNdaSigned={() => setNdaSigned(true)}>
                 <div className="bg-card rounded-2xl border border-border p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -414,7 +415,7 @@ const PropertyDetail = () => {
               </NdaGate>
               <ValuationPanel property={property} />
               <InvestmentCalculator property={property} />
-            </>
+              </>
             ) : (
             ) : (
               <>
