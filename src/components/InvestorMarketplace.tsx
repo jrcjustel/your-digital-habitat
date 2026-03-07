@@ -1,12 +1,13 @@
+import { Link } from "react-router-dom";
 import { Building2, Landmark, Package, FileText, Gavel, Users, TreePine, Map, Target } from "lucide-react";
 
 const assets = [
+  { icon: FileText, label: "NPL (Deuda)", href: "/inversores/npl" },
+  { icon: Gavel, label: "Cesiones de Remate", href: "/inversores/cesiones-remate" },
+  { icon: Users, label: "Activos Ocupados", href: "/inversores/ocupados" },
   { icon: Building2, label: "Obra Parada (WIP)", href: "#obra-parada" },
   { icon: Landmark, label: "Edificios", href: "#edificios" },
   { icon: Package, label: "Grandes Lotes", href: "#lotes" },
-  { icon: FileText, label: "NPL (Deuda)", href: "#npl" },
-  { icon: Gavel, label: "Cesiones de Remate", href: "#cdr" },
-  { icon: Users, label: "Activos Ocupados", href: "#ocupados" },
   { icon: TreePine, label: "Suelo Rústico", href: "#rustico" },
   { icon: Map, label: "Suelo Urbanizable", href: "#urbanizable" },
   { icon: Target, label: "Suelo Finalista", href: "#finalista" },
