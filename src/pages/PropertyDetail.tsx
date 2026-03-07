@@ -87,6 +87,23 @@ const PropertyDetail = () => {
     nave: "Nave industrial", edificio: "Edificio", "obra-parada": "Obra parada",
   };
 
+  const operationLabels: Record<string, string> = {
+    venta: "Venta",
+    alquiler: "Alquiler",
+  };
+
+  const saleTypeColors: Record<string, string> = {
+    compraventa: "bg-primary text-primary-foreground",
+    npl: "bg-destructive text-destructive-foreground",
+    "cesion-remate": "bg-accent text-accent-foreground",
+    ocupado: "bg-muted-foreground text-background",
+  };
+
+  const operationColors: Record<string, string> = {
+    venta: "bg-primary/20 text-primary border border-primary/30",
+    alquiler: "bg-accent/20 text-accent border border-accent/30",
+  };
+
   const saleTypeLabel = saleTypes.find((s) => s.value === property.saleType)?.label || property.saleType;
   const discount = property.marketValue ? Math.round(((property.marketValue - property.price) / property.marketValue) * 100) : 0;
 
