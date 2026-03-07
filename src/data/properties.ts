@@ -121,6 +121,7 @@ export const properties: Property[] = [
     isHabitualResidence: false,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "B", consumption: 45, emissions: 12 },
   },
   {
     id: "2",
@@ -152,6 +153,7 @@ export const properties: Property[] = [
     isHabitualResidence: true,
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "E", consumption: 185, emissions: 42 },
     judicialInfo: {
       judicializado: true,
       phase: "ejecucion",
@@ -196,6 +198,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "A", consumption: 22, emissions: 5 },
   },
   {
     id: "4",
@@ -223,6 +226,7 @@ export const properties: Property[] = [
     occupancyStatus: "libre",
     ownershipPercent: 100,
     isVPO: false,
+    cee: { rating: "D", consumption: 130, emissions: 32 },
     judicialInfo: {
       judicializado: true,
       phase: "adjudicacion",
