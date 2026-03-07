@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import OfferForm from "@/components/OfferForm";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import { generatePropertyPdf } from "@/lib/generatePropertyPdf";
+import { generateInvestmentDossier, propertyToDossier } from "@/lib/dossier";
 import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NdaGate from "@/components/NdaGate";
@@ -241,10 +242,16 @@ const PropertyDetail = () => {
                 <div className="bg-card rounded-2xl border border-border p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
-                    <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
-                      <Download className="w-3.5 h-3.5" />
-                      Descargar ficha
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                        <Download className="w-3.5 h-3.5" />
+                        Ficha
+                      </button>
+                      <button onClick={() => generateInvestmentDossier(propertyToDossier(property))} className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-medium transition-colors">
+                        <FileText className="w-3.5 h-3.5" />
+                        Dossier Inversión
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">{property.description}</p>
@@ -422,10 +429,16 @@ const PropertyDetail = () => {
                 <div className="bg-card rounded-2xl border border-border p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
-                    <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
-                      <Download className="w-3.5 h-3.5" />
-                      Descargar ficha
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={() => generatePropertyPdf(property)} className="flex items-center gap-2 btn-search text-xs py-2 px-4">
+                        <Download className="w-3.5 h-3.5" />
+                        Ficha
+                      </button>
+                      <button onClick={() => generateInvestmentDossier(propertyToDossier(property))} className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-medium transition-colors">
+                        <FileText className="w-3.5 h-3.5" />
+                        Dossier Inversión
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">{property.description}</p>
