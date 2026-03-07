@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
