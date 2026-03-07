@@ -107,6 +107,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          nda_signed: boolean
+          nda_signed_at: string | null
           phone: string | null
           search_preferences: Json | null
           updated_at: string
@@ -117,6 +119,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          nda_signed?: boolean
+          nda_signed_at?: string | null
           phone?: string | null
           search_preferences?: Json | null
           updated_at?: string
@@ -127,6 +131,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          nda_signed?: boolean
+          nda_signed_at?: string | null
           phone?: string | null
           search_preferences?: Json | null
           updated_at?: string
