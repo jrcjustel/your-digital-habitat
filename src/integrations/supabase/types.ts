@@ -65,6 +65,42 @@ export type Database = {
         }
         Relationships: []
       }
+      offers: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          offer_amount: number
+          phone: string | null
+          property_id: string
+          property_reference: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          offer_amount: number
+          phone?: string | null
+          property_id: string
+          property_reference?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          offer_amount?: number
+          phone?: string | null
+          property_id?: string
+          property_reference?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
