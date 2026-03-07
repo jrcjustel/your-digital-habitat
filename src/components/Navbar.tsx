@@ -7,7 +7,7 @@ import ikesaLogo from "@/assets/ikesa-logo-color.png";
 const navItems = [
   { label: "Particulares", href: "/inmuebles" },
   { label: "Inversores", href: "/inversores" },
-  { label: "Obra Nueva", href: "/inmuebles?saleType=compraventa" },
+  { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Marketplace", href: "/inversores" },
 ];
 
