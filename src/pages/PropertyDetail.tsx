@@ -150,10 +150,18 @@ const PropertyDetail = () => {
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
-              <span className="text-sm font-semibold text-accent">{saleTypeLabel}</span>
-              <div className="flex items-center gap-3 mt-1">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${saleTypeColors[property.saleType] || "bg-secondary text-foreground"}`}>
+                {saleTypeLabel}
+              </span>
+              <div className="flex items-center gap-2 mt-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
-                <span className="bg-secondary text-xs font-medium px-2.5 py-1 rounded-full text-muted-foreground">{typeLabels[property.type]}</span>
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
+                  {operationLabels[property.operation]}
+                </span>
+                <span className="bg-secondary text-xs font-medium px-2.5 py-1 rounded-full text-muted-foreground flex items-center gap-1">
+                  <Building2 className="w-3 h-3" />
+                  {typeLabels[property.type]}
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
