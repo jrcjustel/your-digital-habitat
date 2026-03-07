@@ -122,6 +122,7 @@ const AdminDocuments = () => {
         mime_type: file.type,
         category,
         npl_asset_id: nplAssetId !== "none" ? nplAssetId : null,
+        property_id: propertyId.trim() || null,
         is_confidential: isConfidential,
       } as any);
 
