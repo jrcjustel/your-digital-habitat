@@ -15,6 +15,7 @@ import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
 import NplListing from "./pages/NplListing";
 import AiChatWidget from "./components/AiChatWidget";
+import SocialChannelsFloat from "./components/SocialChannelsFloat";
 import CookieConsent from "./components/CookieConsent";
 import NplDetail from "./pages/NplDetail";
 import ComoFunciona from "./pages/ComoFunciona";
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AiChatWidget />
+          <SocialChannelsFloat />
           <CookieConsent />
         </BrowserRouter>
       </AuthProvider>
