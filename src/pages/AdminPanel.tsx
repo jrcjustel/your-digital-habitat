@@ -73,6 +73,8 @@ interface BroadcastRow {
   sent_at: string | null;
 }
 
+const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))", "#6366f1", "#f59e0b"];
+
 const ContactLogTab = () => {
   const [contacts, setContacts] = useState<any[]>([]);
   const [clLoading, setClLoading] = useState(true);
