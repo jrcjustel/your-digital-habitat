@@ -88,6 +88,7 @@ const AdminPanel = () => {
   const [matchingAssetId, setMatchingAssetId] = useState("");
   const [matchingResult, setMatchingResult] = useState<number | null>(null);
   const [matchingLoading, setMatchingLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [broadcastText, setBroadcastText] = useState("");
   const [broadcastChannel, setBroadcastChannel] = useState<"whatsapp" | "telegram" | "both">("both");
   const [broadcastSending, setBroadcastSending] = useState(false);
