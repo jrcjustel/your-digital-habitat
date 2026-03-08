@@ -183,10 +183,35 @@ Deno.serve(async (req) => {
       console.log("Could not fetch descriptive data:", e);
     }
 
-    // ===== 3) Generate Catastro PDF link =====
-    const catastro_pdf_url = `https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCConCiwor  /Consulta_DNPRC?rc1=${rc.substring(0, 7)}&rc2=${rc.substring(7, 14)}`;
+    // ===== 3) Generate URLs and fetch fachada image =====
     const catastro_web_url = `https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCConCiworBienInmueble.aspx?del=${cpro}&mun=${cmun}&UrbRus=&rc1=${rc.substring(0, 7)}&rc2=${rc.substring(7, 14)}&from=OVCBusqueda&pest=rc&RCCompleta=${rc}&from=nuevoVisor`;
-    const catastro_cartografia_url = `https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${rc}`;
+
+    // Fetch fachada image server-side to avoid CORS
+    let fachada_base64: string | null = null;
+    try {
+      const fachadaUrl = `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${rc}`;
+      const fachadaRes = await fetch(fachadaUrl);
+      if (fachadaRes.ok) {
+        const contentType = fachadaRes.headers.get('content-type') || 'image/jpeg';
+        if (contentType.startsWith('image/')) {
+          const buffer = await fachadaRes.arrayBuffer();
+          if (buffer.byteLength > 1000) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            fachada_base64 = `data:${contentType};base64,${btoa(binary)}`;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching fachada:", e);
+    }
+
+    // Build Google Maps embed URL from address for satellite view
+    const fullAddress = [direccion, municipio, provincia].filter(Boolean).join(', ');
+    const google_maps_embed = fullAddress
+      ? `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`
+      : null;
 
     // Build complete result
     const catastroData = {
@@ -207,9 +232,10 @@ Deno.serve(async (req) => {
       planta,
       coeficiente_participacion,
       usos_detalle,
+      fachada_base64,
+      google_maps_embed,
       urls: {
         ficha_catastral: catastro_web_url,
-        cartografia: catastro_cartografia_url,
       },
     };
 

@@ -181,14 +181,12 @@ const Valorador = () => {
         const cd = catastroResult.data.data;
         setCatastroData(cd);
         
-        // Build catastro image URLs
-        if (cd.ref_catastral) {
-          setCatastroFachadaUrl(
-            `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${cd.ref_catastral}`
-          );
+        // Use server-proxied fachada image (base64) and Google Maps embed
+        if (cd.fachada_base64) {
+          setCatastroFachadaUrl(cd.fachada_base64);
         }
-        if (cd.urls?.cartografia) {
-          setCatastroCartoUrl(cd.urls.cartografia);
+        if (cd.google_maps_embed) {
+          setCatastroCartoUrl(cd.google_maps_embed);
         }
       }
     } catch (e: any) {
@@ -592,30 +590,35 @@ const Valorador = () => {
                     <FileText className="w-4 h-4 text-accent" /> Datos Catastrales
                   </h3>
 
-                  {/* Catastro photos */}
-                  {catastroFachadaUrl && (
+                  {/* Catastro photos & Google Maps */}
+                  {(catastroFachadaUrl || catastroCartoUrl) && (
                     <div className="mb-6">
                       <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                        <Image className="w-3.5 h-3.5" /> Fotografía oficial del Catastro
+                        <Image className="w-3.5 h-3.5" /> Imágenes del inmueble
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="rounded-lg overflow-hidden border bg-muted">
-                          <img
-                            src={catastroFachadaUrl}
-                            alt="Fachada del inmueble - Catastro"
-                            className="w-full h-48 object-cover"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                          />
-                          <p className="text-xs text-muted-foreground text-center py-1.5">Fachada</p>
-                        </div>
+                        {catastroFachadaUrl && (
+                          <div className="rounded-lg overflow-hidden border bg-muted">
+                            <img
+                              src={catastroFachadaUrl}
+                              alt="Fachada del inmueble - Catastro"
+                              className="w-full h-48 object-cover"
+                              onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                            />
+                            <p className="text-xs text-muted-foreground text-center py-1.5">Fachada (Catastro)</p>
+                          </div>
+                        )}
                         {catastroCartoUrl && (
                           <div className="rounded-lg overflow-hidden border bg-muted">
                             <iframe
                               src={catastroCartoUrl}
-                              title="Cartografia catastral"
+                              title="Vista satélite - Google Maps"
                               className="w-full h-48 border-0"
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                              allowFullScreen
                             />
-                            <p className="text-xs text-muted-foreground text-center py-1.5">Cartografia catastral</p>
+                            <p className="text-xs text-muted-foreground text-center py-1.5">Vista satélite (Google Maps)</p>
                           </div>
                         )}
                       </div>
