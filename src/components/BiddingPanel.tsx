@@ -26,12 +26,14 @@ interface Bid {
 interface BiddingPanelProps {
   assetId: string;
   precioOrientativo?: number;
+  depositoPorcentaje?: number;
+  comisionPorcentaje?: number;
   userId?: string;
   userName?: string;
   userEmail?: string;
 }
 
-const BiddingPanel = ({ assetId, precioOrientativo = 0, userId, userName = "", userEmail = "" }: BiddingPanelProps) => {
+const BiddingPanel = ({ assetId, precioOrientativo = 0, depositoPorcentaje = 0, comisionPorcentaje = 0, userId, userName = "", userEmail = "" }: BiddingPanelProps) => {
   const [auction, setAuction] = useState<AuctionSettings | null>(null);
   const [bids, setBids] = useState<Bid[]>([]);
   const [highestBid, setHighestBid] = useState(0);
@@ -196,6 +198,22 @@ const BiddingPanel = ({ assetId, precioOrientativo = 0, userId, userName = "", u
             </p>
             <p className="text-lg font-bold text-foreground">
               {isAuction ? bidCount : `${minBid.toLocaleString("es-ES")} €`}
+            </p>
+          </div>
+        </div>
+
+        {/* Deposit + Commission */}
+        <div className="flex gap-3">
+          {depositoPorcentaje > 0 && (
+            <div className="flex-1 bg-secondary rounded-xl p-3 text-center">
+              <p className="text-xs text-muted-foreground mb-0.5">Depósito</p>
+              <p className="text-sm font-bold text-foreground">{depositoPorcentaje.toLocaleString("es-ES", { minimumFractionDigits: 2 })}%</p>
+            </div>
+          )}
+          <div className="flex-1 bg-secondary rounded-xl p-3 text-center">
+            <p className="text-xs text-muted-foreground mb-0.5">Comisión IKESA</p>
+            <p className={`text-sm font-bold ${comisionPorcentaje > 0 ? "text-foreground" : "text-green-600"}`}>
+              {comisionPorcentaje > 0 ? `${comisionPorcentaje.toLocaleString("es-ES", { minimumFractionDigits: 2 })}%` : "Exenta"}
             </p>
           </div>
         </div>
