@@ -272,7 +272,137 @@ const Dashboard = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="offers">
+          {/* Operaciones realizadas */}
+          <TabsContent value="operations">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2"><Activity className="w-5 h-5 text-accent" /> Operaciones realizadas</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {offers.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <Activity className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+                    <p className="text-muted-foreground">No tienes operaciones registradas todavía.</p>
+                    <p className="text-sm text-muted-foreground mt-1">Aquí aparecerán tus ofertas aceptadas, reservas y compras finalizadas.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {offers.filter(o => o.status === "accepted").length === 0 ? (
+                      <div className="py-8 text-center">
+                        <Activity className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
+                        <p className="text-muted-foreground text-sm">No tienes operaciones completadas.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Las ofertas aceptadas aparecerán aquí como operaciones.</p>
+                      </div>
+                    ) : (
+                      offers.filter(o => o.status === "accepted").map((op) => (
+                        <div key={op.id} className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl border border-border">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-foreground text-sm">Activo {op.property_reference || op.property_id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Oferta aceptada · {new Date(op.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                            </p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="font-bold text-foreground">{op.offer_amount.toLocaleString("es-ES")} €</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Descargar datos (RGPD) */}
+          <TabsContent value="download">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2"><FileDown className="w-5 h-5 text-accent" /> Descargar mis datos</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-sm text-muted-foreground">
+                  Conforme al Reglamento General de Protección de Datos (RGPD), puedes descargar una copia de todos los datos personales que tenemos almacenados sobre ti.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button
+                    variant="outline"
+                    className="gap-2 justify-start h-auto py-4"
+                    onClick={() => {
+                      const data = {
+                        perfil: profile,
+                        email: user.email,
+                        favoritos: favorites.length,
+                        ofertas: offers,
+                        alertas: alerts,
+                        fecha_exportacion: new Date().toISOString(),
+                      };
+                      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `ikesa-mis-datos-${new Date().toISOString().slice(0, 10)}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Datos descargados correctamente");
+                    }}
+                  >
+                    <Download className="w-5 h-5 text-accent" />
+                    <div className="text-left">
+                      <p className="font-medium text-foreground">Descargar datos (JSON)</p>
+                      <p className="text-xs text-muted-foreground">Perfil, ofertas, alertas y preferencias</p>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 justify-start h-auto py-4"
+                    onClick={() => {
+                      const rows = [
+                        ["Campo", "Valor"],
+                        ["Nombre", profile.display_name || ""],
+                        ["Email", user.email || ""],
+                        ["Teléfono", profile.phone || ""],
+                        ["Tipo persona", profile.persona_tipo || ""],
+                        ["Empresa", profile.empresa || ""],
+                        ["CIF/NIF", profile.cif_nif || ""],
+                        ["Comunidad Autónoma", profile.comunidad_autonoma || ""],
+                        ["Ciudad", profile.ciudad || ""],
+                        ["Nivel inversor", profile.investor_level || ""],
+                        ["NDA firmado", profile.nda_signed ? "Sí" : "No"],
+                        ["Favoritos", String(favorites.length)],
+                        ["Ofertas enviadas", String(offers.length)],
+                        ["Alertas activas", String(alerts.filter(a => a.is_active).length)],
+                      ];
+                      const csv = rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+                      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `ikesa-mis-datos-${new Date().toISOString().slice(0, 10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Datos descargados en CSV");
+                    }}
+                  >
+                    <Download className="w-5 h-5 text-primary" />
+                    <div className="text-left">
+                      <p className="font-medium text-foreground">Descargar datos (CSV)</p>
+                      <p className="text-xs text-muted-foreground">Formato compatible con Excel</p>
+                    </div>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Si deseas solicitar la eliminación completa de tu cuenta y datos, contacta con nosotros en{" "}
+                  <a href="mailto:privacidad@ikesa.es" className="text-accent underline">privacidad@ikesa.es</a>.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+
             {offers.length === 0 ? (
               <Card><CardContent className="py-12 text-center">
                 <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
