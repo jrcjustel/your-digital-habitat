@@ -223,7 +223,7 @@ export const generatePropertyPdf = async (property: Property) => {
     addSection("Información de la Deuda");
     if (property.debtInfo.debtType) addLine("Tipo de deuda", property.debtInfo.debtType);
     if (property.debtInfo.guaranteeType) addLine("Tipo de garantía", property.debtInfo.guaranteeType);
-    if (property.debtInfo.outstandingDebt) addLine("Deuda pendiente", `${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`);
+    if (property.debtInfo.outstandingDebt) addLine("Deuda pendiente", `${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} EUR`);
   }
 
   // ── Description ─────────────────────────────────────────
