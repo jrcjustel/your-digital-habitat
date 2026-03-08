@@ -410,13 +410,15 @@ const NplDetail = () => {
                           tooltip="Es el importe que deberá pagar el comprador como garantía del buen fin de la operación."
                         />
                       )}
-                      {asset.comision_porcentaje > 0 && (
-                        <PriceTooltip
-                          label="Comisión"
-                          value={comisionAmount ? `${comisionAmount.toLocaleString("es-ES")} €` : `${asset.comision_porcentaje}%`}
-                          tooltip="Porcentaje de comisión sobre el precio de la operación."
-                        />
-                      )}
+                      <PriceTooltip
+                        label="Comisión IKESA"
+                        value={asset.comision_porcentaje > 0
+                          ? (comisionAmount ? `${comisionAmount.toLocaleString("es-ES")} € (${asset.comision_porcentaje}%)` : `${asset.comision_porcentaje}%`)
+                          : "Exenta"}
+                        tooltip={asset.comision_porcentaje > 0
+                          ? "Comisión de intermediación a cargo del comprador sobre el precio de la operación."
+                          : "La comisión de intermediación es asumida por el fondo/servicer. El comprador no abona comisión."}
+                      />
                     </div>
                   </div>
 
@@ -583,7 +585,7 @@ const NplDetail = () => {
                 {/* Comisiones section */}
                 <AnalysisSection title="Condiciones comerciales" icon={Euro} defaultOpen={false}>
                   <div className="divide-y divide-border">
-                    <InfoRow label="Comisión" value={asset.comision_porcentaje > 0 ? `${asset.comision_porcentaje}%` : "n.a."} />
+                    <InfoRow label="Comisión IKESA" value={asset.comision_porcentaje > 0 ? `${asset.comision_porcentaje}% (a cargo del comprador)` : "Exenta (asumida por el fondo)"} />
                     <InfoRow label="Depósito" value={asset.deposito_porcentaje > 0 ? `${asset.deposito_porcentaje}%` : "n.a."} />
                     <InfoRow label="Servicer" value={asset.servicer} />
                     <InfoRow label="Cartera" value={asset.cartera} />

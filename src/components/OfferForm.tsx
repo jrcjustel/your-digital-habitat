@@ -127,12 +127,12 @@ const OfferForm = ({
                   <p className="text-sm font-bold text-foreground">{depositoPorcentaje.toLocaleString("es-ES", { minimumFractionDigits: 2 })}%</p>
                 </div>
               )}
-              {comisionPorcentaje > 0 && (
-                <div className="flex-1 bg-secondary rounded-xl p-3 text-center">
-                  <p className="text-xs text-muted-foreground mb-0.5">Comisión</p>
-                  <p className="text-sm font-bold text-foreground">{comisionPorcentaje.toLocaleString("es-ES", { minimumFractionDigits: 2 })}%</p>
-                </div>
-              )}
+              <div className="flex-1 bg-secondary rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-0.5">Comisión IKESA</p>
+                <p className={`text-sm font-bold ${comisionPorcentaje > 0 ? "text-foreground" : "text-green-600"}`}>
+                  {comisionPorcentaje > 0 ? `${comisionPorcentaje.toLocaleString("es-ES", { minimumFractionDigits: 2 })}%` : "Exenta"}
+                </p>
+              </div>
             </div>
           </div>
         )}
