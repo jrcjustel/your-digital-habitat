@@ -22,6 +22,19 @@ interface Profile {
   avatar_url: string | null;
   nda_signed?: boolean;
   nda_signed_at?: string | null;
+  persona_tipo?: string | null;
+  empresa?: string | null;
+  cif_nif?: string | null;
+  comunidad_autonoma?: string | null;
+  ciudad?: string | null;
+  investor_level?: string | null;
+  presupuesto_min?: number | null;
+  presupuesto_max?: number | null;
+  intereses?: string[] | null;
+  tipos_activo_preferidos?: string[] | null;
+  provincias_interes?: string[] | null;
+  acepta_marketing?: boolean;
+  lead_score?: number | null;
 }
 
 interface Favorite {
