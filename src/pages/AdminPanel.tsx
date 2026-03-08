@@ -1,0 +1,446 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/sonner";
+import {
+  BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
+  Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
+  Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
+} from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+
+interface KPIs {
+  totalAssets: number;
+  publishedAssets: number;
+  totalUsers: number;
+  totalOffers: number;
+  pendingOffers: number;
+  totalLeads: number;
+  totalFavorites: number;
+  totalAlerts: number;
+  totalSubscribers: number;
+  totalBroadcasts: number;
+  avgLeadScore: number;
+}
+
+interface UserRow {
+  user_id: string;
+  display_name: string | null;
+  phone: string | null;
+  persona_tipo: string | null;
+  comunidad_autonoma: string | null;
+  investor_level: string | null;
+  lead_score: number | null;
+  nda_signed: boolean;
+  created_at: string;
+  acepta_marketing: boolean;
+  num_ofertas: number;
+  num_favoritos: number;
+}
+
+interface OfferRow {
+  id: string;
+  property_id: string;
+  property_reference: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  offer_amount: number;
+  status: string;
+  created_at: string;
+}
+
+interface BroadcastRow {
+  id: string;
+  channel: string;
+  content: string;
+  sent_count: number;
+  failed_count: number;
+  status: string;
+  created_at: string;
+  sent_at: string | null;
+}
+
+const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))", "#6366f1", "#f59e0b"];
+
+const AdminPanel = () => {
+  const [kpis, setKpis] = useState<KPIs | null>(null);
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [offers, setOffers] = useState<OfferRow[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastRow[]>([]);
+  const [assetsByType, setAssetsByType] = useState<any[]>([]);
+  const [assetsByProvince, setAssetsByProvince] = useState<any[]>([]);
+  const [userSearch, setUserSearch] = useState("");
+  const [offerFilter, setOfferFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAll();
+  }, []);
+
+  const loadAll = async () => {
+    setLoading(true);
+    await Promise.all([loadKPIs(), loadUsers(), loadOffers(), loadBroadcasts(), loadChartData()]);
+    setLoading(false);
+  };
+
+  const loadKPIs = async () => {
+    const [assets, published, usersRes, offersRes, pendingOffers, leadsRes, favsRes, alertsRes, subsRes, broadcastsRes, scoresRes] = await Promise.all([
+      supabase.from("npl_assets").select("id", { count: "exact", head: true }),
+      supabase.from("npl_assets").select("id", { count: "exact", head: true }).eq("publicado", true),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+      supabase.from("offers").select("id", { count: "exact", head: true }),
+      supabase.from("offers").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      supabase.from("valuation_leads").select("id", { count: "exact", head: true }),
+      supabase.from("favorites").select("id", { count: "exact", head: true }),
+      supabase.from("alerts").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("channel_subscribers").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("broadcast_messages").select("id", { count: "exact", head: true }),
+      supabase.from("profiles").select("lead_score"),
+    ]);
+
+    const scores = (scoresRes.data || []).map((p: any) => p.lead_score || 0);
+    const avgScore = scores.length ? Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length) : 0;
+
+    setKpis({
+      totalAssets: assets.count || 0,
+      publishedAssets: published.count || 0,
+      totalUsers: usersRes.count || 0,
+      totalOffers: offersRes.count || 0,
+      pendingOffers: pendingOffers.count || 0,
+      totalLeads: leadsRes.count || 0,
+      totalFavorites: favsRes.count || 0,
+      totalAlerts: alertsRes.count || 0,
+      totalSubscribers: subsRes.count || 0,
+      totalBroadcasts: broadcastsRes.count || 0,
+      avgLeadScore: avgScore,
+    });
+  };
+
+  const loadChartData = async () => {
+    // Assets by type
+    const { data: typeData } = await supabase.from("npl_assets").select("tipo_activo").eq("publicado", true);
+    if (typeData) {
+      const counts: Record<string, number> = {};
+      typeData.forEach((a: any) => { counts[a.tipo_activo || "Sin tipo"] = (counts[a.tipo_activo || "Sin tipo"] || 0) + 1; });
+      setAssetsByType(Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, value]) => ({ name, value })));
+    }
+
+    // Assets by province (top 10)
+    const { data: provData } = await supabase.from("npl_assets").select("provincia").eq("publicado", true);
+    if (provData) {
+      const counts: Record<string, number> = {};
+      provData.forEach((a: any) => { counts[a.provincia || "Sin provincia"] = (counts[a.provincia || "Sin provincia"] || 0) + 1; });
+      setAssetsByProvince(Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, value]) => ({ name, value })));
+    }
+  };
+
+  const loadUsers = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, phone, persona_tipo, comunidad_autonoma, investor_level, lead_score, nda_signed, created_at, acepta_marketing, num_ofertas, num_favoritos")
+      .order("lead_score", { ascending: false })
+      .limit(200);
+    if (data) setUsers(data as unknown as UserRow[]);
+  };
+
+  const loadOffers = async () => {
+    const { data } = await supabase
+      .from("offers")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) setOffers(data as unknown as OfferRow[]);
+  };
+
+  const loadBroadcasts = async () => {
+    const { data } = await supabase
+      .from("broadcast_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (data) setBroadcasts(data as unknown as BroadcastRow[]);
+  };
+
+  const updateOfferStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("offers").update({ status }).eq("id", id);
+    if (error) toast.error("Error al actualizar oferta");
+    else {
+      toast.success(`Oferta ${status === "accepted" ? "aceptada" : "rechazada"}`);
+      setOffers(prev => prev.map(o => o.id === id ? { ...o, status } : o));
+    }
+  };
+
+  const filteredUsers = users.filter(u =>
+    !userSearch || (u.display_name || "").toLowerCase().includes(userSearch.toLowerCase()) ||
+    (u.comunidad_autonoma || "").toLowerCase().includes(userSearch.toLowerCase())
+  );
+
+  const filteredOffers = offers.filter(o => offerFilter === "all" || o.status === offerFilter);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center py-32">
+          <Activity className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
+  const kpiCards = kpis ? [
+    { label: "Activos totales", value: kpis.totalAssets, sub: `${kpis.publishedAssets} publicados`, icon: Building2, color: "text-primary" },
+    { label: "Usuarios", value: kpis.totalUsers, sub: `Score medio: ${kpis.avgLeadScore}`, icon: Users, color: "text-accent" },
+    { label: "Ofertas", value: kpis.totalOffers, sub: `${kpis.pendingOffers} pendientes`, icon: FileText, color: "text-destructive" },
+    { label: "Leads valoración", value: kpis.totalLeads, sub: "Formulario valorador", icon: Target, color: "text-primary" },
+    { label: "Favoritos", value: kpis.totalFavorites, sub: "Total guardados", icon: TrendingUp, color: "text-accent" },
+    { label: "Alertas activas", value: kpis.totalAlerts, sub: "Usuarios con alertas", icon: Bell, color: "text-primary" },
+    { label: "Suscriptores", value: kpis.totalSubscribers, sub: "WhatsApp + Telegram", icon: MessageCircle, color: "text-accent" },
+    { label: "Broadcasts", value: kpis.totalBroadcasts, sub: "Mensajes enviados", icon: Send, color: "text-primary" },
+  ] : [];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
+            <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
+          </div>
+          <Button variant="outline" onClick={loadAll} className="gap-2">
+            <Activity className="w-4 h-4" /> Actualizar datos
+          </Button>
+        </div>
+
+        {/* KPIs Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {kpiCards.map((kpi) => (
+            <Card key={kpi.label}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
+                </div>
+                <p className="text-2xl font-bold text-foreground">{kpi.value.toLocaleString("es-ES")}</p>
+                <p className="text-xs text-muted-foreground">{kpi.label}</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5">{kpi.sub}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Tabs defaultValue="users" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+            <TabsTrigger value="users" className="gap-2"><Users className="w-4 h-4" /> Usuarios</TabsTrigger>
+            <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
+            <TabsTrigger value="charts" className="gap-2"><BarChart3 className="w-4 h-4" /> Gráficos</TabsTrigger>
+            <TabsTrigger value="broadcasts" className="gap-2"><Send className="w-4 h-4" /> Difusión</TabsTrigger>
+          </TabsList>
+
+          {/* USERS TAB */}
+          <TabsContent value="users">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="Buscar por nombre o CCAA..." value={userSearch} onChange={(e) => setUserSearch(e.target.value)} className="pl-10" />
+              </div>
+              <Badge variant="secondary">{filteredUsers.length} usuarios</Badge>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left">
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Usuario</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Tipo</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">CCAA</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Nivel</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Score</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">NDA</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Ofertas</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Favs</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Marketing</th>
+                    <th className="py-3 px-2 font-medium text-muted-foreground">Registro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((u) => (
+                    <tr key={u.user_id} className="border-b border-border/50 hover:bg-secondary/30">
+                      <td className="py-2.5 px-2">
+                        <p className="font-medium text-foreground">{u.display_name || "Sin nombre"}</p>
+                        <p className="text-[10px] text-muted-foreground">{u.phone || "Sin teléfono"}</p>
+                      </td>
+                      <td className="py-2.5 px-2">
+                        <Badge variant={u.persona_tipo === "juridica" ? "default" : "secondary"} className="text-[10px]">
+                          {u.persona_tipo === "juridica" ? "Empresa" : "Particular"}
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 px-2 text-xs">{u.comunidad_autonoma || "—"}</td>
+                      <td className="py-2.5 px-2">
+                        <Badge variant="outline" className="text-[10px]">{u.investor_level || "—"}</Badge>
+                      </td>
+                      <td className="py-2.5 px-2">
+                        <span className={`text-xs font-bold ${(u.lead_score || 0) >= 50 ? "text-primary" : "text-muted-foreground"}`}>
+                          {u.lead_score || 0}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-2">
+                        {u.nda_signed ? <CheckCircle className="w-4 h-4 text-primary" /> : <XCircle className="w-4 h-4 text-muted-foreground/40" />}
+                      </td>
+                      <td className="py-2.5 px-2 text-xs text-center">{u.num_ofertas || 0}</td>
+                      <td className="py-2.5 px-2 text-xs text-center">{u.num_favoritos || 0}</td>
+                      <td className="py-2.5 px-2 text-center">
+                        {u.acepta_marketing ? <CheckCircle className="w-4 h-4 text-primary" /> : <span className="text-muted-foreground/40">—</span>}
+                      </td>
+                      <td className="py-2.5 px-2 text-xs text-muted-foreground">
+                        {new Date(u.created_at).toLocaleDateString("es-ES")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </TabsContent>
+
+          {/* OFFERS TAB */}
+          <TabsContent value="offers">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex gap-2">
+                {["all", "pending", "accepted", "rejected"].map((f) => (
+                  <Button
+                    key={f}
+                    variant={offerFilter === f ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setOfferFilter(f)}
+                    className="text-xs"
+                  >
+                    {f === "all" ? "Todas" : f === "pending" ? "Pendientes" : f === "accepted" ? "Aceptadas" : "Rechazadas"}
+                  </Button>
+                ))}
+              </div>
+              <Badge variant="secondary">{filteredOffers.length} ofertas</Badge>
+            </div>
+            <div className="space-y-3">
+              {filteredOffers.map((offer) => (
+                <Card key={offer.id}>
+                  <CardContent className="flex items-center gap-4 p-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-accent">{offer.property_reference || offer.property_id}</span>
+                        <Badge variant={offer.status === "pending" ? "secondary" : offer.status === "accepted" ? "default" : "destructive"} className="text-[10px]">
+                          {offer.status === "pending" ? "Pendiente" : offer.status === "accepted" ? "Aceptada" : "Rechazada"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-semibold text-foreground">{offer.full_name}</p>
+                      <p className="text-xs text-muted-foreground">{offer.email} {offer.phone && `· ${offer.phone}`}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {new Date(offer.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-foreground">{offer.offer_amount.toLocaleString("es-ES")} €</p>
+                    </div>
+                    {offer.status === "pending" && (
+                      <div className="flex flex-col gap-1.5">
+                        <Button size="sm" className="text-xs h-7 gap-1" onClick={() => updateOfferStatus(offer.id, "accepted")}>
+                          <CheckCircle className="w-3 h-3" /> Aceptar
+                        </Button>
+                        <Button size="sm" variant="destructive" className="text-xs h-7 gap-1" onClick={() => updateOfferStatus(offer.id, "rejected")}>
+                          <XCircle className="w-3 h-3" /> Rechazar
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+              {filteredOffers.length === 0 && (
+                <div className="text-center py-12 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No hay ofertas con este filtro</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* CHARTS TAB */}
+          <TabsContent value="charts">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader><CardTitle className="text-base">Activos por tipo</CardTitle></CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie data={assetsByType} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, value }) => `${name}: ${value}`}>
+                        {assetsByType.map((_, i) => (
+                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader><CardTitle className="text-base">Top 10 provincias</CardTitle></CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={assetsByProvince} layout="vertical">
+                      <XAxis type="number" />
+                      <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11 }} />
+                      <Tooltip />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* BROADCASTS TAB */}
+          <TabsContent value="broadcasts">
+            <div className="space-y-3">
+              {broadcasts.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Send className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No se han enviado difusiones todavía</p>
+                </div>
+              ) : broadcasts.map((b) => (
+                <Card key={b.id}>
+                  <CardContent className="flex items-center gap-4 p-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                      b.channel === "whatsapp" ? "bg-[#25D366]/15" : "bg-[#0088cc]/15"
+                    }`}>
+                      {b.channel === "whatsapp" ? <MessageCircle className="w-5 h-5 text-[#25D366]" /> : <Send className="w-5 h-5 text-[#0088cc]" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground line-clamp-2">{b.content}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {b.sent_at ? new Date(b.sent_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Sin enviar"}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold text-foreground">{b.sent_count} enviados</p>
+                      {b.failed_count > 0 && <p className="text-xs text-destructive">{b.failed_count} fallidos</p>}
+                      <Badge variant={b.status === "sent" ? "default" : "secondary"} className="text-[10px] mt-1">{b.status}</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default AdminPanel;
