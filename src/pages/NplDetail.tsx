@@ -338,17 +338,14 @@ const NplDetail = () => {
                     const tipo = asset.tipo_activo ? asset.tipo_activo.charAt(0).toUpperCase() + asset.tipo_activo.slice(1) : "Inmueble";
                     const loc = asset.municipio || asset.provincia || "";
                     const sqm = asset.sqm > 0 ? `${asset.sqm} m²` : "";
-                    const hasDiscount = asset.valor_mercado > 0 && asset.precio_orientativo > 0 && asset.precio_orientativo < asset.valor_mercado;
-                    const discTag = hasDiscount ? " · Precio por debajo de mercado" : "";
-
                     if (opType === "cesion_remate") {
                       return `${tipo} en cesión de remate${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}`;
                     }
                     if (opType === "ocupado") {
-                      return `${tipo} sin posesión${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}${discTag}`;
+                      return `${tipo} sin posesión${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}`;
                     }
                     if (opType === "npl") {
-                      return `Crédito con colateral ${tipo.toLowerCase()}${loc ? ` en ${loc}` : ""}${discTag}`;
+                      return `Crédito con colateral ${tipo.toLowerCase()}${loc ? ` en ${loc}` : ""}`;
                     }
                     // subasta
                     return `${tipo} en subasta${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}`;
