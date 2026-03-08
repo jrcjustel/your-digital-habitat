@@ -98,7 +98,7 @@ const NplDetail = () => {
   const [asset, setAsset] = useState<NplAsset | null>(null);
   const [loading, setLoading] = useState(true);
   const [ndaSigned, setNdaSigned] = useState(false);
-  const [showOffer, setShowOffer] = useState(false);
+  const [_showOffer, _setShowOffer] = useState(false);
   const [isFav, setIsFav] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
