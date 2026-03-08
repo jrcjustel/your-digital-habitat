@@ -242,7 +242,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
 
   // Confidence badge
   const confLabel = data.valuation.confianza === "alta" ? "Confianza Alta" : data.valuation.confianza === "media" ? "Confianza Media" : "Confianza Baja";
-  const confColor = data.valuation.confianza === "alta" ? BRAND_GREEN : data.valuation.confianza === "media" ? [180, 140, 20] as const : BRAND_RED;
+  const confColor: readonly [number, number, number] = data.valuation.confianza === "alta" ? BRAND_GREEN : data.valuation.confianza === "media" ? [180, 140, 20] as const : BRAND_RED;
   doc.setFillColor(...confColor);
   const confW = doc.getTextWidth(confLabel) + 8;
   doc.roundedRect(col3 - confW / 2, y + 20, confW, 5, 1.5, 1.5, "F");
