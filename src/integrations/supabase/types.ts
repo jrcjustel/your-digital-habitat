@@ -77,6 +77,60 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_snapshots: {
+        Row: {
+          assets_by_province: Json | null
+          assets_by_type: Json | null
+          avg_lead_score: number | null
+          conversion_rate: number | null
+          created_at: string
+          id: string
+          offers_by_status: Json | null
+          pending_offers: number | null
+          published_assets: number | null
+          snapshot_date: string
+          total_assets: number | null
+          total_leads: number | null
+          total_offers: number | null
+          total_subscribers: number | null
+          total_users: number | null
+        }
+        Insert: {
+          assets_by_province?: Json | null
+          assets_by_type?: Json | null
+          avg_lead_score?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          id?: string
+          offers_by_status?: Json | null
+          pending_offers?: number | null
+          published_assets?: number | null
+          snapshot_date?: string
+          total_assets?: number | null
+          total_leads?: number | null
+          total_offers?: number | null
+          total_subscribers?: number | null
+          total_users?: number | null
+        }
+        Update: {
+          assets_by_province?: Json | null
+          assets_by_type?: Json | null
+          avg_lead_score?: number | null
+          conversion_rate?: number | null
+          created_at?: string
+          id?: string
+          offers_by_status?: Json | null
+          pending_offers?: number | null
+          published_assets?: number | null
+          snapshot_date?: string
+          total_assets?: number | null
+          total_leads?: number | null
+          total_offers?: number | null
+          total_subscribers?: number | null
+          total_users?: number | null
+        }
+        Relationships: []
+      }
       broadcast_messages: {
         Row: {
           channel: Database["public"]["Enums"]["channel_type"]
