@@ -76,11 +76,15 @@ const AdminPanel = () => {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [broadcasts, setBroadcasts] = useState<BroadcastRow[]>([]);
+  const [activityLog, setActivityLog] = useState<any[]>([]);
   const [assetsByType, setAssetsByType] = useState<any[]>([]);
   const [assetsByProvince, setAssetsByProvince] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState("");
   const [offerFilter, setOfferFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [matchingAssetId, setMatchingAssetId] = useState("");
+  const [matchingResult, setMatchingResult] = useState<number | null>(null);
+  const [matchingLoading, setMatchingLoading] = useState(false);
 
   useEffect(() => {
     loadAll();
@@ -88,7 +92,7 @@ const AdminPanel = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    await Promise.all([loadKPIs(), loadUsers(), loadOffers(), loadBroadcasts(), loadChartData()]);
+    await Promise.all([loadKPIs(), loadUsers(), loadOffers(), loadBroadcasts(), loadChartData(), loadActivityLog()]);
     setLoading(false);
   };
 
