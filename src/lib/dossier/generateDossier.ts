@@ -156,9 +156,9 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
 
   // ── SECTION 3: Deuda y Procedimiento ──────────────────
   y = drawSectionHeader(doc, "Datos de Deuda y Procedimiento", y, 3);
-  y = drawRow(doc, "Importe deuda actual", data.currentDebt ? `${fmt(data.currentDebt)} €` : "-", y);
-  y = drawRow(doc, "Tipología deudor", data.debtorType || "-", y);
-  y = drawRow(doc, "Valor efectos subasta", data.auctionEffectsValue ? `${fmt(data.auctionEffectsValue)} €` : "-", y);
+  y = drawRow(doc, "Importe deuda actual", data.currentDebt ? `${fmt(data.currentDebt)} EUR` : "-", y);
+  y = drawRow(doc, "Tipologia deudor", data.debtorType || "-", y);
+  y = drawRow(doc, "Valor efectos subasta", data.auctionEffectsValue ? `${fmt(data.auctionEffectsValue)} EUR` : "-", y);
   y = drawRow(doc, "Fase judicial", data.judicialPhase || "-", y);
   y = drawRow(doc, "Juzgado", data.court, y);
   y = drawRow(doc, "Nº procedimiento", data.proceedingNumber, y);
