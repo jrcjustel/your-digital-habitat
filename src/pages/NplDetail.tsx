@@ -6,16 +6,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
-  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail
+  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail, Heart
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
 import EnrichedDossierButton from "@/components/EnrichedDossierButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import NdaGate from "@/components/NdaGate";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import OfferForm from "@/components/OfferForm";
+import RelatedAssets from "@/components/RelatedAssets";
+import WaitlistButton from "@/components/WaitlistButton";
 
 interface NplAsset {
   id: string;
