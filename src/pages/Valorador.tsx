@@ -584,13 +584,44 @@ const Valorador = () => {
               </CardContent>
             </Card>
 
-            {/* Catastro data summary if available */}
+            {/* Catastro photos + data */}
             {catastroData && (
               <Card>
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
                     <FileText className="w-4 h-4 text-accent" /> Datos Catastrales
                   </h3>
+
+                  {/* Catastro photos */}
+                  {catastroFachadaUrl && (
+                    <div className="mb-6">
+                      <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                        <Image className="w-3.5 h-3.5" /> Fotografía oficial del Catastro
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="rounded-lg overflow-hidden border bg-muted">
+                          <img
+                            src={catastroFachadaUrl}
+                            alt="Fachada del inmueble - Catastro"
+                            className="w-full h-48 object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                          <p className="text-xs text-muted-foreground text-center py-1.5">Fachada</p>
+                        </div>
+                        {catastroCartoUrl && (
+                          <div className="rounded-lg overflow-hidden border bg-muted">
+                            <iframe
+                              src={catastroCartoUrl}
+                              title="Cartografia catastral"
+                              className="w-full h-48 border-0"
+                            />
+                            <p className="text-xs text-muted-foreground text-center py-1.5">Cartografia catastral</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Ref. catastral</span>
@@ -598,8 +629,14 @@ const Valorador = () => {
                     </div>
                     {catastroData.uso_catastral && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Uso</span>
+                        <span className="text-muted-foreground">Uso catastral</span>
                         <span className="font-medium text-foreground">{catastroData.uso_catastral}</span>
+                      </div>
+                    )}
+                    {catastroData.uso_predominante && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Uso predominante</span>
+                        <span className="font-medium text-foreground">{catastroData.uso_predominante}</span>
                       </div>
                     )}
                     {catastroData.superficie_construida > 0 && (
@@ -612,6 +649,18 @@ const Valorador = () => {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Clase</span>
                         <span className="font-medium text-foreground">{catastroData.clase}</span>
+                      </div>
+                    )}
+                    {catastroData.anio_construccion && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Año construcción</span>
+                        <span className="font-medium text-foreground">{catastroData.anio_construccion}</span>
+                      </div>
+                    )}
+                    {catastroData.coeficiente_participacion && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Coef. participación</span>
+                        <span className="font-medium text-foreground">{catastroData.coeficiente_participacion}</span>
                       </div>
                     )}
                   </div>
