@@ -71,7 +71,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(28);
   doc.setTextColor(255, 255, 255);
-  doc.text(`${fmt(data.potentialPurchasePrice)} €`, MARGIN, y + 14);
+  doc.text(`${fmt(data.potentialPurchasePrice)} EUR`, MARGIN, y + 14);
 
   if (data.estimatedAssetValue) {
     doc.setFont("helvetica", "normal");
@@ -81,7 +81,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.setTextColor(180, 210, 230);
-    doc.text(`${fmt(data.estimatedAssetValue)} €`, MARGIN, y + 38);
+    doc.text(`${fmt(data.estimatedAssetValue)} EUR`, MARGIN, y + 38);
   }
 
   if (data.discount && data.discount > 0) {
@@ -105,7 +105,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 130, 160);
-  doc.text("IKESA Inmobiliaria Real — Dossier de Inversión Confidencial", MARGIN, 280);
+  doc.text("IKESA Inmobiliaria Real - Dossier de Inversion Confidencial", MARGIN, 280);
   doc.text(`Generado: ${new Date().toLocaleDateString("es-ES")}`, PAGE_WIDTH - MARGIN, 280, { align: "right" });
 
   // Accent line at bottom
@@ -122,8 +122,8 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   y = drawSectionHeader(doc, "Información General de la Operación", y, 1);
   y = drawRow(doc, "Tipo de operación", opLabel, y);
   y = drawRow(doc, "Identificador", data.reference, y);
-  y = drawRow(doc, "Precio potencial compra", `${fmt(data.potentialPurchasePrice)} €`, y);
-  y = drawRow(doc, "Valor estimado activo", `${fmt(data.estimatedAssetValue)} €`, y);
+  y = drawRow(doc, "Precio potencial compra", `${fmt(data.potentialPurchasePrice)} EUR`, y);
+  y = drawRow(doc, "Valor estimado activo", `${fmt(data.estimatedAssetValue)} EUR`, y);
   if (data.profitability) y = drawRow(doc, "Rentabilidad estimada", `${data.profitability}%`, y);
   if (data.discount) y = drawRow(doc, "Descuento s/ mercado", `${data.discount}%`, y);
   y += 2;
@@ -149,16 +149,16 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   y = drawRow(doc, "Estado conservación", data.conservationState, y);
   y = drawRow(doc, "Estado ocupacional", data.occupancyStatus, y);
   y = drawRow(doc, "Fecha vencimiento alquiler", data.leaseExpiryDate || "-", y);
-  y = drawRow(doc, "Renta bruta mensual", data.grossMonthlyRent ? `${fmt(data.grossMonthlyRent)} €` : "-", y);
-  y = drawRow(doc, "Cargas preferentes", data.preferentialCharges ? `${fmt(data.preferentialCharges)} €` : "-", y);
+  y = drawRow(doc, "Renta bruta mensual", data.grossMonthlyRent ? `${fmt(data.grossMonthlyRent)} EUR` : "-", y);
+  y = drawRow(doc, "Cargas preferentes", data.preferentialCharges ? `${fmt(data.preferentialCharges)} EUR` : "-", y);
   y = drawRow(doc, "VPO", data.isVPO ? "Sí" : "No", y);
   y += 4;
 
   // ── SECTION 3: Deuda y Procedimiento ──────────────────
   y = drawSectionHeader(doc, "Datos de Deuda y Procedimiento", y, 3);
-  y = drawRow(doc, "Importe deuda actual", data.currentDebt ? `${fmt(data.currentDebt)} €` : "-", y);
-  y = drawRow(doc, "Tipología deudor", data.debtorType || "-", y);
-  y = drawRow(doc, "Valor efectos subasta", data.auctionEffectsValue ? `${fmt(data.auctionEffectsValue)} €` : "-", y);
+  y = drawRow(doc, "Importe deuda actual", data.currentDebt ? `${fmt(data.currentDebt)} EUR` : "-", y);
+  y = drawRow(doc, "Tipologia deudor", data.debtorType || "-", y);
+  y = drawRow(doc, "Valor efectos subasta", data.auctionEffectsValue ? `${fmt(data.auctionEffectsValue)} EUR` : "-", y);
   y = drawRow(doc, "Fase judicial", data.judicialPhase || "-", y);
   y = drawRow(doc, "Juzgado", data.court, y);
   y = drawRow(doc, "Nº procedimiento", data.proceedingNumber, y);
@@ -167,9 +167,9 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
 
   // ── SECTION 4: Valoración del Colateral ───────────────
   y = drawSectionHeader(doc, "Valoración del Colateral", y, 4);
-  y = drawRow(doc, "Precio medio m² zona", `${fmt(data.pricePerSqm)} €/m²`, y);
-  y = drawRow(doc, "Superficie adoptada", `${fmt(data.adoptedArea)} m²`, y);
-  y = drawRow(doc, "Valoración total inmueble", `${fmt(data.totalValuation)} €`, y);
+  y = drawRow(doc, "Precio medio m2 zona", `${fmt(data.pricePerSqm)} EUR/m2`, y);
+  y = drawRow(doc, "Superficie adoptada", `${fmt(data.adoptedArea)} m2`, y);
+  y = drawRow(doc, "Valoracion total inmueble", `${fmt(data.totalValuation)} EUR`, y);
   y += 4;
 
   // Comparative bar chart
@@ -190,7 +190,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   if (data.absorptionRate) y = drawRow(doc, "Tasa de absorción", `${data.absorptionRate}%`, y);
   if (data.population) y = drawRow(doc, "Población", fmt(data.population), y);
   if (data.unemploymentRate) y = drawRow(doc, "Tasa de paro", `${data.unemploymentRate}%`, y);
-  if (data.averageFamilyIncome) y = drawRow(doc, "Renta media familiar", `${fmt(data.averageFamilyIncome)} €`, y);
+  if (data.averageFamilyIncome) y = drawRow(doc, "Renta media familiar", `${fmt(data.averageFamilyIncome)} EUR`, y);
 
   // Google Maps link
   if (data.lat && data.lng) {
@@ -198,7 +198,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(BRAND_GRAY[0], BRAND_GRAY[1], BRAND_GRAY[2]);
-    doc.text("📍 Ver en Google Maps:", MARGIN + 2, y + 3);
+    doc.text("Ver en Google Maps:", MARGIN + 2, y + 3);
     const mapsUrl = `https://www.google.com/maps?q=${data.lat},${data.lng}`;
     doc.setTextColor(BRAND_BLUE[0], BRAND_BLUE[1], BRAND_BLUE[2]);
     doc.textWithLink(mapsUrl.substring(0, 60) + "...", MARGIN + 35, y + 3, { url: mapsUrl });
@@ -248,19 +248,19 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFontSize(8);
     doc.setTextColor(60, 60, 60);
     doc.text(
-      `Compra del crédito → Adjudicación → Posesión → Reforma → Venta. Margen estimado: ${fmt(s.operationMargin)} € | TIR Bruta: ${s.grossIRR}% | Duración: ${s.durationMonths} meses`,
+      `Compra del credito > Adjudicacion > Posesion > Reforma > Venta. Margen estimado: ${fmt(s.operationMargin)} EUR | TIR Bruta: ${s.grossIRR}% | Duracion: ${s.durationMonths} meses`,
       MARGIN + 4, y + 6
     );
     y += 14;
 
-    y = drawRow(doc, "Precio compra crédito", `${fmt(s.purchasePrice)} €`, y);
-    y = drawRow(doc, "Impuestos", `${fmt(s.taxes)} €`, y);
-    y = drawRow(doc, "Costes judiciales", `${fmt(s.judicialCosts)} €`, y);
-    y = drawRow(doc, "Costes reforma", `${fmt(s.reformCosts)} €`, y);
-    y = drawRow(doc, "Precio venta estimado", `${fmt(s.estimatedSalePrice)} €`, y);
-    y = drawRow(doc, "Margen operación", `${fmt(s.operationMargin)} €`, y);
+    y = drawRow(doc, "Precio compra credito", `${fmt(s.purchasePrice)} EUR`, y);
+    y = drawRow(doc, "Impuestos", `${fmt(s.taxes)} EUR`, y);
+    y = drawRow(doc, "Costes judiciales", `${fmt(s.judicialCosts)} EUR`, y);
+    y = drawRow(doc, "Costes reforma", `${fmt(s.reformCosts)} EUR`, y);
+    y = drawRow(doc, "Precio venta estimado", `${fmt(s.estimatedSalePrice)} EUR`, y);
+    y = drawRow(doc, "Margen operacion", `${fmt(s.operationMargin)} EUR`, y);
     y = drawRow(doc, "TIR Bruta", `${s.grossIRR}%`, y);
-    y = drawRow(doc, "Duración estimada", `${s.durationMonths} meses`, y);
+    y = drawRow(doc, "Duracion estimada", `${s.durationMonths} meses`, y);
     y += 4;
 
     // Cash flow table
@@ -289,17 +289,17 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFontSize(8);
     doc.setTextColor(60, 60, 60);
     doc.text(
-      `Compra crédito → Acuerdo con postor → Cesión de remate. Margen: ${fmt(s.estimatedMargin)} € | TIR: ${s.operationIRR}% | Duración: ${s.durationMonths} meses`,
+      `Compra credito > Acuerdo con postor > Cesion de remate. Margen: ${fmt(s.estimatedMargin)} EUR | TIR: ${s.operationIRR}% | Duracion: ${s.durationMonths} meses`,
       MARGIN + 4, y + 6
     );
     y += 14;
 
-    y = drawRow(doc, "Precio compra crédito", `${fmt(s.purchasePrice)} €`, y);
-    y = drawRow(doc, "Ingreso por cesión", `${fmt(s.assignmentIncome)} €`, y);
-    y = drawRow(doc, "Costes legales", `${fmt(s.legalCosts)} €`, y);
-    y = drawRow(doc, "Margen estimado", `${fmt(s.estimatedMargin)} €`, y);
-    y = drawRow(doc, "TIR operación", `${s.operationIRR}%`, y);
-    y = drawRow(doc, "Duración operación", `${s.durationMonths} meses`, y);
+    y = drawRow(doc, "Precio compra credito", `${fmt(s.purchasePrice)} EUR`, y);
+    y = drawRow(doc, "Ingreso por cesion", `${fmt(s.assignmentIncome)} EUR`, y);
+    y = drawRow(doc, "Costes legales", `${fmt(s.legalCosts)} EUR`, y);
+    y = drawRow(doc, "Margen estimado", `${fmt(s.estimatedMargin)} EUR`, y);
+    y = drawRow(doc, "TIR operacion", `${s.operationIRR}%`, y);
+    y = drawRow(doc, "Duracion operacion", `${s.durationMonths} meses`, y);
     y += 4;
   }
 
@@ -311,7 +311,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
   doc.setTextColor(BRAND_NAVY[0], BRAND_NAVY[1], BRAND_NAVY[2]);
-  doc.text("Comparativa de Valores (€)", MARGIN + 2, y);
+  doc.text("Comparativa de Valores (EUR)", MARGIN + 2, y);
   y += 5;
 
   const compValues = [
@@ -354,10 +354,10 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(60, 60, 60);
-  doc.text("📧  info@ikesa.es", MARGIN + 4, y + 13);
-  doc.text("📞  +34 900 000 000", MARGIN + 70, y + 13);
-  doc.text("💬  WhatsApp: +34 600 000 000", MARGIN + 4, y + 19);
-  doc.text("🌐  www.ikesa.es", MARGIN + 70, y + 19);
+  doc.text("Email: info@ikesa.es", MARGIN + 4, y + 13);
+  doc.text("Tel: +34 900 000 000", MARGIN + 70, y + 13);
+  doc.text("WhatsApp: +34 600 000 000", MARGIN + 4, y + 19);
+  doc.text("Web: www.ikesa.es", MARGIN + 70, y + 19);
 
   // ═══════════════════════════════════════════════════════
   // FOOTERS on all pages
@@ -374,7 +374,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(6.5);
     doc.setTextColor(BRAND_NAVY[0], BRAND_NAVY[1], BRAND_NAVY[2]);
-    doc.text("IKESA — Dossier de Inversión Confidencial", MARGIN, 288);
+    doc.text("IKESA - Dossier de Inversion Confidencial", MARGIN, 288);
     doc.setTextColor(140, 140, 140);
     doc.text(`Ref: ${data.reference}`, PAGE_WIDTH / 2, 288, { align: "center" });
     doc.text(`Página ${i} de ${totalPages}`, PAGE_WIDTH - MARGIN, 288, { align: "right" });
@@ -408,7 +408,7 @@ function buildAutoDescription(data: DossierData): string {
     data.occupancyStatus ? `Estado ocupacional: ${data.occupancyStatus}. ` : "",
     data.features?.length ? `Características destacadas: ${data.features.join(", ")}. ` : "",
     data.potentialPurchasePrice && data.marketValue
-      ? `El precio potencial de compra (${fmt(data.potentialPurchasePrice)} €) supone un descuento del ${data.discount || Math.round(((data.marketValue - data.potentialPurchasePrice) / data.marketValue) * 100)}% sobre el valor de mercado estimado (${fmt(data.marketValue)} €).`
+      ? `El precio potencial de compra (${fmt(data.potentialPurchasePrice)} EUR) supone un descuento del ${data.discount || Math.round(((data.marketValue - data.potentialPurchasePrice) / data.marketValue) * 100)}% sobre el valor de mercado estimado (${fmt(data.marketValue)} EUR).`
       : "",
   ];
   return parts.join("");

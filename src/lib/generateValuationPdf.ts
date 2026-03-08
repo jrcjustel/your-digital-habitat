@@ -263,7 +263,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...BRAND_GREEN);
-      doc.text("✓ Factores positivos", margin, y);
+      doc.text("[+] Factores positivos", margin, y);
       y += 5;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
@@ -281,7 +281,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...BRAND_RED);
-      doc.text("⚠ Factores a considerar", margin, y);
+      doc.text("[!] Factores a considerar", margin, y);
       y += 5;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
@@ -411,7 +411,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(80, 80, 80);
-  doc.text(`📍 ${data.direccion}`, margin, y);
+  doc.text(`> ${data.direccion}`, margin, y);
   y += 4;
   doc.text(`${data.municipio}, ${data.provincia}${data.codigo_postal ? ` (${data.codigo_postal})` : ""}`, margin, y);
   y += 5;
@@ -435,7 +435,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7);
   doc.setTextColor(160, 120, 40);
-  doc.text("⚠ AVISO LEGAL", margin + 5, y + 3);
+  doc.text("AVISO LEGAL", margin + 5, y + 3);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 80, 40);
@@ -452,7 +452,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(...BRAND_NAVY);
-    doc.text("IKESA Inmobiliaria — Informe de Valoración Confidencial", margin, 289);
+    doc.text("IKESA Inmobiliaria - Informe de Valoracion Confidencial", margin, 289);
     doc.setTextColor(140, 140, 140);
     doc.text(`Página ${i} de ${totalPages}`, pageWidth - margin, 289, { align: "right" });
   }

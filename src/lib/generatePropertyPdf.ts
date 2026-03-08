@@ -135,7 +135,7 @@ export const generatePropertyPdf = async (property: Property) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(...BRAND_BLUE);
-  doc.text(`${property.price.toLocaleString("es-ES")} €`, margin + 4, y + 5);
+  doc.text(`${property.price.toLocaleString("es-ES")} EUR`, margin + 4, y + 5);
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
   doc.text("Precio orientativo", margin + 4, y + 11);
@@ -144,7 +144,7 @@ export const generatePropertyPdf = async (property: Property) => {
     const disc = Math.round(((property.marketValue - property.price) / property.marketValue) * 100);
     doc.setFontSize(11);
     doc.setTextColor(130, 130, 130);
-    doc.text(`${property.marketValue.toLocaleString("es-ES")} €`, pageWidth / 2, y + 5);
+    doc.text(`${property.marketValue.toLocaleString("es-ES")} EUR`, pageWidth / 2, y + 5);
     doc.setFontSize(8);
     doc.text("Valor de mercado", pageWidth / 2, y + 11);
 
@@ -177,12 +177,12 @@ export const generatePropertyPdf = async (property: Property) => {
 
   // Google Maps link
   const mapsUrl = `https://www.google.com/maps?q=${property.lat},${property.lng}`;
-  addLink("📍 Ver en Google Maps", mapsUrl);
+  addLink("Ver en Google Maps", mapsUrl);
 
   // Wikibarrio link
   const wikibarrioSlug = property.municipality.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
   const wikibarrioUrl = `https://www.wikibarrio.es/${wikibarrioSlug}`;
-  addLink("🏘️ Info del barrio (Wikibarrio)", wikibarrioUrl);
+  addLink("Info del barrio (Wikibarrio)", wikibarrioUrl);
 
   // ── Property details ────────────────────────────────────
   addSection("Características del Inmueble");
@@ -223,7 +223,7 @@ export const generatePropertyPdf = async (property: Property) => {
     addSection("Información de la Deuda");
     if (property.debtInfo.debtType) addLine("Tipo de deuda", property.debtInfo.debtType);
     if (property.debtInfo.guaranteeType) addLine("Tipo de garantía", property.debtInfo.guaranteeType);
-    if (property.debtInfo.outstandingDebt) addLine("Deuda pendiente", `${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`);
+    if (property.debtInfo.outstandingDebt) addLine("Deuda pendiente", `${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} EUR`);
   }
 
   // ── Description ─────────────────────────────────────────
@@ -248,7 +248,7 @@ export const generatePropertyPdf = async (property: Property) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(...BRAND_NAVY);
-    doc.text("IKESA Inmobiliaria Real — Documento confidencial", margin, 289);
+    doc.text("IKESA Inmobiliaria Real - Documento confidencial", margin, 289);
     doc.setTextColor(140, 140, 140);
     doc.text(`Página ${i} de ${totalPages}`, pageWidth - margin, 289, { align: "right" });
   }
