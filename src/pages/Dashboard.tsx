@@ -22,6 +22,19 @@ interface Profile {
   avatar_url: string | null;
   nda_signed?: boolean;
   nda_signed_at?: string | null;
+  persona_tipo?: string | null;
+  empresa?: string | null;
+  cif_nif?: string | null;
+  comunidad_autonoma?: string | null;
+  ciudad?: string | null;
+  investor_level?: string | null;
+  presupuesto_min?: number | null;
+  presupuesto_max?: number | null;
+  intereses?: string[] | null;
+  tipos_activo_preferidos?: string[] | null;
+  provincias_interes?: string[] | null;
+  acepta_marketing?: boolean;
+  lead_score?: number | null;
 }
 
 interface Favorite {
@@ -53,7 +66,13 @@ interface Offer {
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile>({ display_name: "", phone: "", avatar_url: "", nda_signed: false, nda_signed_at: null });
+  const [profile, setProfile] = useState<Profile>({
+    display_name: "", phone: "", avatar_url: "", nda_signed: false, nda_signed_at: null,
+    persona_tipo: "fisica", empresa: null, cif_nif: null, comunidad_autonoma: null, ciudad: null,
+    investor_level: "principiante", presupuesto_min: 0, presupuesto_max: 0,
+    intereses: [], tipos_activo_preferidos: [], provincias_interes: [],
+    acepta_marketing: false, lead_score: 0,
+  });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -74,7 +93,7 @@ const Dashboard = () => {
 
   const loadData = async () => {
     const [profileRes, favRes, alertRes, offersRes] = await Promise.all([
-      supabase.from("profiles").select("display_name, phone, avatar_url, nda_signed, nda_signed_at").eq("user_id", user!.id).single(),
+      supabase.from("profiles").select("display_name, phone, avatar_url, nda_signed, nda_signed_at, persona_tipo, empresa, cif_nif, comunidad_autonoma, ciudad, investor_level, presupuesto_min, presupuesto_max, intereses, tipos_activo_preferidos, provincias_interes, acepta_marketing, lead_score").eq("user_id", user!.id).single(),
       supabase.from("favorites").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("alerts").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
@@ -90,6 +109,18 @@ const Dashboard = () => {
     const { error } = await supabase.from("profiles").update({
       display_name: profile.display_name,
       phone: profile.phone,
+      persona_tipo: profile.persona_tipo as any,
+      empresa: profile.empresa,
+      cif_nif: profile.cif_nif,
+      comunidad_autonoma: profile.comunidad_autonoma,
+      ciudad: profile.ciudad,
+      investor_level: profile.investor_level as any,
+      presupuesto_min: profile.presupuesto_min,
+      presupuesto_max: profile.presupuesto_max,
+      intereses: profile.intereses as any,
+      tipos_activo_preferidos: profile.tipos_activo_preferidos as any,
+      provincias_interes: profile.provincias_interes as any,
+      acepta_marketing: profile.acepta_marketing,
     }).eq("user_id", user!.id);
     setSaving(false);
     if (error) toast.error("Error al guardar"); else toast.success("Perfil actualizado");
@@ -375,26 +406,153 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader><CardTitle>Datos personales</CardTitle></CardHeader>
-              <CardContent className="space-y-4 max-w-md">
-                <div className="space-y-2">
-                  <Label>Nombre</Label>
-                  <Input value={profile.display_name || ""} onChange={(e) => setProfile({ ...profile, display_name: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input value={user.email || ""} disabled />
-                </div>
-                <div className="space-y-2">
-                  <Label>Teléfono</Label>
-                  <Input value={profile.phone || ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} placeholder="+34 600 000 000" />
-                </div>
-                <Button onClick={saveProfile} disabled={saving}>
-                  {saving ? "Guardando..." : "Guardar cambios"}
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Lead Score */}
+            {profile.lead_score !== undefined && profile.lead_score !== null && profile.lead_score > 0 && (
+              <Card className="mb-6">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">Tu puntuación de inversor</h3>
+                      <p className="text-xs text-muted-foreground">Basada en tu actividad y perfil completado</p>
+                    </div>
+                    <div className="text-2xl font-bold text-primary">{profile.lead_score}/100</div>
+                  </div>
+                  <div className="mt-2 h-2 bg-secondary rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${profile.lead_score}%` }} />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Datos personales */}
+              <Card>
+                <CardHeader><CardTitle className="text-base">Datos personales</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Nombre</Label>
+                    <Input value={profile.display_name || ""} onChange={(e) => setProfile({ ...profile, display_name: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={user.email || ""} disabled />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Teléfono</Label>
+                    <Input value={profile.phone || ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} placeholder="+34 600 000 000" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipo de persona</Label>
+                    <select
+                      value={profile.persona_tipo || "fisica"}
+                      onChange={(e) => setProfile({ ...profile, persona_tipo: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="fisica">Persona Física</option>
+                      <option value="juridica">Persona Jurídica</option>
+                    </select>
+                  </div>
+                  {profile.persona_tipo === "juridica" && (
+                    <>
+                      <div className="space-y-2">
+                        <Label>Empresa / Razón social</Label>
+                        <Input value={profile.empresa || ""} onChange={(e) => setProfile({ ...profile, empresa: e.target.value })} placeholder="Nombre de la empresa" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>CIF</Label>
+                        <Input value={profile.cif_nif || ""} onChange={(e) => setProfile({ ...profile, cif_nif: e.target.value })} placeholder="B12345678" />
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Perfil de inversor */}
+              <Card>
+                <CardHeader><CardTitle className="text-base">Perfil de inversor</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Nivel de experiencia</Label>
+                    <select
+                      value={profile.investor_level || "principiante"}
+                      onChange={(e) => setProfile({ ...profile, investor_level: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="principiante">Principiante</option>
+                      <option value="intermedio">Intermedio</option>
+                      <option value="avanzado">Avanzado</option>
+                      <option value="profesional">Profesional</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Comunidad Autónoma</Label>
+                    <select
+                      value={profile.comunidad_autonoma || ""}
+                      onChange={(e) => setProfile({ ...profile, comunidad_autonoma: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Selecciona...</option>
+                      {["Andalucía","Aragón","Asturias","Baleares","Canarias","Cantabria","Castilla-La Mancha","Castilla y León","Cataluña","C. Valenciana","Extremadura","Galicia","La Rioja","Madrid","Murcia","Navarra","País Vasco"].map(ca => (
+                        <option key={ca} value={ca}>{ca}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ciudad</Label>
+                    <Input value={profile.ciudad || ""} onChange={(e) => setProfile({ ...profile, ciudad: e.target.value })} placeholder="Tu ciudad" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Presupuesto mín. (€)</Label>
+                      <Input type="number" value={profile.presupuesto_min || ""} onChange={(e) => setProfile({ ...profile, presupuesto_min: Number(e.target.value) })} placeholder="0" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Presupuesto máx. (€)</Label>
+                      <Input type="number" value={profile.presupuesto_max || ""} onChange={(e) => setProfile({ ...profile, presupuesto_max: Number(e.target.value) })} placeholder="500000" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipos de activo de interés</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {["NPL","Cesión de Remate","Subastas BOE","Ocupados","Viviendas","Locales","Terrenos"].map(tipo => {
+                        const selected = profile.tipos_activo_preferidos?.includes(tipo);
+                        return (
+                          <button
+                            key={tipo}
+                            type="button"
+                            onClick={() => {
+                              const current = profile.tipos_activo_preferidos || [];
+                              setProfile({
+                                ...profile,
+                                tipos_activo_preferidos: selected ? current.filter(t => t !== tipo) : [...current, tipo]
+                              });
+                            }}
+                            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                              selected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border hover:border-primary/50"
+                            }`}
+                          >
+                            {tipo}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 pt-2">
+                    <Switch
+                      checked={profile.acepta_marketing || false}
+                      onCheckedChange={(checked) => setProfile({ ...profile, acepta_marketing: checked })}
+                    />
+                    <Label className="text-sm text-muted-foreground">Acepto recibir comunicaciones comerciales y oportunidades de inversión</Label>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-6">
+              <Button onClick={saveProfile} disabled={saving} className="w-full md:w-auto">
+                {saving ? "Guardando..." : "Guardar todos los cambios"}
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
