@@ -544,6 +544,39 @@ export type Database = {
           },
         ]
       }
+      contact_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          mensaje: string
+          nombre: string
+          servicio: string | null
+          status: string
+          telefono: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          mensaje: string
+          nombre: string
+          servicio?: string | null
+          status?: string
+          telefono?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          mensaje?: string
+          nombre?: string
+          servicio?: string | null
+          status?: string
+          telefono?: string | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
