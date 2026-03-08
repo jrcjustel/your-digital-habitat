@@ -39,6 +39,27 @@ const AcademiaArticle = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={article.title}
+        description={article.excerpt}
+        canonical={`/academia/${article.slug}`}
+        type="article"
+        publishedTime={article.date}
+        keywords={`${article.category}, inversión inmobiliaria, ${article.title.split(" ").slice(0, 4).join(" ")}`}
+        jsonLd={[
+          createArticleSchema({
+            title: article.title,
+            description: article.excerpt,
+            url: `/academia/${article.slug}`,
+            datePublished: article.date,
+          }),
+          createBreadcrumbSchema([
+            { name: "Inicio", url: "/" },
+            { name: "Academia", url: "/academia" },
+            { name: article.title, url: `/academia/${article.slug}` },
+          ]),
+        ]}
+      />
       <Navbar />
 
       {/* Breadcrumb */}
