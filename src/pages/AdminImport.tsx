@@ -142,6 +142,16 @@ const AdminImport = () => {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [clearExisting, setClearExisting] = useState(false);
 
+  // Group DB fields for the select - must be before early returns
+  const groupedFields = useMemo(() => {
+    const groups: Record<string, typeof DB_FIELDS> = {};
+    for (const f of DB_FIELDS) {
+      if (!groups[f.group]) groups[f.group] = [];
+      groups[f.group].push(f);
+    }
+    return groups;
+  }, []);
+
   if (authLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>;
   if (!user) {
     navigate("/auth");
@@ -149,7 +159,6 @@ const AdminImport = () => {
   }
 
   const mappedCount = Object.values(columnMapping).filter(Boolean).length;
-  const totalDbFields = DB_FIELDS.length;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
