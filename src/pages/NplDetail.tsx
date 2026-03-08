@@ -6,16 +6,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
-  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail
+  CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail, Heart
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
 import EnrichedDossierButton from "@/components/EnrichedDossierButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import NdaGate from "@/components/NdaGate";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import OfferForm from "@/components/OfferForm";
+import RelatedAssets from "@/components/RelatedAssets";
+import WaitlistButton from "@/components/WaitlistButton";
 
 interface NplAsset {
   id: string;
@@ -58,6 +61,7 @@ interface NplAsset {
   descripcion: string | null;
   deposito_porcentaje: number;
   comision_porcentaje: number;
+  estado: string | null;
 }
 
 const InfoRow = ({ label, value, highlight }: { label: string; value: string | number | null | undefined; highlight?: boolean }) => {
@@ -95,6 +99,9 @@ const NplDetail = () => {
   const [loading, setLoading] = useState(true);
   const [ndaSigned, setNdaSigned] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     if (!id) return;
@@ -124,11 +131,32 @@ const NplDetail = () => {
 
   useEffect(() => {
     if (user) {
-      supabase.from("profiles").select("nda_signed").eq("user_id", user.id).single().then(({ data }) => {
+      supabase.from("profiles").select("nda_signed, display_name").eq("user_id", user.id).single().then(({ data }) => {
         setNdaSigned(!!(data as any)?.nda_signed);
+        setUserName((data as any)?.display_name || "");
       });
+      // Get email from auth
+      setUserEmail(user.email || "");
+      // Check favorite
+      if (asset) {
+        supabase.from("favorites").select("id").eq("user_id", user.id).eq("property_id", asset.id).maybeSingle().then(({ data }) => {
+          setIsFav(!!data);
+        });
+      }
     }
-  }, [user]);
+  }, [user, asset?.id]);
+
+  const toggleFavorite = async () => {
+    if (!user || !asset) return;
+    if (isFav) {
+      await supabase.from("favorites").delete().eq("user_id", user.id).eq("property_id", asset.id);
+      setIsFav(false);
+    } else {
+      await supabase.from("favorites").insert({ user_id: user.id, property_id: asset.id });
+      setIsFav(true);
+      await supabase.from("activity_log").insert({ user_id: user.id, action: "favorite_added", entity_type: "npl_asset", entity_id: asset.id });
+    }
+  };
 
   if (loading) {
     return (
@@ -182,19 +210,31 @@ const NplDetail = () => {
 
           <div className="p-6 md:p-8">
             {/* Type badge + reference */}
-            <div className="flex items-center gap-3 mb-4 flex-wrap">
-              <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
-                {asset.tipo_activo || "Activo"}
-              </span>
-              {asset.referencia_fencia && (
-                <span className="text-xs font-mono text-muted-foreground">
-                  Ref: {asset.referencia_fencia}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
+                  {asset.tipo_activo || "Activo"}
                 </span>
-              )}
-              {asset.cartera && (
-                <span className="bg-secondary text-foreground text-xs font-medium px-3 py-1 rounded-full">
-                  Cartera: {asset.cartera}
-                </span>
+                {asset.referencia_fencia && (
+                  <span className="text-xs font-mono text-muted-foreground">
+                    Ref: {asset.referencia_fencia}
+                  </span>
+                )}
+                {asset.cartera && (
+                  <span className="bg-secondary text-foreground text-xs font-medium px-3 py-1 rounded-full">
+                    Cartera: {asset.cartera}
+                  </span>
+                )}
+                {asset.estado && asset.estado !== "disponible" && (
+                  <Badge variant={asset.estado === "cerrado" ? "destructive" : "secondary"} className="text-[10px]">
+                    {asset.estado === "oferta_gestion" ? "En gestión de oferta" : asset.estado === "cerrado" ? "Operación cerrada" : asset.estado}
+                  </Badge>
+                )}
+              </div>
+              {user && (
+                <button onClick={toggleFavorite} className="p-2 rounded-full hover:bg-accent/10 transition-colors" title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}>
+                  <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground hover:text-accent"}`} />
+                </button>
               )}
             </div>
 
@@ -389,13 +429,29 @@ const NplDetail = () => {
                   </div>
                 )}
 
-                <Button
-                  onClick={() => setShowOffer(!showOffer)}
-                  className="w-full gap-2 mb-3"
-                >
-                  <Euro className="w-4 h-4" />
-                  {showOffer ? "Ocultar formulario" : "Presentar oferta"}
-                </Button>
+                {/* Conditional: show offer form or waitlist based on estado */}
+                {asset.estado === "oferta_gestion" ? (
+                  <div className="mb-3">
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mb-3">
+                      <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
+                      <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
+                    </div>
+                    <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
+                  </div>
+                ) : asset.estado === "cerrado" ? (
+                  <div className="bg-muted rounded-xl p-3 mb-3">
+                    <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
+                    <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => setShowOffer(!showOffer)}
+                    className="w-full gap-2 mb-3"
+                  >
+                    <Euro className="w-4 h-4" />
+                    {showOffer ? "Ocultar formulario" : "¡Haz tu oferta!"}
+                  </Button>
+                )}
 
                 <Button
                   variant="outline"
@@ -485,6 +541,14 @@ const NplDetail = () => {
             </div>
           </div>
         </NdaGate>
+
+        {/* Related assets */}
+        <RelatedAssets
+          currentAssetId={asset.id}
+          tipoActivo={asset.tipo_activo}
+          provincia={asset.provincia}
+          comunidadAutonoma={asset.comunidad_autonoma}
+        />
       </div>
 
       <Footer />

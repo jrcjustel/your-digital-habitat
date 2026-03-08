@@ -13,6 +13,7 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
+  Zap, History,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -75,11 +76,15 @@ const AdminPanel = () => {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [offers, setOffers] = useState<OfferRow[]>([]);
   const [broadcasts, setBroadcasts] = useState<BroadcastRow[]>([]);
+  const [activityLog, setActivityLog] = useState<any[]>([]);
   const [assetsByType, setAssetsByType] = useState<any[]>([]);
   const [assetsByProvince, setAssetsByProvince] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState("");
   const [offerFilter, setOfferFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [matchingAssetId, setMatchingAssetId] = useState("");
+  const [matchingResult, setMatchingResult] = useState<number | null>(null);
+  const [matchingLoading, setMatchingLoading] = useState(false);
 
   useEffect(() => {
     loadAll();
@@ -87,7 +92,7 @@ const AdminPanel = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    await Promise.all([loadKPIs(), loadUsers(), loadOffers(), loadBroadcasts(), loadChartData()]);
+    await Promise.all([loadKPIs(), loadUsers(), loadOffers(), loadBroadcasts(), loadChartData(), loadActivityLog()]);
     setLoading(false);
   };
 
@@ -169,6 +174,32 @@ const AdminPanel = () => {
     if (data) setBroadcasts(data as unknown as BroadcastRow[]);
   };
 
+  const loadActivityLog = async () => {
+    const { data } = await supabase
+      .from("activity_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) setActivityLog(data);
+  };
+
+  const runMatching = async () => {
+    if (!matchingAssetId.trim()) {
+      toast.error("Introduce el ID del activo");
+      return;
+    }
+    setMatchingLoading(true);
+    setMatchingResult(null);
+    const { data, error } = await supabase.rpc("match_investors_to_asset", { p_asset_id: matchingAssetId.trim() });
+    if (error) {
+      toast.error("Error al ejecutar matching: " + error.message);
+    } else {
+      setMatchingResult(data as number);
+      toast.success(`Matching completado: ${data} inversores encontrados`);
+    }
+    setMatchingLoading(false);
+  };
+
   const updateOfferStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("offers").update({ status }).eq("id", id);
     if (error) toast.error("Error al actualizar oferta");
@@ -238,10 +269,12 @@ const AdminPanel = () => {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+          <TabsList className="grid w-full grid-cols-6 max-w-3xl">
             <TabsTrigger value="users" className="gap-2"><Users className="w-4 h-4" /> Usuarios</TabsTrigger>
             <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
             <TabsTrigger value="charts" className="gap-2"><BarChart3 className="w-4 h-4" /> Gráficos</TabsTrigger>
+            <TabsTrigger value="matching" className="gap-2"><Zap className="w-4 h-4" /> Matching</TabsTrigger>
+            <TabsTrigger value="activity" className="gap-2"><History className="w-4 h-4" /> Actividad</TabsTrigger>
             <TabsTrigger value="broadcasts" className="gap-2"><Send className="w-4 h-4" /> Difusión</TabsTrigger>
           </TabsList>
 
@@ -401,6 +434,107 @@ const AdminPanel = () => {
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          {/* MATCHING TAB */}
+          <TabsContent value="matching">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader><CardTitle className="text-base">Ejecutar Matching Inversor-Activo</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Introduce el ID de un activo para ejecutar el algoritmo de matching contra todos los inversores con NDA firmado. El sistema puntúa por zona geográfica (40%), tipo de activo (25%), rango de precio (20%) y nivel inversor (15%).
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="UUID del activo..."
+                      value={matchingAssetId}
+                      onChange={(e) => setMatchingAssetId(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button onClick={runMatching} disabled={matchingLoading} className="gap-2">
+                      {matchingLoading ? <Activity className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                      Ejecutar
+                    </Button>
+                  </div>
+                  {matchingResult !== null && (
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl p-4">
+                      <p className="text-sm font-semibold text-primary">
+                        ✓ Matching completado: {matchingResult} inversores con score {">"}20 encontrados
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">Criterios de puntuación</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Zona geográfica (CCAA + provincia)</span>
+                      <span className="font-bold text-foreground">40 pts</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Tipo de activo preferido</span>
+                      <span className="font-bold text-foreground">25 pts</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Rango de precio</span>
+                      <span className="font-bold text-foreground">20 pts</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Nivel inversor</span>
+                      <span className="font-bold text-foreground">15 pts</span>
+                    </div>
+                    <div className="border-t border-border pt-2 flex justify-between items-center">
+                      <span className="text-foreground font-semibold">Umbral mínimo</span>
+                      <Badge variant="default">{">"}20 pts</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* ACTIVITY LOG TAB */}
+          <TabsContent value="activity">
+            <div className="space-y-3">
+              {activityLog.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <History className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No hay actividad registrada</p>
+                </div>
+              ) : (
+                <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border bg-secondary/50">
+                        <th className="text-left p-3 font-medium text-muted-foreground">Acción</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Entidad</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">ID Entidad</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Usuario</th>
+                        <th className="text-left p-3 font-medium text-muted-foreground">Fecha</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activityLog.map((log: any) => (
+                        <tr key={log.id} className="border-b border-border/50 hover:bg-secondary/30">
+                          <td className="p-3">
+                            <Badge variant="outline" className="text-[10px]">{log.action}</Badge>
+                          </td>
+                          <td className="p-3 text-foreground text-xs">{log.entity_type}</td>
+                          <td className="p-3 text-muted-foreground text-xs font-mono">{log.entity_id?.slice(0, 8) || "—"}</td>
+                          <td className="p-3 text-muted-foreground text-xs font-mono">{log.user_id?.slice(0, 8) || "Sistema"}</td>
+                          <td className="p-3 text-muted-foreground text-xs">
+                            {new Date(log.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </TabsContent>
 

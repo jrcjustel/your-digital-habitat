@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       alerts: {
         Row: {
           created_at: string
@@ -258,6 +291,47 @@ export type Database = {
         }
         Relationships: []
       }
+      investor_asset_matches: {
+        Row: {
+          asset_id: string
+          created_at: string
+          criteria: Json | null
+          id: string
+          investor_id: string
+          notified: boolean | null
+          score: number
+          viewed: boolean | null
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          criteria?: Json | null
+          id?: string
+          investor_id: string
+          notified?: boolean | null
+          score?: number
+          viewed?: boolean | null
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          criteria?: Json | null
+          id?: string
+          investor_id?: string
+          notified?: boolean | null
+          score?: number
+          viewed?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_asset_matches_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       npl_assets: {
         Row: {
           anio_construccion: number | null
@@ -273,6 +347,7 @@ export type Database = {
           descripcion: string | null
           deuda_ob: number | null
           direccion: string | null
+          estado: string | null
           estado_judicial: string | null
           estado_ocupacional: string | null
           fase_judicial: string | null
@@ -317,6 +392,7 @@ export type Database = {
           descripcion?: string | null
           deuda_ob?: number | null
           direccion?: string | null
+          estado?: string | null
           estado_judicial?: string | null
           estado_ocupacional?: string | null
           fase_judicial?: string | null
@@ -361,6 +437,7 @@ export type Database = {
           descripcion?: string | null
           deuda_ob?: number | null
           direccion?: string | null
+          estado?: string | null
           estado_judicial?: string | null
           estado_ocupacional?: string | null
           fase_judicial?: string | null
@@ -615,6 +692,53 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          asset_id: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          notified_at: string | null
+          phone: string | null
+          position: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          notified_at?: string | null
+          phone?: string | null
+          position?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notified_at?: string | null
+          phone?: string | null
+          position?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -627,6 +751,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      match_investors_to_asset: {
+        Args: { p_asset_id: string }
+        Returns: number
       }
       refresh_profile_stats: { Args: { p_user_id: string }; Returns: undefined }
     }

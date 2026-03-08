@@ -280,10 +280,9 @@ const Dashboard = () => {
             ) : (
               <div className="grid gap-4">
                 {offers.map((offer) => {
-                  const prop = properties.find((p) => p.id === offer.property_id);
                   const statusConfig: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
                     pending: { label: "Pendiente", icon: <Clock className="w-4 h-4" />, className: "text-yellow-600 bg-yellow-50" },
-                    accepted: { label: "Aceptada", icon: <CheckCircle className="w-4 h-4" />, className: "text-green-600 bg-green-50" },
+                    accepted: { label: "Aceptada", icon: <CheckCircle className="w-4 h-4" />, className: "text-primary bg-primary/10" },
                     rejected: { label: "Rechazada", icon: <XCircle className="w-4 h-4" />, className: "text-destructive bg-destructive/10" },
                   };
                   const st = statusConfig[offer.status] || statusConfig.pending;
@@ -291,26 +290,18 @@ const Dashboard = () => {
                   return (
                     <Card key={offer.id}>
                       <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4">
-                        {prop && (
-                          <img
-                            src={prop.images[0]}
-                            alt={prop.title}
-                            className="w-full sm:w-24 h-20 object-cover rounded-lg cursor-pointer shrink-0"
-                            onClick={() => navigate(`/inmueble/${prop.id}`)}
-                          />
-                        )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-semibold text-accent">{offer.property_reference || offer.property_id}</span>
+                            <span className="text-xs font-semibold text-accent">{offer.property_reference || offer.property_id.slice(0, 8)}</span>
                             <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${st.className}`}>
                               {st.icon} {st.label}
                             </span>
                           </div>
                           <h3
                             className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent"
-                            onClick={() => navigate(`/inmueble/${offer.property_id}`)}
+                            onClick={() => navigate(`/npl/${offer.property_id}`)}
                           >
-                            {prop?.title || `Inmueble ${offer.property_id}`}
+                            Activo {offer.property_reference || offer.property_id.slice(0, 8)}
                           </h3>
                           <p className="text-sm text-muted-foreground">
                             {new Date(offer.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
