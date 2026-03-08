@@ -653,6 +653,65 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          ai_generated: boolean | null
+          asset_id: string | null
+          channel: string
+          content: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          id: string
+          media_url: string | null
+          metrics: Json | null
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generated?: boolean | null
+          asset_id?: string | null
+          channel: string
+          content: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          media_url?: string | null
+          metrics?: Json | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generated?: boolean | null
+          asset_id?: string | null
+          channel?: string
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          media_url?: string | null
+          metrics?: Json | null
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
