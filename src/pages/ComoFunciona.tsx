@@ -13,18 +13,22 @@ import {
   Clock,
   Users,
   BadgePercent,
-  Scale,
+  X,
+  ChevronDown,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { useState } from "react";
 
-interface StepProps {
-  number: number;
-  title: string;
-  description: string;
-}
+/* ── Small reusable pieces ── */
 
-const Step = ({ number, title, description }: StepProps) => (
+const Step = ({ number, title, description }: { number: number; title: string; description: string }) => (
   <div className="flex gap-4">
     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-sm">
       {number}
@@ -36,17 +40,42 @@ const Step = ({ number, title, description }: StepProps) => (
   </div>
 );
 
-interface BulletProps {
-  icon: React.ReactNode;
-  text: string;
-}
-
-const Bullet = ({ icon, text }: BulletProps) => (
+const Bullet = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   <li className="flex items-start gap-2 text-sm text-muted-foreground">
-    <span className="mt-0.5 text-accent flex-shrink-0">{icon}</span>
+    <span className="mt-0.5 flex-shrink-0">{icon}</span>
     {text}
   </li>
 );
+
+/* ── Timeline step for the "Ciclo" section ── */
+const TimelineStep = ({
+  number,
+  title,
+  description,
+  duration,
+}: {
+  number: number;
+  title: string;
+  description: string;
+  duration: string;
+}) => (
+  <div className="relative flex gap-5 group">
+    {/* vertical line */}
+    <div className="flex flex-col items-center">
+      <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-sm z-10">
+        {number}
+      </div>
+      <div className="flex-1 w-px bg-border group-last:hidden" />
+    </div>
+    <div className="pb-10 group-last:pb-0">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">{duration}</span>
+      <h4 className="font-bold text-foreground mt-1 mb-1">{title}</h4>
+      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+    </div>
+  </div>
+);
+
+/* ── Product data ── */
 
 const products = [
   {
@@ -135,6 +164,90 @@ const products = [
   },
 ];
 
+/* ── Cycle timeline data (inspired by Auctree) ── */
+const cycleSteps = [
+  {
+    title: "Haz tu oferta",
+    description:
+      "Encuentra tu activo y envía una oferta por debajo, igual o superior al precio orientativo. Recibirás notificaciones sobre el estado de tu oferta en tiempo real.",
+    duration: "Oferta",
+  },
+  {
+    title: "Revisión y depósito de reserva",
+    description:
+      "Revisamos tu oferta y confirmamos si ha sido pre-aprobada. En las siguientes 24-48h tras la pre-aprobación, el comprador abona el depósito de reserva.",
+    duration: "2-3 días",
+  },
+  {
+    title: "Prevención de blanqueo de capitales",
+    description:
+      "Te solicitamos documentación sobre el origen de los fondos. Por ley, es obligatorio verificar que los fondos provengan de fuentes legítimas (Ley 10/2010).",
+    duration: "1-2 semanas",
+  },
+  {
+    title: "Contrato de arras o reserva",
+    description:
+      "Se establece las condiciones de la operación y garantiza el cumplimiento entre las partes. El comprador habrá pagado el 10% para reservar su derecho de compra.",
+    duration: "1 semana",
+  },
+  {
+    title: "Transferencia de propiedad",
+    description:
+      "En inmuebles judiciales, un tribunal local supervisa la transferencia. El juez revisará la operación y cancelará las cargas pendientes para que la propiedad quede inscrita libre de cargas a tu nombre.",
+    duration: "2-5 meses",
+  },
+  {
+    title: "¡Llaves en mano!",
+    description:
+      "Acabas de adquirir un inmueble por debajo del precio de mercado. Ya puedes inscribirlo en el Registro de la Propiedad y empezar a rentabilizar tu inversión.",
+    duration: "Entrega",
+  },
+];
+
+/* ── Pros / Cons balance (Auctree style) ── */
+const balancePros = [
+  "Accede a descuentos del 10-70% según tipología",
+  "Inversión con margen de seguridad",
+  "Altas rentabilidades que merecen la espera",
+  "Asesoramiento integral de Ikesa en cada paso",
+];
+
+const balanceCons = [
+  "Sin financiación hipotecaria directa (posible préstamo personal)",
+  "Inmuebles generalmente no visitables antes de la compra",
+  "3-9 meses hasta ser propietario registral",
+];
+
+/* ── FAQ ── */
+const faqs = [
+  {
+    q: "¿Por qué los activos tienen información restringida?",
+    a: "En Ikesa protegemos la confidencialidad de los datos. Algunos activos requieren la firma de un NDA (acuerdo de confidencialidad) para acceder a la documentación completa. Registrarte es gratuito y rápido.",
+  },
+  {
+    q: "¿Puedo financiar la compra de un inmueble judicial?",
+    a: "Muchos de nuestros inversores negocian un préstamo a título personal con su entidad financiera durante el periodo de espera previo a la adjudicación. Una vez obtienen la adjudicación, modifican el préstamo a una hipoteca convencional sobre el inmueble.",
+  },
+  {
+    q: "¿Cómo presento una oferta?",
+    a: "Es muy sencillo: revisa la ficha del activo, fíjate en el precio orientativo y envía tu oferta a través de la plataforma. Puede ser por debajo, igual o superior al precio guía. Recibirás notificaciones sobre el estado de tu oferta.",
+  },
+  {
+    q: "¿Cuándo tengo que transferir el depósito?",
+    a: "Si tu oferta es aceptada, te solicitaremos un depósito de reserva (habitualmente el 10% del precio) en las 24-48 horas siguientes. Además, deberás completar la documentación KYC de prevención de blanqueo de capitales.",
+  },
+  {
+    q: "¿Qué pasa si el inmueble está ocupado?",
+    a: "Los inmuebles ocupados se venden con descuento adicional. Ikesa te asesora en la gestión de la desocupación: desde la negociación amistosa (cash for keys) hasta el procedimiento judicial. El plazo varía según la CCAA (45-180 días).",
+  },
+  {
+    q: "¿Qué es una cesión de remate?",
+    a: "Es cuando el adjudicatario de una subasta judicial (generalmente un banco) cede sus derechos sobre el inmueble a un tercero (tú) a cambio de un precio pactado. Requiere aprobación judicial y permite adquirir con un descuento adicional del 10-25% sobre el precio de remate.",
+  },
+];
+
+/* ──────────────────── COMPONENT ──────────────────── */
+
 const ComoFunciona = () => {
   const navigate = useNavigate();
 
@@ -142,24 +255,99 @@ const ComoFunciona = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative bg-primary text-primary-foreground py-20 overflow-hidden">
+      {/* ── Hero (Auctree-inspired) ── */}
+      <section className="relative bg-primary text-primary-foreground py-24 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(199_82%_58%/0.15),transparent_60%)]" />
         <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
-          <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase rounded-full bg-accent/20 text-accent">
-            Guía de inversión
+          <span className="inline-block text-[11px] font-bold tracking-widest uppercase text-accent mb-4">
+            El ciclo de los activos judiciales
           </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-            ¿Cómo funciona?
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
+            Gran oportunidad,{" "}
+            <span className="text-accent">tiempo limitado.</span>
           </h1>
-          <p className="text-lg text-primary-foreground/70 leading-relaxed max-w-2xl mx-auto">
-            Tres vehículos de inversión inmobiliaria con alto potencial de rentabilidad.
-            Descubre el proceso paso a paso para cada tipo de producto.
+          <p className="text-lg text-primary-foreground/70 leading-relaxed max-w-2xl mx-auto mb-8">
+            Los inmuebles judiciales son aquellos que los bancos se ven obligados a adquirir
+            cuando el propietario no puede pagar la hipoteca. Para evitar quedarse con el activo,
+            los bancos los venden a precios muy atractivos. Esta es tu oportunidad de comprar
+            por debajo del mercado y obtener un alto rendimiento.
           </p>
+          <Button
+            size="lg"
+            onClick={() => navigate("/inmuebles")}
+            className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2"
+          >
+            Ver inmuebles <ArrowRight className="w-4 h-4" />
+          </Button>
         </div>
       </section>
 
-      {/* Quick nav */}
+      {/* ── Balance: Pros & Cons (Auctree style) ── */}
+      <section className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-16 max-w-4xl">
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Bajo Riesgo y Alto Rendimiento</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
+              Una jugada <span className="text-accent">inteligente</span>
+            </h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+              Comprar inmuebles judiciales ofrece una oportunidad única de invertir por debajo del precio de mercado con margen de seguridad. El potencial de descuento hace que sea una inversión que realmente vale la pena.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            {/* Cons */}
+            <Card className="border-red-200/50 bg-red-50/30 dark:bg-red-950/10 dark:border-red-900/30">
+              <CardContent className="p-6">
+                <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">A tener en cuenta</h4>
+                <ul className="space-y-3">
+                  {balanceCons.map((c, i) => (
+                    <Bullet key={i} icon={<X className="w-4 h-4 text-red-500" />} text={c} />
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+            {/* Pros */}
+            <Card className="border-green-200/50 bg-green-50/30 dark:bg-green-950/10 dark:border-green-900/30">
+              <CardContent className="p-6">
+                <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">Ventajas</h4>
+                <ul className="space-y-3">
+                  {balancePros.map((p, i) => (
+                    <Bullet key={i} icon={<CheckCircle className="w-4 h-4 text-green-600" />} text={p} />
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Process timeline (Auctree-inspired) ── */}
+      <section className="border-b border-border">
+        <div className="container mx-auto px-4 py-16 max-w-3xl">
+          <div className="text-center mb-12">
+            <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Nuestro equipo de expertos a tu disposición</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
+              Soporte integral para un proceso{" "}
+              <span className="text-accent">sin sorpresas</span>
+            </h2>
+          </div>
+
+          <div className="space-y-0">
+            {cycleSteps.map((step, idx) => (
+              <TimelineStep
+                key={idx}
+                number={idx + 1}
+                title={step.title}
+                description={step.description}
+                duration={step.duration}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Quick nav for product types ── */}
       <section className="border-b border-border bg-card sticky top-16 z-40">
         <div className="container mx-auto px-4 flex gap-2 py-3 overflow-x-auto">
           {products.map((p) => (
@@ -174,7 +362,7 @@ const ComoFunciona = () => {
         </div>
       </section>
 
-      {/* Product sections */}
+      {/* ── Product sections ── */}
       <div className="container mx-auto px-4 py-16 space-y-24">
         {products.map((product, idx) => (
           <section key={product.id} id={product.id} className="scroll-mt-32">
@@ -195,7 +383,7 @@ const ComoFunciona = () => {
 
                 {/* Pros & Risks */}
                 <div className="grid sm:grid-cols-2 gap-6 mb-8">
-                  <Card className="border-green-200 bg-green-50/50">
+                  <Card className="border-green-200/50 bg-green-50/30 dark:bg-green-950/10 dark:border-green-900/30">
                     <CardContent className="p-5">
                       <h4 className="font-semibold text-foreground flex items-center gap-2 mb-3">
                         <TrendingUp className="w-4 h-4 text-green-600" />
@@ -208,7 +396,7 @@ const ComoFunciona = () => {
                       </ul>
                     </CardContent>
                   </Card>
-                  <Card className="border-amber-200 bg-amber-50/50">
+                  <Card className="border-amber-200/50 bg-amber-50/30 dark:bg-amber-950/10 dark:border-amber-900/30">
                     <CardContent className="p-5">
                       <h4 className="font-semibold text-foreground flex items-center gap-2 mb-3">
                         <Shield className="w-4 h-4 text-amber-600" />
@@ -256,21 +444,50 @@ const ComoFunciona = () => {
         ))}
       </div>
 
-      {/* CTA final */}
-      <section className="bg-secondary py-16">
+      {/* ── FAQ (Auctree-inspired) ── */}
+      <section className="border-t border-border bg-secondary/30">
+        <div className="container mx-auto px-4 py-16 max-w-3xl">
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-bold tracking-widest uppercase text-accent">FAQ</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
+              Preguntas frecuentes
+            </h2>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <AccordionItem
+                key={idx}
+                value={`faq-${idx}`}
+                className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-sm"
+              >
+                <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-5">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pb-5">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
+      {/* ── CTA final ── */}
+      <section className="hero-section py-16">
         <div className="container mx-auto px-4 text-center max-w-2xl">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-4">
             ¿Listo para invertir?
           </h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-primary-foreground/60 mb-8">
             Regístrate gratis, firma el NDA y accede a toda la documentación confidencial de nuestros activos.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button size="lg" onClick={() => navigate("/auth")} className="gap-2">
+            <Button size="lg" onClick={() => navigate("/auth")} className="gap-2 bg-accent text-accent-foreground hover:bg-accent/90">
               <Users className="w-4 h-4" />
               Crear cuenta gratuita
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/inversores")} className="gap-2">
+            <Button size="lg" variant="outline" onClick={() => navigate("/inversores")} className="gap-2 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/5">
               <BadgePercent className="w-4 h-4" />
               Explorar oportunidades
             </Button>
