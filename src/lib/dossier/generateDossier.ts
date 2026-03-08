@@ -260,7 +260,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     y = drawRow(doc, "Precio venta estimado", `${fmt(s.estimatedSalePrice)} EUR`, y);
     y = drawRow(doc, "Margen operacion", `${fmt(s.operationMargin)} EUR`, y);
     y = drawRow(doc, "TIR Bruta", `${s.grossIRR}%`, y);
-    y = drawRow(doc, "Duración estimada", `${s.durationMonths} meses`, y);
+    y = drawRow(doc, "Duracion estimada", `${s.durationMonths} meses`, y);
     y += 4;
 
     // Cash flow table
