@@ -510,6 +510,12 @@ const AiChatWidget = () => {
       if (seg.type === "actions") {
         return <AssetActionsBar key={i} onAction={handleAssetAction} />;
       }
+      if (seg.type === "whatsapp") {
+        return <WhatsAppRedirectBlock key={i} />;
+      }
+      if (seg.type === "social_channels") {
+        return <SocialChannelsBlock key={i} />;
+      }
       // Text segment — render as markdown
       return (
         <div key={i} className="prose prose-xs dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-xs [&_p]:text-xs [&_li]:text-xs [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs">
