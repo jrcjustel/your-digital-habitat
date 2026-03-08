@@ -508,8 +508,8 @@ const AlertNotifications = ({ userId }: { userId?: string }) => {
 
     if (data && !error) {
       // Fetch asset details for each notification
-      const assetIds = [...new Set(data.map((n: any) => n.asset_id))];
-      const alertIds = [...new Set(data.map((n: any) => n.alert_id))];
+      const assetIds = [...new Set(data.map((n: any) => n.asset_id))] as string[];
+      const alertIds = [...new Set(data.map((n: any) => n.alert_id))] as string[];
 
       const [assetsRes, alertsRes] = await Promise.all([
         supabase.from("npl_assets").select("id,tipo_activo,municipio,provincia,precio_orientativo,sqm").in("id", assetIds),
