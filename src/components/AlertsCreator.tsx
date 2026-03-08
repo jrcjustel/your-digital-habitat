@@ -211,6 +211,7 @@ const AlertsCreator = () => {
             filters={filters}
             isOpen={isOpen}
             isSaving={saving === alert.id}
+            matchCount={countMatchingAssets(filters, publishedAssets)}
             onToggleOpen={() => toggleOpen(alert.id)}
             onToggleActive={(active) => toggleAlert(alert.id, active)}
             onDelete={() => deleteAlert(alert.id)}
