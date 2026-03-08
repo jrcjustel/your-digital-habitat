@@ -15,6 +15,7 @@ const navItems = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -52,6 +53,12 @@ const Navbar = () => {
                 <User className="w-4 h-4" />
                 Mi cuenta
               </button>
+              {isAdmin && (
+                <button onClick={() => navigate("/admin/panel")} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:text-accent transition-colors">
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </button>
+              )}
               <button onClick={handleSignOut} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-destructive transition-colors">
                 <LogOut className="w-4 h-4" />
               </button>
