@@ -198,8 +198,10 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Mi cuenta</h1>
-            <p className="text-muted-foreground">{user.email}</p>
+            <h1 className="text-3xl font-bold text-foreground">
+              Hola, {profile.display_name || user.email?.split("@")[0]} 👋
+            </h1>
+            <p className="text-muted-foreground">Bienvenido/a a la democratización de la inversión inmobiliaria</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
         </div>
