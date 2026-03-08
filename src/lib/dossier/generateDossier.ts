@@ -122,8 +122,8 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   y = drawSectionHeader(doc, "Información General de la Operación", y, 1);
   y = drawRow(doc, "Tipo de operación", opLabel, y);
   y = drawRow(doc, "Identificador", data.reference, y);
-  doc.text(`${fmt(data.potentialPurchasePrice)} EUR`, MARGIN + 4, y + 5);
-  y = drawRow(doc, "Valor estimado activo", `${fmt(data.estimatedAssetValue)} €`, y);
+  y = drawRow(doc, "Precio potencial compra", `${fmt(data.potentialPurchasePrice)} EUR`, y);
+  y = drawRow(doc, "Valor estimado activo", `${fmt(data.estimatedAssetValue)} EUR`, y);
   if (data.profitability) y = drawRow(doc, "Rentabilidad estimada", `${data.profitability}%`, y);
   if (data.discount) y = drawRow(doc, "Descuento s/ mercado", `${data.discount}%`, y);
   y += 2;
