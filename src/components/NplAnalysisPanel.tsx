@@ -1,4 +1,4 @@
-import { Building2, Euro, Scale, Users, CreditCard, TrendingUp, MapPin, Calendar, BarChart3, Info, ArrowRight } from "lucide-react";
+import { Building2, Euro, Scale, Users, CreditCard, TrendingUp, MapPin, Calendar, BarChart3, Info } from "lucide-react";
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableFooter,
 } from "@/components/ui/table";
@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { KpiCards, ComparisonBarChart, GanttCalendar, SensitivityRow } from "@/components/analysis/AnalysisCharts";
 
 interface NplAssetData {
   direccion: string | null;
@@ -49,7 +50,7 @@ interface Props {
 }
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
-const fmtK = (n: number) => `${(n / 1000).toFixed(0)}k`;
+const fmtK = (n: number) => `€${(n / 1000).toFixed(0)}k`;
 const fmtCF = (n: number) => {
   if (n === 0) return "–";
   return n < 0 ? `(${fmt(Math.abs(n))})` : fmt(n);
@@ -79,22 +80,6 @@ const DataRow = ({ label, value, highlight, note }: {
   );
 };
 
-/** Horizontal bar for the debt/value comparison chart */
-const ComparisonBar = ({ label, value, maxValue, color }: { label: string; value: number; maxValue: number; color: string }) => {
-  const pct = maxValue > 0 ? Math.min((value / maxValue) * 100, 100) : 0;
-  return (
-    <div className="space-y-1">
-      <div className="flex justify-between items-center">
-        <span className="text-xs text-muted-foreground">{label}</span>
-        <span className="text-xs font-bold text-foreground">{fmt(value)} €</span>
-      </div>
-      <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-};
-
 const NplAnalysisPanel = ({ asset }: Props) => {
   const price = asset.precio_orientativo || 0;
   const market = asset.valor_mercado || asset.valor_activo || 0;
@@ -102,6 +87,7 @@ const NplAnalysisPanel = ({ asset }: Props) => {
   const area = asset.sqm || 0;
   const pricePerSqm = area > 0 ? Math.round(market / area) : 0;
   const cargasPreferentes = Math.round(area * 3.8 * 4);
+  const discountRecovery = market > 0 && price > 0 ? Math.round((1 - price / market) * 100) : 0;
 
   // === SCENARIO 1: Buy credit → adjudication → possession → reform → sale ===
   const ajd1 = Math.round(price * 0.028);
@@ -170,24 +156,29 @@ const NplAnalysisPanel = ({ asset }: Props) => {
   const sens1 = buildSensitivity(s1_net, s1_invested, s1_months);
   const sens2 = buildSensitivity(s2_net, s2_invested, s2_months);
 
-  // Max value for comparison bars
-  const maxBarValue = Math.max(debt, market, price, asset.importe_preaprobado || 0);
-
-  // Calendar S1
-  const calendarS1 = [
-    { label: "Arras", months: 0, icon: "📝" },
-    { label: "Escritura", months: 3, icon: "🏛️" },
-    { label: "Testimonio", months: 24, icon: "⚖️" },
-    { label: "Posesión", months: 36, icon: "🔑" },
-    { label: "Reforma", months: 38, icon: "🔨" },
-    { label: "Venta", months: 51, icon: "🏠" },
+  // Bar chart
+  const barData = [
+    ...(debt > 0 ? [{ name: "Deuda Actual", value: debt, color: "hsl(var(--destructive))" }] : []),
+    ...(asset.importe_preaprobado > 0 ? [{ name: "Valor Subasta", value: asset.importe_preaprobado, color: "hsl(var(--muted-foreground))" }] : []),
+    ...(market > 0 ? [{ name: "Valoración", value: market, color: "hsl(var(--primary))" }] : []),
+    ...(price > 0 ? [{ name: "Precio Orient.", value: price, color: "hsl(var(--accent))" }] : []),
   ];
 
-  const calendarS2 = [
-    { label: "Arras", months: 0, icon: "📝" },
-    { label: "Escritura", months: 3, icon: "🏛️" },
-    { label: "Testimonio", months: 24, icon: "⚖️" },
-    { label: "Cobro", months: 35, icon: "💰" },
+  // Gantt calendars
+  const ganttS1 = [
+    { label: "Arras", startMonth: 0, durationMonths: 1 },
+    { label: "Escritura", startMonth: 3, durationMonths: 2 },
+    { label: "Testimonio", startMonth: 10, durationMonths: 22 },
+    { label: "Posesión", startMonth: 33, durationMonths: 5 },
+    { label: "Capex", startMonth: 38, durationMonths: 2 },
+    { label: "Venta", startMonth: 45, durationMonths: 6 },
+  ];
+
+  const ganttS2 = [
+    { label: "Arras", startMonth: 0, durationMonths: 1 },
+    { label: "Escritura", startMonth: 3, durationMonths: 2 },
+    { label: "Testimonio", startMonth: 10, durationMonths: 22 },
+    { label: "Cobro", startMonth: 33, durationMonths: 2 },
   ];
 
   return (
@@ -200,14 +191,22 @@ const NplAnalysisPanel = ({ asset }: Props) => {
         </div>
         <div className="bg-secondary/50 rounded-xl p-4 mb-4">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Crédito por importe de <strong className="text-foreground">{fmtK(debt)} €</strong>,
+            Crédito por importe de <strong className="text-foreground">{fmtK(debt)}</strong>,
             con colateral sito en <strong className="text-foreground">{asset.municipio || "ubicación no disponible"}</strong>
             {asset.provincia && asset.provincia !== asset.municipio ? `, ${asset.provincia}` : ""},
-            valorado en <strong className="text-foreground">{fmtK(market)} €</strong>.
-            El precio orientativo de compra es de <strong className="text-accent">{fmtK(price)} €</strong>.
+            valorado en <strong className="text-foreground">{fmtK(market)}</strong>.
+            El precio orientativo de compra es de <strong className="text-accent">{fmtK(price)}</strong>.
           </p>
         </div>
       </div>
+
+      {/* ── KPI Cards ── */}
+      <KpiCards items={[
+        { label: "Deuda Actual", value: fmtK(debt) },
+        { label: "Valoración Colateral", value: fmtK(market) },
+        { label: "Precio Orientativo", value: fmtK(price), accent: true },
+        { label: "Descuento s/ Recuperación", value: `${discountRecovery}%`, sublabel: "Máxima", accent: true },
+      ]} />
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* ── Colateral ── */}
@@ -228,13 +227,23 @@ const NplAnalysisPanel = ({ asset }: Props) => {
               value={`${fmt(cargasPreferentes)} €`}
               note="Asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años."
             />
-            <DataRow label="Finca registral" value={asset.finca_registral} />
-            <DataRow label="Registro propiedad" value={asset.registro_propiedad} />
           </div>
         </div>
 
-        {/* ── Estado Judicial + Deudor ── */}
+        {/* ── Valoración + Judicial ── */}
         <div className="space-y-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Euro className="w-4 h-4 text-accent" />
+              <h4 className="text-sm font-bold text-foreground">Valoración Colateral</h4>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <DataRow label="Valoración (€/m²)" value={pricePerSqm > 0 ? `${fmt(pricePerSqm)} €/m²` : null} />
+              <DataRow label="Superficie adoptada (m²)" value={area > 0 ? `${fmt(area)} m²` : null} />
+              <DataRow label="Valoración total (€)" value={market > 0 ? `${fmt(market)} €` : null} highlight />
+            </div>
+          </div>
+
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Scale className="w-4 h-4 text-accent" />
@@ -242,58 +251,15 @@ const NplAnalysisPanel = ({ asset }: Props) => {
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
               <DataRow label="Tipología Deudor" value={asset.persona_tipo === "juridica" ? "JURÍDICA" : asset.persona_tipo === "fisica" ? "FÍSICA" : asset.persona_tipo || "n.d."} />
-              <DataRow label="Titulares" value={asset.num_titulares} />
               <DataRow label="Valor Efectos de Subasta" value={asset.importe_preaprobado > 0 ? `${fmt(asset.importe_preaprobado)} €` : "n.d."} />
               <DataRow label="Fase Judicial" value={asset.fase_judicial || asset.estado_judicial || "n.a."} highlight />
-              <DataRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} />
-            </div>
-          </div>
-
-          {/* Deuda */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <CreditCard className="w-4 h-4 text-accent" />
-              <h4 className="text-sm font-bold text-foreground">Deuda</h4>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4">
-              <DataRow label="Deuda actual" value={debt > 0 ? `${fmt(debt)} €` : "–"} highlight />
-              <DataRow label="Rango" value={asset.rango_deuda || "–"} />
-              <DataRow label="NDG" value={asset.ndg || "–"} />
-              <DataRow label="Asset ID" value={asset.asset_id || "–"} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Comparison Chart ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <BarChart3 className="w-4 h-4 text-accent" />
-          <h4 className="text-sm font-bold text-foreground">Resumen comparativo</h4>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-          {debt > 0 && <ComparisonBar label="Deuda Actual" value={debt} maxValue={maxBarValue} color="bg-destructive/70" />}
-          {asset.importe_preaprobado > 0 && <ComparisonBar label="Valor Efectos Subasta" value={asset.importe_preaprobado} maxValue={maxBarValue} color="bg-muted-foreground/50" />}
-          {market > 0 && <ComparisonBar label="Valoración" value={market} maxValue={maxBarValue} color="bg-primary/70" />}
-          {price > 0 && <ComparisonBar label="Precio Orientativo" value={price} maxValue={maxBarValue} color="bg-accent" />}
-        </div>
-      </div>
-
-      {/* ── Ubicación y entorno ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <MapPin className="w-4 h-4 text-accent" />
-          <h4 className="text-sm font-bold text-foreground">Ubicación y entorno</h4>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <DataRow label="Dirección" value={asset.direccion} />
-          <DataRow label="Código Postal" value={asset.codigo_postal} />
-          <DataRow label="Municipio" value={asset.municipio} />
-          <DataRow label="Provincia" value={asset.provincia} />
-          <DataRow label="Comunidad Autónoma" value={asset.comunidad_autonoma} />
-          {pricePerSqm > 0 && <DataRow label="Precio Medio Unitario (€/m²)" value={`${fmt(pricePerSqm)} €/m²`} />}
-        </div>
-      </div>
+      {/* ── Comparison Bar Chart ── */}
+      {barData.length >= 2 && <ComparisonBarChart data={barData} height={250} />}
 
       {/* ── ESCENARIOS FINANCIEROS ── */}
       <div>
@@ -305,10 +271,10 @@ const NplAnalysisPanel = ({ asset }: Props) => {
         <Tabs defaultValue="scenario1" className="w-full">
           <TabsList className="w-full grid grid-cols-2 mb-4">
             <TabsTrigger value="scenario1" className="text-xs">
-              Escenario 1: Adjudicación y Venta
+              Adjudicación, Posesión y Venta
             </TabsTrigger>
             <TabsTrigger value="scenario2" className="text-xs">
-              Escenario 2: Postor en Subasta
+              Postor en Subasta / Cesión
             </TabsTrigger>
           </TabsList>
 
@@ -316,14 +282,14 @@ const NplAnalysisPanel = ({ asset }: Props) => {
           <TabsContent value="scenario1" className="space-y-5">
             <div className="bg-secondary/50 rounded-xl p-4">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Compra del crédito, adjudicación del bien, obtención de posesión, reforma y venta.
-                Margen estimado: <strong className="text-foreground">{fmt(Math.max(s1_net, 0))} €</strong> —
-                TIR Bruta: <strong className="text-accent">{s1_tir}%</strong> —
-                Duración: <strong className="text-foreground">{s1_months} meses</strong>.
+                En este escenario se asume la compra del crédito, la adjudicación del bien, la obtención de la posesión, reforma y venta.
+                Se estima un margen de <strong className="text-foreground">{fmtK(Math.max(s1_net, 0))}</strong> y
+                una TIR Bruta del <strong className="text-accent">{s1_tir}%</strong> en
+                una operación que finalizaría en <strong className="text-foreground">{s1_months} meses</strong>.
               </p>
             </div>
 
-            <div className="border border-border rounded-xl overflow-hidden">
+            <div className="border border-border rounded-xl overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-secondary">
@@ -384,13 +350,13 @@ const NplAnalysisPanel = ({ asset }: Props) => {
                   </TableRow>
 
                   <TableRow className="bg-secondary/30">
-                    <TableCell className="font-bold text-foreground">CF Explotación</TableCell>
-                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_explotY1)}</TableCell>
+                    <TableCell className="font-bold text-foreground">Ingresos</TableCell>
                     <TableCell className="text-right text-muted-foreground">–</TableCell>
-                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_explotY3)}</TableCell>
-                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_explotY4)}</TableCell>
-                    <TableCell className="text-right font-bold text-primary">{fmtCF(s1_explotY5)}</TableCell>
-                    <TableCell className="text-right font-bold text-primary">{fmtCF(s1_explotTotal)}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right font-bold text-primary">{fmt(ventaPrice)}</TableCell>
+                    <TableCell className="text-right font-bold text-primary">{fmt(ventaPrice)}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="pl-6 text-muted-foreground">Venta</TableCell>
@@ -399,7 +365,26 @@ const NplAnalysisPanel = ({ asset }: Props) => {
                     <TableCell className="text-right text-muted-foreground">–</TableCell>
                     <TableCell className="text-right text-muted-foreground">–</TableCell>
                     <TableCell className="text-right text-primary">{fmt(ventaPrice)}</TableCell>
-                    <TableCell className="text-right text-primary">{fmt(ventaPrice)}</TableCell>
+                    <TableCell className="text-right font-bold">{fmt(ventaPrice)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-6 text-muted-foreground">Alquiler</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right">–</TableCell>
+                  </TableRow>
+
+                  <TableRow className="bg-secondary/30">
+                    <TableCell className="font-bold text-foreground">Costes</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_costesY1)}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_costesY3)}</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_costesY4)}</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_costesY5)}</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s1_costesY1 + s1_costesY3 + s1_costesY4 + s1_costesY5)}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="pl-6 text-muted-foreground">Notaría y Registro</TableCell>
@@ -437,6 +422,24 @@ const NplAnalysisPanel = ({ asset }: Props) => {
                     <TableCell className="text-right text-muted-foreground">–</TableCell>
                     <TableCell className="text-right">{fmtCF(-cargasPreferentes)}</TableCell>
                   </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-6 text-muted-foreground">Cashout <sup>(1)</sup></TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right">–</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="pl-6 text-muted-foreground">Coste Inmueble</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">{fmtCF(-Math.round(costeInmueble1 * 0.15))}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">{fmtCF(-Math.round(costeInmueble1 * 0.5))}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">{fmtCF(-Math.round(costeInmueble1 * 0.35))}</TableCell>
+                    <TableCell className="text-right">{fmtCF(-costeInmueble1)}</TableCell>
+                  </TableRow>
                 </TableBody>
                 <TableFooter>
                   <TableRow className="bg-accent/10 border-t-2 border-accent/30">
@@ -452,55 +455,10 @@ const NplAnalysisPanel = ({ asset }: Props) => {
               </Table>
             </div>
 
-            {/* Calendar S1 */}
-            <div className="bg-card border border-border rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-4 h-4 text-accent" />
-                <span className="text-sm font-bold text-foreground">Calendario</span>
-                <Badge variant="outline" className="text-xs">{s1_months} meses</Badge>
-              </div>
-              <div className="relative">
-                <div className="absolute top-5 left-6 right-6 h-0.5 bg-border" />
-                <div className="flex justify-between relative z-10">
-                  {calendarS1.map((item, i) => (
-                    <div key={i} className="flex flex-col items-center text-center">
-                      <div className="w-9 h-9 rounded-full bg-accent/10 border-2 border-accent flex items-center justify-center text-base mb-1.5">
-                        {item.icon}
-                      </div>
-                      <span className="text-[10px] font-bold text-foreground">{item.label}</span>
-                      <span className="text-[9px] text-muted-foreground">Mes {item.months}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Sensitivity S1 */}
-            <div className="border border-border rounded-xl overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-secondary">
-                    <TableHead className="font-bold text-foreground">Precio de Compra</TableHead>
-                    <TableHead className="text-right font-bold text-foreground">TIR Bruta</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sens1.map((s, i) => {
-                    const isBase = s.price === price;
-                    return (
-                      <TableRow key={i} className={isBase ? "bg-accent/5" : ""}>
-                        <TableCell className={isBase ? "font-bold text-accent" : ""}>
-                          {fmt(s.price)} €
-                          {isBase && <Badge variant="secondary" className="ml-2 text-[10px]">Base</Badge>}
-                        </TableCell>
-                        <TableCell className={`text-right font-bold ${s.tir > 15 ? "text-primary" : s.tir > 8 ? "text-accent" : "text-muted-foreground"}`}>
-                          {s.tir}%
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+            {/* Gantt + Sensitivity */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <GanttCalendar items={ganttS1} totalMonths={s1_months} />
+              <SensitivityRow items={sens1} basePrice={price} />
             </div>
           </TabsContent>
 
@@ -509,13 +467,13 @@ const NplAnalysisPanel = ({ asset }: Props) => {
             <div className="bg-secondary/50 rounded-xl p-4">
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Compra del crédito y acuerdo con postor en subasta o cesión de remate a tercero.
-                Margen estimado: <strong className="text-foreground">{fmt(Math.max(s2_net, 0))} €</strong> —
+                Margen estimado: <strong className="text-foreground">{fmtK(Math.max(s2_net, 0))}</strong> —
                 TIR Bruta: <strong className="text-accent">{s2_tir}%</strong> —
                 Duración: <strong className="text-foreground">{s2_months} meses</strong>.
               </p>
             </div>
 
-            <div className="border border-border rounded-xl overflow-hidden">
+            <div className="border border-border rounded-xl overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-secondary">
@@ -549,18 +507,18 @@ const NplAnalysisPanel = ({ asset }: Props) => {
                     <TableCell className="text-right">{fmtCF(-ajd2)}</TableCell>
                   </TableRow>
                   <TableRow className="bg-secondary/30">
-                    <TableCell className="font-bold text-foreground">CF Explotación</TableCell>
+                    <TableCell className="font-bold text-foreground">Ingresos</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right text-muted-foreground">–</TableCell>
+                    <TableCell className="text-right font-bold text-primary">{fmt(cobroPrice)}</TableCell>
+                    <TableCell className="text-right font-bold text-primary">{fmt(cobroPrice)}</TableCell>
+                  </TableRow>
+                  <TableRow className="bg-secondary/30">
+                    <TableCell className="font-bold text-foreground">Costes</TableCell>
                     <TableCell className="text-right font-bold text-destructive">{fmtCF(s2_explotY1)}</TableCell>
                     <TableCell className="text-right text-muted-foreground">–</TableCell>
-                    <TableCell className="text-right font-bold text-primary">{fmtCF(s2_explotY3)}</TableCell>
-                    <TableCell className="text-right font-bold text-primary">{fmtCF(s2_explotTotal)}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="pl-6 text-muted-foreground">Cobro</TableCell>
-                    <TableCell className="text-right text-muted-foreground">–</TableCell>
-                    <TableCell className="text-right text-muted-foreground">–</TableCell>
-                    <TableCell className="text-right text-primary">{fmt(cobroPrice)}</TableCell>
-                    <TableCell className="text-right text-primary">{fmt(cobroPrice)}</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(-costesLegales2)}</TableCell>
+                    <TableCell className="text-right font-bold text-destructive">{fmtCF(s2_explotY1 - costesLegales2)}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="pl-6 text-muted-foreground">Notaría y Registro</TableCell>
@@ -596,64 +554,19 @@ const NplAnalysisPanel = ({ asset }: Props) => {
               </Table>
             </div>
 
-            {/* Calendar S2 */}
-            <div className="bg-card border border-border rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-4 h-4 text-accent" />
-                <span className="text-sm font-bold text-foreground">Calendario</span>
-                <Badge variant="outline" className="text-xs">{s2_months} meses</Badge>
-              </div>
-              <div className="relative">
-                <div className="absolute top-5 left-6 right-6 h-0.5 bg-border" />
-                <div className="flex justify-between relative z-10">
-                  {calendarS2.map((item, i) => (
-                    <div key={i} className="flex flex-col items-center text-center">
-                      <div className="w-9 h-9 rounded-full bg-accent/10 border-2 border-accent flex items-center justify-center text-base mb-1.5">
-                        {item.icon}
-                      </div>
-                      <span className="text-[10px] font-bold text-foreground">{item.label}</span>
-                      <span className="text-[9px] text-muted-foreground">Mes {item.months}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Sensitivity S2 */}
-            <div className="border border-border rounded-xl overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-secondary">
-                    <TableHead className="font-bold text-foreground">Precio de Compra</TableHead>
-                    <TableHead className="text-right font-bold text-foreground">TIR Bruta</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sens2.map((s, i) => {
-                    const isBase = s.price === price;
-                    return (
-                      <TableRow key={i} className={isBase ? "bg-accent/5" : ""}>
-                        <TableCell className={isBase ? "font-bold text-accent" : ""}>
-                          {fmt(s.price)} €
-                          {isBase && <Badge variant="secondary" className="ml-2 text-[10px]">Base</Badge>}
-                        </TableCell>
-                        <TableCell className={`text-right font-bold ${s.tir > 15 ? "text-primary" : s.tir > 8 ? "text-accent" : "text-muted-foreground"}`}>
-                          {s.tir}%
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+            {/* Gantt + Sensitivity */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <GanttCalendar items={ganttS2} totalMonths={s2_months} />
+              <SensitivityRow items={sens2} basePrice={price} />
             </div>
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* ── Footnotes ── */}
+      {/* ── Footnote ── */}
       <div className="bg-secondary/50 rounded-xl p-4 text-[10px] text-muted-foreground leading-relaxed space-y-1">
-        <p><strong>(1)</strong> Cargas preferentes: asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años.</p>
-        <p><strong>(2)</strong> Cashout: dinero a consignar en el juzgado al superar el importe de adjudicación la deuda acreditada.</p>
+        <p><strong>(1)</strong> Dinero a consignar en el juzgado al superar el importe de adjudicación la deuda acreditada.</p>
+        <p>Cargas preferentes: asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años.</p>
         <p>Los datos financieros son estimativos y no constituyen asesoramiento de inversión. Se recomienda verificación independiente.</p>
       </div>
     </div>
