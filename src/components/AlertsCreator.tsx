@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  Bell, Plus, Trash2, ChevronDown, ChevronUp, Save, Loader2, MapPin, Home, Euro, Tag,
+  Bell, Plus, Trash2, ChevronDown, ChevronUp, Save, Loader2, MapPin, Home, Euro, Tag, BellRing, Eye, ExternalLink,
 } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -162,6 +162,9 @@ const AlertsCreator = () => {
           En cada alerta puedes configurar múltiples criterios de búsqueda.
         </p>
       </div>
+
+      {/* Notifications Section */}
+      <AlertNotifications userId={user?.id} />
 
       {/* Existing alerts */}
       {alerts.map((alert, index) => {
@@ -461,6 +464,142 @@ const AlertFilterForm = ({ filters, onChange }: AlertFilterFormProps) => {
         </div>
       </div>
     </div>
+  );
+};
+
+// ─── Alert Notifications ────────────────────────────────────
+
+interface AlertNotification {
+  id: string;
+  alert_id: string;
+  asset_id: string;
+  matched_criteria: Record<string, boolean>;
+  is_read: boolean;
+  created_at: string;
+  asset?: {
+    tipo_activo: string | null;
+    municipio: string | null;
+    provincia: string | null;
+    precio_orientativo: number | null;
+    sqm: number | null;
+  };
+  alert?: {
+    name: string;
+  };
+}
+
+const AlertNotifications = ({ userId }: { userId?: string }) => {
+  const [notifications, setNotifications] = useState<AlertNotification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userId) loadNotifications();
+  }, [userId]);
+
+  const loadNotifications = async () => {
+    // We need to query alert_notifications and join with npl_assets and alerts
+    // Since the types aren't auto-generated yet, we use .from() with manual typing
+    const { data, error } = await supabase
+      .from("alert_notifications" as any)
+      .select("*")
+      .eq("user_id", userId!)
+      .order("created_at", { ascending: false })
+      .limit(20) as any;
+
+    if (data && !error) {
+      // Fetch asset details for each notification
+      const assetIds = [...new Set(data.map((n: any) => n.asset_id))];
+      const alertIds = [...new Set(data.map((n: any) => n.alert_id))];
+
+      const [assetsRes, alertsRes] = await Promise.all([
+        supabase.from("npl_assets").select("id,tipo_activo,municipio,provincia,precio_orientativo,sqm").in("id", assetIds),
+        supabase.from("alerts").select("id,name").in("id", alertIds),
+      ]);
+
+      const assetsMap = new Map((assetsRes.data || []).map((a) => [a.id, a]));
+      const alertsMap = new Map((alertsRes.data || []).map((a) => [a.id, a]));
+
+      const enriched = data.map((n: any) => ({
+        ...n,
+        asset: assetsMap.get(n.asset_id),
+        alert: alertsMap.get(n.alert_id),
+      }));
+
+      setNotifications(enriched);
+    }
+    setLoading(false);
+  };
+
+  const markAsRead = async (id: string) => {
+    await (supabase.from("alert_notifications" as any) as any).update({ is_read: true }).eq("id", id);
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
+  };
+
+  if (loading) return null;
+  if (notifications.length === 0) return null;
+
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
+
+  return (
+    <Card className="border-accent/20 bg-accent/5">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm flex items-center gap-2">
+          <BellRing className="w-4 h-4 text-accent" />
+          Activos que coinciden con tus alertas
+          {unreadCount > 0 && (
+            <Badge className="bg-accent text-accent-foreground text-xs">{unreadCount} nuevos</Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {notifications.slice(0, 10).map((notif) => (
+          <div
+            key={notif.id}
+            className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+              notif.is_read ? "bg-background/50" : "bg-background border border-accent/30"
+            }`}
+          >
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground truncate">
+                  {notif.asset?.tipo_activo || "Activo"} — {notif.asset?.municipio || ""}, {notif.asset?.provincia || ""}
+                </span>
+                {!notif.is_read && (
+                  <span className="w-2 h-2 rounded-full bg-accent shrink-0" />
+                )}
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-muted-foreground">
+                  {notif.asset?.precio_orientativo
+                    ? `${notif.asset.precio_orientativo.toLocaleString("es-ES")} €`
+                    : "Consultar"}
+                  {notif.asset?.sqm ? ` · ${notif.asset.sqm} m²` : ""}
+                </span>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-accent">{notif.alert?.name || "Alerta"}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              {!notif.is_read && (
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => markAsRead(notif.id)} title="Marcar como leído">
+                  <Eye className="w-3.5 h-3.5" />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                <a href={`/inmuebles/${notif.asset_id}`} title="Ver activo">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        ))}
+        {notifications.length > 10 && (
+          <p className="text-xs text-muted-foreground text-center pt-1">
+            Mostrando 10 de {notifications.length} coincidencias
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
