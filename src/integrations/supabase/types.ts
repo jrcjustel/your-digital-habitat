@@ -47,6 +47,54 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_notifications: {
+        Row: {
+          alert_id: string
+          asset_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          matched_criteria: Json | null
+          notified_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_id: string
+          asset_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          matched_criteria?: Json | null
+          notified_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_id?: string
+          asset_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          matched_criteria?: Json | null
+          notified_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_notifications_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "alerts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alert_notifications_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts: {
         Row: {
           created_at: string
