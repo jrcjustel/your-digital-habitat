@@ -21,6 +21,7 @@ import RelatedAssets from "@/components/RelatedAssets";
 import WaitlistButton from "@/components/WaitlistButton";
 import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
+import CdrAnalysisPanel from "@/components/CdrAnalysisPanel";
 import {
   Tooltip,
   TooltipContent,
