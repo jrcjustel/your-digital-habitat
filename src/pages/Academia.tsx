@@ -125,11 +125,9 @@ const Academia = () => {
                 key={ruta.id}
                 onClick={() => navigate(`/academia/ruta/${ruta.slug}`)}
                 className="group text-left rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 bg-card"
-                custom={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-50px" }}
-                variants={fadeUp}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
               >
                 {/* Image header */}
                 <div className="relative h-44 overflow-hidden">
