@@ -7,12 +7,11 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
   CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail, Heart,
-  ShieldAlert, Key, AlertTriangle
+  ShieldAlert, Key, AlertTriangle, ExternalLink, Info, ChevronDown, ChevronUp, Phone, Map
 } from "lucide-react";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
 import EnrichedDossierButton from "@/components/EnrichedDossierButton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import NdaGate from "@/components/NdaGate";
@@ -22,6 +21,17 @@ import RelatedAssets from "@/components/RelatedAssets";
 import WaitlistButton from "@/components/WaitlistButton";
 import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface NplAsset {
   id: string;
@@ -65,6 +75,7 @@ interface NplAsset {
   deposito_porcentaje: number;
   comision_porcentaje: number;
   estado: string | null;
+  publicado: boolean | null;
 }
 
 const InfoRow = ({ label, value, highlight }: { label: string; value: string | number | null | undefined; highlight?: boolean }) => {
@@ -77,24 +88,6 @@ const InfoRow = ({ label, value, highlight }: { label: string; value: string | n
   );
 };
 
-const TransactionIndicator = ({
-  icon: Icon, label, active
-}: { icon: typeof CreditCard; label: string; active: boolean }) => (
-  <div className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center ${
-    active
-      ? "bg-accent/10 border-accent/30 text-accent"
-      : "bg-muted/50 border-border text-muted-foreground"
-  }`}>
-    <Icon className={`w-5 h-5 ${active ? "text-accent" : "text-muted-foreground/50"}`} />
-    <span className="text-xs font-semibold leading-tight">{label}</span>
-    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-      active ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
-    }`}>
-      {active ? "Sí" : "No"}
-    </span>
-  </div>
-);
-
 /** Determine the "type" of operation for differentiated layout */
 const getOperationType = (asset: NplAsset): "npl" | "cesion_remate" | "ocupado" | "subasta" => {
   if (asset.cesion_remate) return "cesion_remate";
@@ -103,31 +96,54 @@ const getOperationType = (asset: NplAsset): "npl" | "cesion_remate" | "ocupado" 
   return "npl";
 };
 
-const operationTypeConfig = {
-  npl: {
-    label: "Compra de crédito (NPL)",
-    color: "bg-primary text-primary-foreground",
-    icon: CreditCard,
-    description: "Adquisición de crédito hipotecario impagado con garantía real.",
-  },
-  cesion_remate: {
-    label: "Cesión de remate",
-    color: "bg-accent text-accent-foreground",
-    icon: Gavel,
-    description: "Cesión de los derechos de adjudicación tras subasta judicial.",
-  },
-  ocupado: {
-    label: "Inmueble ocupado",
-    color: "bg-destructive text-destructive-foreground",
-    icon: Home,
-    description: "Propiedad con ocupantes. Requiere procedimiento de desahucio.",
-  },
-  subasta: {
-    label: "Postura en subasta",
-    color: "bg-secondary text-foreground",
-    icon: Gavel,
-    description: "Participación directa en subasta judicial del BOE.",
-  },
+const operationLabels: Record<string, string> = {
+  npl: "Compraventa de crédito",
+  cesion_remate: "Cesión de remate",
+  ocupado: "Compraventa de inmuebles",
+  subasta: "Postura en subasta",
+};
+
+const PriceTooltip = ({ label, value, tooltip }: { label: string; value: string; tooltip: string }) => (
+  <div className="text-center flex-1">
+    <div className="flex items-center justify-center gap-1 mb-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+          </TooltipTrigger>
+          <TooltipContent className="max-w-[240px] text-xs">
+            {tooltip}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+    <p className="text-lg font-bold text-foreground">{value}</p>
+  </div>
+);
+
+/** Collapsible section for Análisis de la Oportunidad */
+const AnalysisSection = ({ title, icon: Icon, children, defaultOpen = true }: {
+  title: string;
+  icon: typeof Building2;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-3 px-4 bg-secondary rounded-xl hover:bg-secondary/80 transition-colors">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-accent" />
+          <span className="text-sm font-bold text-foreground">{title}</span>
+        </div>
+        {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-1 pt-2">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
+  );
 };
 
 const NplDetail = () => {
@@ -139,6 +155,7 @@ const NplDetail = () => {
   const [isFav, setIsFav] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
+  const [showDescription, setShowDescription] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -212,254 +229,290 @@ const NplDetail = () => {
   }
 
   const opType = getOperationType(asset);
-  const opConfig = operationTypeConfig[opType];
-  const OpIcon = opConfig.icon;
+  const opLabel = operationLabels[opType];
+  const reference = asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8);
+  const addressFull = [asset.direccion, asset.municipio].filter(Boolean).join(", ");
+  const googleMapsUrl = addressFull
+    ? `https://www.google.es/maps/place/${encodeURIComponent(addressFull)}`
+    : null;
 
   const discount = asset.valor_mercado > 0 && asset.precio_orientativo > 0
     ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100)
+    : null;
+
+  const isNpl = opType === "npl";
+  const hasTwoPrices = !isNpl; // CDR and Ocupado only show 2 prices
+  const depositoAmount = asset.deposito_porcentaje > 0 && asset.precio_orientativo > 0
+    ? Math.round(asset.precio_orientativo * asset.deposito_porcentaje / 100)
+    : null;
+  const comisionAmount = asset.comision_porcentaje > 0 && asset.precio_orientativo > 0
+    ? Math.round(asset.precio_orientativo * asset.comision_porcentaje / 100)
     : null;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Operation type banner */}
-      <div className={`${opConfig.color}`}>
-        <div className="container mx-auto px-4 py-3 flex items-center gap-3">
-          <OpIcon className="w-5 h-5" />
-          <div>
-            <p className="text-sm font-bold">{opConfig.label}</p>
-            <p className="text-xs opacity-80">{opConfig.description}</p>
+      {/* Breadcrumb */}
+      <div className="bg-secondary border-b border-border">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
+            <span>/</span>
+            <Link to="/npl" className="hover:text-accent transition-colors">Oportunidades</Link>
+            <span>/</span>
+            <span className="text-foreground font-medium truncate max-w-[200px]">
+              {asset.direccion || asset.municipio || reference}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Breadcrumb */}
-      <div className="bg-secondary border-b border-border">
-        <div className="container mx-auto px-4 py-3 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
-          <span>/</span>
-          <Link to="/npl" className="hover:text-accent transition-colors">Oportunidades</Link>
-          <span>/</span>
-          <span className="text-foreground font-medium truncate max-w-[200px]">
-            {asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
-          </span>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* ===== HEADER CARD ===== */}
-        <div className="bg-card rounded-2xl border border-border overflow-hidden mb-6">
-          <div className="h-1.5 bg-gradient-to-r from-accent to-primary" />
-
-          <div className="p-6 md:p-8">
-            {/* Type badge + reference */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
-                  {asset.tipo_activo || "Activo"}
-                </span>
-                <Badge variant="outline" className="text-[10px] gap-1">
-                  <OpIcon className="w-3 h-3" />
-                  {opConfig.label}
-                </Badge>
-                {asset.referencia_fencia && (
-                  <span className="text-xs font-mono text-muted-foreground">Ref: {asset.referencia_fencia}</span>
-                )}
-                {asset.cartera && (
-                  <span className="bg-secondary text-foreground text-xs font-medium px-3 py-1 rounded-full">Cartera: {asset.cartera}</span>
-                )}
-                {asset.estado && asset.estado !== "disponible" && (
-                  <Badge variant={asset.estado === "cerrado" ? "destructive" : "secondary"} className="text-[10px]">
-                    {asset.estado === "oferta_gestion" ? "En gestión de oferta" : asset.estado === "cerrado" ? "Operación cerrada" : asset.estado}
-                  </Badge>
-                )}
-              </div>
-              {user && (
-                <button onClick={toggleFavorite} className="p-2 rounded-full hover:bg-accent/10 transition-colors" title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}>
-                  <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground hover:text-accent"}`} />
-                </button>
-              )}
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
+        {/* ===== SECTION 1: Type + Reference + Prices ===== */}
+        <div className="bg-card rounded-2xl border border-border overflow-hidden mb-0">
+          <div className="p-5 md:p-6">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <span className="text-sm font-bold text-accent">{opLabel}</span>
+              <span className="text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">Referencia</span> {reference}
+              </span>
             </div>
 
-            {/* Title */}
-            <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">
-              {asset.tipo_activo || "Activo"} — {opConfig.label}
-            </h1>
-            <p className="text-base text-muted-foreground flex items-center gap-1.5 mb-6">
-              <MapPin className="w-4 h-4 text-accent" />
-              {asset.direccion || asset.municipio || "Ubicación no disponible"}
-              {asset.municipio && asset.direccion && `, ${asset.municipio}`}
-              {asset.provincia && ` (${asset.provincia})`}
-            </p>
-
-            {/* Image Gallery */}
-            <div className="mb-6">
-              <AssetImageGallery assetId={asset.id} />
-            </div>
-
-            {/* Pricing row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {/* Pricing boxes - 3 cols for NPL (mercado + deuda + orientativo), 2 cols for CDR/Ocupado */}
+            <div className={`grid ${isNpl ? "grid-cols-3" : "grid-cols-2"} gap-0 border border-border rounded-xl overflow-hidden`}>
               {asset.valor_mercado > 0 && (
-                <div className="bg-secondary rounded-xl p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Valor de mercado</p>
-                  <p className="text-lg font-bold text-foreground">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
+                <div className="p-4 text-center border-r border-border">
+                  <p className="text-lg md:text-xl font-bold text-foreground">{asset.valor_mercado.toLocaleString("es-ES")}&nbsp;€</p>
+                  <p className="text-xs text-muted-foreground mt-1">Valor de mercado</p>
+                </div>
+              )}
+              {isNpl && asset.deuda_ob > 0 && (
+                <div className="p-4 text-center border-r border-border">
+                  <p className="text-lg md:text-xl font-bold text-foreground">{asset.deuda_ob.toLocaleString("es-ES")}&nbsp;€</p>
+                  <p className="text-xs text-muted-foreground mt-1">Deuda aproximada</p>
                 </div>
               )}
               {asset.precio_orientativo > 0 && (
-                <div className="bg-accent/10 border border-accent/20 rounded-xl p-4">
-                  <p className="text-xs text-accent mb-1">Precio orientativo</p>
-                  <p className="text-lg font-bold text-accent">{asset.precio_orientativo.toLocaleString("es-ES")} €</p>
+                <div className="p-4 text-center">
+                  <p className="text-lg md:text-xl font-bold text-accent">{asset.precio_orientativo.toLocaleString("es-ES")}&nbsp;€</p>
+                  <p className="text-xs text-muted-foreground mt-1">Precio orientativo</p>
                 </div>
               )}
-              {discount !== null && discount > 0 && (
-                <div className="bg-accent/10 border border-accent/20 rounded-xl p-4">
-                  <p className="text-xs text-accent mb-1">Descuento s/ mercado</p>
-                  <p className="text-lg font-bold text-accent flex items-center gap-1">
-                    <TrendingDown className="w-4 h-4" /> {discount}%
-                  </p>
-                </div>
-              )}
-              {asset.sqm > 0 && (
-                <div className="bg-secondary rounded-xl p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Superficie</p>
-                  <p className="text-lg font-bold text-foreground flex items-center gap-1">
-                    <Maximize className="w-4 h-4" /> {asset.sqm.toLocaleString("es-ES")} m²
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            {asset.descripcion && (
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 border-l-2 border-accent/30 pl-4">
-                {asset.descripcion}
-              </p>
-            )}
-
-            {/* Type-specific info banner */}
-            {opType === "ocupado" && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 mb-6 flex items-start gap-3">
-                <ShieldAlert className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-destructive">Inmueble con ocupantes</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Estado ocupacional: <strong>{asset.estado_ocupacional || "Ocupado"}</strong>. 
-                    Será necesario iniciar un procedimiento de desahucio o negociar una salida voluntaria.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {opType === "cesion_remate" && (
-              <div className="bg-accent/10 border border-accent/20 rounded-xl p-4 mb-6 flex items-start gap-3">
-                <Key className="w-5 h-5 text-accent mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-accent">Cesión de derechos de remate</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    El adjudicatario cede sus derechos de adjudicación. Fase judicial: <strong>{asset.fase_judicial || "En proceso"}</strong>.
-                    {asset.importe_preaprobado > 0 && ` Importe pre-aprobado: ${asset.importe_preaprobado.toLocaleString("es-ES")} €.`}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {opType === "subasta" && (
-              <div className="bg-secondary border border-border rounded-xl p-4 mb-6 flex items-start gap-3">
-                <Gavel className="w-5 h-5 text-foreground mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-foreground">Participación en subasta judicial</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Operación que requiere postura directa en subasta del BOE. 
-                    Tipo de procedimiento: <strong>{asset.tipo_procedimiento || "N/D"}</strong>.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Transaction type indicators */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <TransactionIndicator icon={CreditCard} label="Compra de crédito" active={asset.cesion_credito} />
-              <TransactionIndicator icon={Gavel} label="Cesión de remate" active={asset.cesion_remate} />
-              <TransactionIndicator icon={Home} label="Propiedad sin posesión" active={asset.propiedad_sin_posesion} />
-              <TransactionIndicator icon={Users} label="Postura en subasta" active={asset.postura_subasta} />
             </div>
           </div>
         </div>
 
-        {/* ===== GATED DETAILED CONTENT ===== */}
-        <NdaGate user={user} ndaSigned={ndaSigned} onNdaSigned={() => setNdaSigned(true)}>
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Main content */}
-            <div className="lg:col-span-2">
-              <div className="bg-card rounded-2xl border border-border overflow-hidden">
-                <Tabs defaultValue="propiedad">
-                  <TabsList className="w-full justify-start rounded-none border-b border-border bg-secondary/50 p-0 h-auto flex-wrap">
-                    <TabsTrigger value="propiedad" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                      <Building2 className="w-4 h-4" /> Propiedad
-                    </TabsTrigger>
-                    <TabsTrigger value="deudor" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                      <Users className="w-4 h-4" /> Deudor
-                    </TabsTrigger>
-                    <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                      <Scale className="w-4 h-4" /> Judicial
-                    </TabsTrigger>
-                    {opType === "ocupado" && (
-                      <TabsTrigger value="ocupacion" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                        <AlertTriangle className="w-4 h-4" /> Ocupación
-                      </TabsTrigger>
+        {/* ===== SECTION 2: Title + Gallery + Description (left) + Sidebar (right) ===== */}
+        <div className="grid lg:grid-cols-12 gap-0 lg:gap-6 mt-0">
+          {/* Left column: immovable info */}
+          <div className="lg:col-span-7">
+            <div className="bg-card rounded-b-2xl lg:rounded-2xl border border-t-0 lg:border-t border-border overflow-hidden">
+              {/* Subtitle bar */}
+              <div className="px-5 md:px-6 pt-5 flex items-center justify-between flex-wrap gap-2">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {isNpl ? "Inmueble principal" : "Inmueble"}
+                </span>
+                <div className="flex items-center gap-2">
+                  {user && (
+                    <button onClick={toggleFavorite} className="p-1.5 rounded-full hover:bg-accent/10 transition-colors" title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}>
+                      <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground hover:text-accent"}`} />
+                    </button>
+                  )}
+                  {googleMapsUrl && (
+                    <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full hover:bg-accent/10 transition-colors" title="Ver en mapa">
+                      <Map className="w-5 h-5 text-muted-foreground hover:text-accent" />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Title */}
+              <div className="px-5 md:px-6 pb-4">
+                <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground mt-2">
+                  {asset.tipo_activo ? `${asset.tipo_activo.charAt(0).toUpperCase() + asset.tipo_activo.slice(1)} — ` : ""}
+                  {asset.direccion || asset.municipio || "Sin dirección"}
+                </h1>
+                <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    {asset.provincia || asset.comunidad_autonoma || ""}
+                  </p>
+                  {asset.estado !== "cerrado" && asset.estado !== "oferta_gestion" && (
+                    <span className="text-xs text-accent font-semibold cursor-pointer hover:underline">¿Te interesa?</span>
+                  )}
+                </div>
+
+                {/* Status banners */}
+                {asset.estado === "oferta_gestion" && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mt-4 flex items-start gap-2">
+                    <ShieldAlert className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-destructive">Oportunidad no disponible</p>
+                      <p className="text-xs text-muted-foreground">Ya cuenta con una oferta en gestión. Puedes <strong>incorporarte a la lista de espera</strong>.</p>
+                    </div>
+                  </div>
+                )}
+
+                {opType === "ocupado" && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mt-4 flex items-start gap-2">
+                    <ShieldAlert className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs font-semibold text-destructive">Inmueble transmitido sin posesión</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Estado: {asset.estado_ocupacional || "Ocupado"}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Image Gallery */}
+              <div className="px-5 md:px-6 pb-5">
+                <AssetImageGallery assetId={asset.id} />
+              </div>
+            </div>
+          </div>
+
+          {/* Right column: Offer sidebar */}
+          <div className="lg:col-span-5 mt-4 lg:mt-0">
+            <div className="sticky top-20 space-y-4">
+              {/* Offer / Bidding panel (Fencia-style) */}
+              {asset.estado === "oferta_gestion" ? (
+                <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
+                    <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
+                    <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
+                  </div>
+                  <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
+                  <p className="text-[10px] text-muted-foreground"><sup>*</sup>En caso de que la actual oferta en gestión no sea efectiva, priorizaremos la lista de espera por el orden de entrada.</p>
+                </div>
+              ) : asset.estado === "cerrado" ? (
+                <div className="bg-card rounded-2xl border border-border p-6">
+                  <div className="bg-muted rounded-xl p-3">
+                    <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
+                    <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                  {/* Pricing summary with tooltips (Fencia style) */}
+                  <div className="p-5 border-b border-border">
+                    <div className="flex items-stretch divide-x divide-border">
+                      {asset.precio_orientativo > 0 && (
+                        <PriceTooltip
+                          label="Precio orientativo"
+                          value={`${asset.precio_orientativo.toLocaleString("es-ES")} €`}
+                          tooltip="Importe recomendado que, considerando la rentabilidad de ambas partes, se estima viable para la operación (sujeto a aprobación)."
+                        />
+                      )}
+                      {asset.deposito_porcentaje > 0 && (
+                        <PriceTooltip
+                          label="Depósito"
+                          value={depositoAmount ? `${depositoAmount.toLocaleString("es-ES")} €` : `${asset.deposito_porcentaje}%`}
+                          tooltip="Es el importe que deberá pagar el comprador como garantía del buen fin de la operación."
+                        />
+                      )}
+                      {asset.comision_porcentaje > 0 && (
+                        <PriceTooltip
+                          label="Comisión"
+                          value={comisionAmount ? `${comisionAmount.toLocaleString("es-ES")} €` : `${asset.comision_porcentaje}%`}
+                          tooltip="Porcentaje de comisión sobre el precio de la operación."
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bid panel */}
+                  <div className="p-5">
+                    <p className="text-sm font-bold text-foreground mb-3">¡Haz tu oferta!</p>
+                    {asset.descripcion && (
+                      <div className="mb-4">
+                        <p className={`text-xs text-muted-foreground leading-relaxed ${!showDescription ? "line-clamp-2" : ""}`}>
+                          {asset.descripcion}
+                        </p>
+                        {asset.descripcion.length > 120 && (
+                          <button onClick={() => setShowDescription(!showDescription)} className="text-xs text-accent font-semibold mt-1 hover:underline">
+                            {showDescription ? "Ver menos" : "Ver más"}
+                          </button>
+                        )}
+                      </div>
                     )}
-                    <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                      <FolderOpen className="w-4 h-4" /> Documentos
-                    </TabsTrigger>
-                    <TabsTrigger value="catastro" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
-                      <MapPin className="w-4 h-4" /> Catastro
-                    </TabsTrigger>
-                  </TabsList>
+                    <BiddingPanel
+                      assetId={asset.id}
+                      precioOrientativo={asset.precio_orientativo}
+                      userId={user?.id}
+                      userName={userName}
+                      userEmail={userEmail}
+                    />
+                  </div>
+                </div>
+              )}
 
-                  {/* Propiedad */}
-                  <TabsContent value="propiedad" className="p-6 mt-0">
-                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información de la propiedad</h3>
-                    <div className="divide-y divide-border">
-                      <InfoRow label="Comunidad autónoma" value={asset.comunidad_autonoma} />
-                      <InfoRow label="Provincia" value={asset.provincia} />
-                      <InfoRow label="Municipio" value={asset.municipio} />
-                      <InfoRow label="Código postal" value={asset.codigo_postal} />
-                      <InfoRow label="Dirección" value={asset.direccion} />
-                      <InfoRow label="Tipo de activo" value={asset.tipo_activo} />
-                      <InfoRow label="Metros construidos" value={asset.sqm > 0 ? `${asset.sqm.toLocaleString("es-ES")} m²` : null} />
-                      <InfoRow label="VPO" value={asset.vpo ? "SÍ" : "NO"} />
-                      <InfoRow label="Año construcción" value={asset.anio_construccion} />
-                      <InfoRow label="Referencia catastral" value={asset.ref_catastral} />
-                      <InfoRow label="Finca registral" value={asset.finca_registral} />
-                      <InfoRow label="Registro de propiedad" value={asset.registro_propiedad} />
-                      <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional} />
-                      <InfoRow label="Servicer" value={asset.servicer} />
-                      <InfoRow label="Cartera" value={asset.cartera} />
-                    </div>
-                  </TabsContent>
+              {/* Action buttons */}
+              <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
+                <Button variant="outline" className="w-full gap-2" onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}>
+                  <Download className="w-4 h-4" /> Descargar Dossier
+                </Button>
+                <EnrichedDossierButton dossierData={nplAssetToDossier(asset as any)} variant="outline" className="w-full" />
+                <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
+                  <Button variant="outline" className="w-full gap-2">
+                    <Mail className="w-4 h-4" /> Enviar Dossier por Email
+                  </Button>
+                </ShareDossierDialog>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                  {/* Deudor */}
-                  <TabsContent value="deudor" className="p-6 mt-0">
-                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información del deudor</h3>
-                    <div className="divide-y divide-border">
-                      <InfoRow label="Titulares" value={asset.num_titulares} />
-                      <InfoRow label="Nombre deudor" value={asset.name_debtor} />
-                      <InfoRow label="Tipo persona" value={asset.persona_tipo} />
-                    </div>
+        {/* ===== ANÁLISIS DE LA OPORTUNIDAD (Fencia-style below main) ===== */}
+        <NdaGate user={user} ndaSigned={ndaSigned} onNdaSigned={() => setNdaSigned(true)}>
+          <div className="mt-8">
+            <div className="bg-card rounded-2xl border border-border overflow-hidden">
+              {/* Header */}
+              <div className="p-6 border-b border-border flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-foreground">Análisis de la Oportunidad</h3>
+                  <p className="text-xs text-muted-foreground mt-1">La operación detallada para entender su potencialidad.</p>
+                </div>
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}>
+                  <Download className="w-4 h-4" /> Descargar PDF
+                </Button>
+              </div>
 
-                    <h3 className="font-heading text-base font-bold text-foreground mt-8 mb-4">Información de la deuda</h3>
+              <div className="p-6 space-y-4">
+                {/* Inmueble section */}
+                <AnalysisSection title="Inmueble" icon={Building2}>
+                  <div className="divide-y divide-border">
+                    <InfoRow label="Comunidad autónoma" value={asset.comunidad_autonoma} />
+                    <InfoRow label="Provincia" value={asset.provincia} />
+                    <InfoRow label="Municipio" value={asset.municipio} />
+                    <InfoRow label="Código postal" value={asset.codigo_postal} />
+                    <InfoRow label="Dirección" value={asset.direccion} />
+                    <InfoRow label="Tipo de activo" value={asset.tipo_activo} />
+                    <InfoRow label="Metros construidos" value={asset.sqm > 0 ? `${asset.sqm.toLocaleString("es-ES")} m²` : null} />
+                    <InfoRow label="VPO" value={asset.vpo ? "SÍ" : "NO"} />
+                    <InfoRow label="Año construcción" value={asset.anio_construccion} />
+                    <InfoRow label="Referencia catastral" value={asset.ref_catastral} />
+                    <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional || "n.a."} />
+                    <InfoRow label="Persona" value={asset.persona_tipo === "juridica" ? "Jurídica" : asset.persona_tipo === "fisica" ? "Física" : asset.persona_tipo} />
+                    <InfoRow label="Titulares" value={asset.num_titulares} />
+                    <InfoRow label="Finca registral" value={asset.finca_registral} />
+                    <InfoRow label="Registro propiedad" value={asset.registro_propiedad} />
+                  </div>
+                </AnalysisSection>
+
+                {/* Préstamo / Deuda section (NPL only) */}
+                {isNpl && (
+                  <AnalysisSection title="Préstamo / Crédito" icon={CreditCard}>
                     <div className="divide-y divide-border">
-                      <InfoRow label="Deuda pendiente (OB)" value={asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : "No disponible"} highlight />
-                      <InfoRow label="Valor del activo" value={asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : "No disponible"} />
-                      <InfoRow label="Rango de deuda" value={asset.rango_deuda} />
+                      <InfoRow label="Rango" value={asset.rango_deuda} />
+                      <InfoRow label="Deuda actual" value={asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : "n.a."} highlight />
+                      <InfoRow label="Valor del activo" value={asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : "n.a."} />
                       <InfoRow label="NDG" value={asset.ndg} />
                       <InfoRow label="Asset ID" value={asset.asset_id} />
                     </div>
 
-                    {/* NPL-specific: LTV ratio */}
-                    {opType === "npl" && asset.deuda_ob > 0 && asset.valor_activo > 0 && (
-                      <div className="mt-6 bg-secondary rounded-xl p-4">
+                    {/* LTV Analysis */}
+                    {asset.deuda_ob > 0 && asset.valor_activo > 0 && (
+                      <div className="mt-4 bg-secondary rounded-xl p-4">
                         <h4 className="text-sm font-bold text-foreground mb-3">Análisis LTV (Loan-to-Value)</h4>
                         <div className="grid grid-cols-3 gap-3 text-center">
                           <div>
@@ -472,173 +525,80 @@ const NplDetail = () => {
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground">Descuento s/deuda</p>
-                            <p className="text-lg font-bold text-green-600">{asset.precio_orientativo > 0 ? `${Math.round((1 - asset.precio_orientativo / asset.deuda_ob) * 100)}%` : "N/D"}</p>
+                            <p className="text-lg font-bold text-primary">{asset.precio_orientativo > 0 ? `${Math.round((1 - asset.precio_orientativo / asset.deuda_ob) * 100)}%` : "N/D"}</p>
                           </div>
                         </div>
                       </div>
                     )}
-                  </TabsContent>
-
-                  {/* Judicial */}
-                  <TabsContent value="judicial" className="p-6 mt-0">
-                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información judicial</h3>
-                    <div className="divide-y divide-border">
-                      <InfoRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} highlight={asset.judicializado} />
-                      <InfoRow label="Fase judicial actual" value={asset.fase_judicial || asset.estado_judicial} />
-                      <InfoRow label="Tipo de procedimiento" value={asset.tipo_procedimiento} />
-                      <InfoRow label="Referencia" value={asset.referencia_fencia} />
-                      <InfoRow label="Cesión de remate" value={asset.cesion_remate ? "SÍ" : "NO"} />
-                      <InfoRow label="Cesión de crédito" value={asset.cesion_credito ? "SÍ" : "NO"} />
-                      <InfoRow label="Postura en subasta" value={asset.postura_subasta ? "SÍ" : "NO"} />
-                      <InfoRow label="Importe pre-aprobado" value={asset.importe_preaprobado > 0 ? `${asset.importe_preaprobado.toLocaleString("es-ES")} €` : "No disponible"} />
-                      <InfoRow label="Oferta aprobada" value={asset.oferta_aprobada ? "SÍ" : "NO"} />
-                    </div>
-
-                    {/* Cesión de remate specific */}
-                    {opType === "cesion_remate" && (
-                      <div className="mt-6 bg-accent/5 border border-accent/20 rounded-xl p-4">
-                        <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
-                          <Gavel className="w-4 h-4 text-accent" /> Detalle de la cesión
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          La cesión de remate permite adquirir los derechos del adjudicatario en subasta sin necesidad de participar directamente. 
-                          {asset.importe_preaprobado > 0 && ` El importe pre-aprobado para esta cesión es de ${asset.importe_preaprobado.toLocaleString("es-ES")} €.`}
-                        </p>
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  {/* Ocupación tab (only for occupied properties) */}
-                  {opType === "ocupado" && (
-                    <TabsContent value="ocupacion" className="p-6 mt-0">
-                      <h3 className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2">
-                        <AlertTriangle className="w-5 h-5 text-destructive" /> Situación de ocupación
-                      </h3>
-                      <div className="divide-y divide-border mb-6">
-                        <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional} highlight />
-                        <InfoRow label="Propiedad sin posesión" value={asset.propiedad_sin_posesion ? "SÍ" : "NO"} />
-                        <InfoRow label="Titulares" value={asset.num_titulares} />
-                        <InfoRow label="Tipo persona (deudor)" value={asset.persona_tipo} />
-                      </div>
-
-                      <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4 space-y-3">
-                        <h4 className="text-sm font-bold text-destructive">Consideraciones importantes</h4>
-                        <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
-                          <li>El proceso de desahucio puede tardar entre 6-18 meses según la jurisdicción.</li>
-                          <li>Evalúe la posibilidad de negociación de salida voluntaria con compensación económica.</li>
-                          <li>Considere los costes legales adicionales en el cálculo de rentabilidad.</li>
-                          {asset.vpo && <li className="text-destructive font-semibold">⚠️ Inmueble VPO: puede tener restricciones adicionales de venta y precio máximo.</li>}
-                        </ul>
-                      </div>
-                    </TabsContent>
-                  )}
-
-                  {/* Documentos */}
-                  <TabsContent value="documentos" className="p-6 mt-0">
-                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Documentación del activo</h3>
-                    <DocumentsPanel nplAssetId={asset.id} compact showFilters />
-                  </TabsContent>
-
-                  {/* Catastro */}
-                  <TabsContent value="catastro" className="p-6 mt-0">
-                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información catastral</h3>
-                    <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-
-            {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-4">
-              <div className="sticky top-20 space-y-4">
-                {/* Bidding / Offer panel */}
-                {asset.estado === "oferta_gestion" ? (
-                  <div className="bg-card rounded-2xl border border-border p-6">
-                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mb-3">
-                      <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
-                      <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
-                    </div>
-                    <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
-                  </div>
-                ) : asset.estado === "cerrado" ? (
-                  <div className="bg-card rounded-2xl border border-border p-6">
-                    <div className="bg-muted rounded-xl p-3">
-                      <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
-                      <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
-                    </div>
-                  </div>
-                ) : (
-                  <BiddingPanel
-                    assetId={asset.id}
-                    precioOrientativo={asset.precio_orientativo}
-                    userId={user?.id}
-                    userName={userName}
-                    userEmail={userEmail}
-                  />
+                  </AnalysisSection>
                 )}
 
-                {/* Action buttons */}
-                <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
-                  <Button variant="outline" className="w-full gap-2" onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}>
-                    <Download className="w-4 h-4" /> Descargar Dossier
-                  </Button>
-                  <EnrichedDossierButton dossierData={nplAssetToDossier(asset as any)} variant="outline" className="w-full" />
-                  <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
-                    <Button variant="outline" className="w-full gap-2">
-                      <Mail className="w-4 h-4" /> Enviar Dossier por Email
-                    </Button>
-                  </ShareDossierDialog>
-                  <Button variant="outline" className="w-full gap-2" asChild>
-                    <a href="#contacto"><FileText className="w-4 h-4" /> Solicitar información</a>
-                  </Button>
-                </div>
+                {/* Judicial section */}
+                <AnalysisSection title="Situación Judicial" icon={Scale}>
+                  <div className="divide-y divide-border">
+                    <InfoRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} highlight={asset.judicializado} />
+                    <InfoRow label="Fase judicial actual" value={asset.fase_judicial || asset.estado_judicial || "n.a."} />
+                    <InfoRow label="Tipo de procedimiento" value={asset.tipo_procedimiento || "n.a."} />
+                    <InfoRow label="Cesión de remate" value={asset.cesion_remate ? "SÍ" : "NO"} />
+                    <InfoRow label="Cesión de crédito" value={asset.cesion_credito ? "SÍ" : "NO"} />
+                    <InfoRow label="Postura en subasta" value={asset.postura_subasta ? "SÍ" : "NO"} />
+                    <InfoRow label="Importe pre-aprobado" value={asset.importe_preaprobado > 0 ? `${asset.importe_preaprobado.toLocaleString("es-ES")} €` : "n.a."} />
+                    <InfoRow label="Oferta aprobada" value={asset.oferta_aprobada ? "SÍ" : "NO"} />
+                    <InfoRow label="Tipo de venta" value={opLabel} />
+                  </div>
 
-                {/* Summary */}
-                <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
-                  <h4 className="text-sm font-bold text-foreground">Resumen</h4>
-                  {asset.valor_mercado > 0 && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Euro className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Valor mercado</span>
-                      <span className="ml-auto font-bold text-foreground">{asset.valor_mercado.toLocaleString("es-ES")} €</span>
+                  {/* Cesión de remate specific */}
+                  {opType === "cesion_remate" && (
+                    <div className="mt-4 bg-accent/5 border border-accent/20 rounded-xl p-4">
+                      <h4 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                        <Key className="w-4 h-4 text-accent" /> Detalle de la cesión
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        La cesión de remate permite adquirir los derechos del adjudicatario en subasta sin necesidad de participar directamente.
+                        {asset.importe_preaprobado > 0 && ` El importe pre-aprobado para esta cesión es de ${asset.importe_preaprobado.toLocaleString("es-ES")} €.`}
+                      </p>
                     </div>
                   )}
-                  {asset.precio_orientativo > 0 && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <TrendingDown className="w-4 h-4 text-accent" />
-                      <span className="text-muted-foreground">Precio orientativo</span>
-                      <span className="ml-auto font-bold text-accent">{asset.precio_orientativo.toLocaleString("es-ES")} €</span>
+                </AnalysisSection>
+
+                {/* Ocupación section (for occupied properties) */}
+                {opType === "ocupado" && (
+                  <AnalysisSection title="Situación de Ocupación" icon={AlertTriangle}>
+                    <div className="divide-y divide-border">
+                      <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional} highlight />
+                      <InfoRow label="Propiedad sin posesión" value={asset.propiedad_sin_posesion ? "SÍ" : "NO"} />
                     </div>
-                  )}
-                  {asset.deuda_ob > 0 && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <CreditCard className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Deuda OB</span>
-                      <span className="ml-auto font-bold text-foreground">{asset.deuda_ob.toLocaleString("es-ES")} €</span>
+                    <div className="mt-4 bg-destructive/5 border border-destructive/20 rounded-xl p-4 space-y-2">
+                      <h4 className="text-xs font-bold text-destructive">Consideraciones importantes</h4>
+                      <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4">
+                        <li>El proceso de desahucio puede tardar entre 6-18 meses según la jurisdicción.</li>
+                        <li>Evalúe la posibilidad de negociación de salida voluntaria con compensación económica.</li>
+                        <li>Considere los costes legales adicionales en el cálculo de rentabilidad.</li>
+                        {asset.vpo && <li className="text-destructive font-semibold">⚠️ Inmueble VPO: puede tener restricciones de venta y precio máximo.</li>}
+                      </ul>
                     </div>
-                  )}
-                  {asset.sqm > 0 && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Maximize className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Superficie</span>
-                      <span className="ml-auto font-bold text-foreground">{asset.sqm.toLocaleString("es-ES")} m²</span>
-                    </div>
-                  )}
-                  {asset.anio_construccion && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Año</span>
-                      <span className="ml-auto font-bold text-foreground">{asset.anio_construccion}</span>
-                    </div>
-                  )}
-                  {asset.ref_catastral && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Hash className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Ref. catastral</span>
-                      <span className="ml-auto font-mono text-xs text-foreground">{asset.ref_catastral}</span>
-                    </div>
-                  )}
-                </div>
+                  </AnalysisSection>
+                )}
+
+                {/* Comisiones section */}
+                <AnalysisSection title="Condiciones comerciales" icon={Euro} defaultOpen={false}>
+                  <div className="divide-y divide-border">
+                    <InfoRow label="Comisión" value={asset.comision_porcentaje > 0 ? `${asset.comision_porcentaje}%` : "n.a."} />
+                    <InfoRow label="Depósito" value={asset.deposito_porcentaje > 0 ? `${asset.deposito_porcentaje}%` : "n.a."} />
+                    <InfoRow label="Servicer" value={asset.servicer} />
+                    <InfoRow label="Cartera" value={asset.cartera} />
+                  </div>
+                </AnalysisSection>
+
+                {/* Catastro section */}
+                <AnalysisSection title="Información catastral" icon={MapPin} defaultOpen={false}>
+                  <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
+                </AnalysisSection>
+
+                {/* Documents section */}
+                <AnalysisSection title="Documentación" icon={FolderOpen} defaultOpen={false}>
+                  <DocumentsPanel nplAssetId={asset.id} compact showFilters />
+                </AnalysisSection>
               </div>
             </div>
           </div>
