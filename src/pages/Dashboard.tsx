@@ -406,26 +406,153 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader><CardTitle>Datos personales</CardTitle></CardHeader>
-              <CardContent className="space-y-4 max-w-md">
-                <div className="space-y-2">
-                  <Label>Nombre</Label>
-                  <Input value={profile.display_name || ""} onChange={(e) => setProfile({ ...profile, display_name: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input value={user.email || ""} disabled />
-                </div>
-                <div className="space-y-2">
-                  <Label>Teléfono</Label>
-                  <Input value={profile.phone || ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} placeholder="+34 600 000 000" />
-                </div>
-                <Button onClick={saveProfile} disabled={saving}>
-                  {saving ? "Guardando..." : "Guardar cambios"}
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Lead Score */}
+            {profile.lead_score !== undefined && profile.lead_score !== null && profile.lead_score > 0 && (
+              <Card className="mb-6">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm">Tu puntuación de inversor</h3>
+                      <p className="text-xs text-muted-foreground">Basada en tu actividad y perfil completado</p>
+                    </div>
+                    <div className="text-2xl font-bold text-primary">{profile.lead_score}/100</div>
+                  </div>
+                  <div className="mt-2 h-2 bg-secondary rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${profile.lead_score}%` }} />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Datos personales */}
+              <Card>
+                <CardHeader><CardTitle className="text-base">Datos personales</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Nombre</Label>
+                    <Input value={profile.display_name || ""} onChange={(e) => setProfile({ ...profile, display_name: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input value={user.email || ""} disabled />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Teléfono</Label>
+                    <Input value={profile.phone || ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} placeholder="+34 600 000 000" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipo de persona</Label>
+                    <select
+                      value={profile.persona_tipo || "fisica"}
+                      onChange={(e) => setProfile({ ...profile, persona_tipo: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="fisica">Persona Física</option>
+                      <option value="juridica">Persona Jurídica</option>
+                    </select>
+                  </div>
+                  {profile.persona_tipo === "juridica" && (
+                    <>
+                      <div className="space-y-2">
+                        <Label>Empresa / Razón social</Label>
+                        <Input value={profile.empresa || ""} onChange={(e) => setProfile({ ...profile, empresa: e.target.value })} placeholder="Nombre de la empresa" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>CIF</Label>
+                        <Input value={profile.cif_nif || ""} onChange={(e) => setProfile({ ...profile, cif_nif: e.target.value })} placeholder="B12345678" />
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Perfil de inversor */}
+              <Card>
+                <CardHeader><CardTitle className="text-base">Perfil de inversor</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Nivel de experiencia</Label>
+                    <select
+                      value={profile.investor_level || "principiante"}
+                      onChange={(e) => setProfile({ ...profile, investor_level: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="principiante">Principiante</option>
+                      <option value="intermedio">Intermedio</option>
+                      <option value="avanzado">Avanzado</option>
+                      <option value="profesional">Profesional</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Comunidad Autónoma</Label>
+                    <select
+                      value={profile.comunidad_autonoma || ""}
+                      onChange={(e) => setProfile({ ...profile, comunidad_autonoma: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">Selecciona...</option>
+                      {["Andalucía","Aragón","Asturias","Baleares","Canarias","Cantabria","Castilla-La Mancha","Castilla y León","Cataluña","C. Valenciana","Extremadura","Galicia","La Rioja","Madrid","Murcia","Navarra","País Vasco"].map(ca => (
+                        <option key={ca} value={ca}>{ca}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ciudad</Label>
+                    <Input value={profile.ciudad || ""} onChange={(e) => setProfile({ ...profile, ciudad: e.target.value })} placeholder="Tu ciudad" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Presupuesto mín. (€)</Label>
+                      <Input type="number" value={profile.presupuesto_min || ""} onChange={(e) => setProfile({ ...profile, presupuesto_min: Number(e.target.value) })} placeholder="0" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Presupuesto máx. (€)</Label>
+                      <Input type="number" value={profile.presupuesto_max || ""} onChange={(e) => setProfile({ ...profile, presupuesto_max: Number(e.target.value) })} placeholder="500000" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Tipos de activo de interés</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {["NPL","Cesión de Remate","Subastas BOE","Ocupados","Viviendas","Locales","Terrenos"].map(tipo => {
+                        const selected = profile.tipos_activo_preferidos?.includes(tipo);
+                        return (
+                          <button
+                            key={tipo}
+                            type="button"
+                            onClick={() => {
+                              const current = profile.tipos_activo_preferidos || [];
+                              setProfile({
+                                ...profile,
+                                tipos_activo_preferidos: selected ? current.filter(t => t !== tipo) : [...current, tipo]
+                              });
+                            }}
+                            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                              selected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border hover:border-primary/50"
+                            }`}
+                          >
+                            {tipo}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 pt-2">
+                    <Switch
+                      checked={profile.acepta_marketing || false}
+                      onCheckedChange={(checked) => setProfile({ ...profile, acepta_marketing: checked })}
+                    />
+                    <Label className="text-sm text-muted-foreground">Acepto recibir comunicaciones comerciales y oportunidades de inversión</Label>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-6">
+              <Button onClick={saveProfile} disabled={saving} className="w-full md:w-auto">
+                {saving ? "Guardando..." : "Guardar todos los cambios"}
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
