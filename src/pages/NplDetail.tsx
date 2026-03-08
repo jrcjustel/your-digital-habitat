@@ -384,7 +384,7 @@ const NplDetail = () => {
 
               {/* Image Gallery */}
               <div className="px-5 md:px-6 pb-5">
-                <AssetImageGallery assetId={asset.id} />
+                <AssetImageGallery assetId={asset.id} refCatastral={asset.ref_catastral} direccion={asset.direccion} municipio={asset.municipio} provincia={asset.provincia} />
               </div>
             </div>
           </div>
