@@ -135,7 +135,7 @@ export const generatePropertyPdf = async (property: Property) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(...BRAND_BLUE);
-  doc.text(`${property.price.toLocaleString("es-ES")} €`, margin + 4, y + 5);
+  doc.text(`${property.price.toLocaleString("es-ES")} EUR`, margin + 4, y + 5);
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
   doc.text("Precio orientativo", margin + 4, y + 11);
