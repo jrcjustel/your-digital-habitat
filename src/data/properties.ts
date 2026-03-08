@@ -63,6 +63,8 @@ export interface Property {
     debtType?: string;
     guaranteeType?: string;
   };
+  depositoPorcentaje?: number;
+  comisionPorcentaje?: number;
 }
 
 export const saleTypes: { value: SaleType; label: string }[] = [
