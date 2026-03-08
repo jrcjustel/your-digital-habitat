@@ -407,31 +407,10 @@ const NplDetail = () => {
 
             {/* Sidebar */}
             <div className="lg:col-span-1 space-y-4">
-              {/* CTA Card */}
-              <div className="bg-card rounded-2xl border border-border p-6 sticky top-20">
-                <h3 className="font-heading text-lg font-bold text-foreground mb-2">¿Te interesa este activo?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Solicita más información o presenta tu oferta.
-                </p>
-
-                {asset.deposito_porcentaje > 0 && (
-                  <div className="bg-secondary rounded-xl p-3 mb-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Depósito requerido</span>
-                      <span className="font-bold text-foreground">{asset.deposito_porcentaje}%</span>
-                    </div>
-                    {asset.comision_porcentaje > 0 && (
-                      <div className="flex justify-between text-sm mt-1">
-                        <span className="text-muted-foreground">Comisión</span>
-                        <span className="font-bold text-foreground">{asset.comision_porcentaje}%</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Conditional: show offer form or waitlist based on estado */}
+              {/* Offer / CTA Card */}
+              <div className="sticky top-20 space-y-4">
                 {asset.estado === "oferta_gestion" ? (
-                  <div className="mb-3">
+                  <div className="bg-card rounded-2xl border border-border p-6">
                     <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mb-3">
                       <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
                       <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
@@ -439,58 +418,56 @@ const NplDetail = () => {
                     <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
                   </div>
                 ) : asset.estado === "cerrado" ? (
-                  <div className="bg-muted rounded-xl p-3 mb-3">
-                    <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
-                    <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
+                  <div className="bg-card rounded-2xl border border-border p-6">
+                    <div className="bg-muted rounded-xl p-3">
+                      <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
+                      <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
+                    </div>
                   </div>
                 ) : (
+                  <OfferForm
+                    propertyId={asset.id}
+                    propertyReference={asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
+                    descripcion={asset.descripcion}
+                    precioOrientativo={asset.precio_orientativo}
+                    depositoPorcentaje={asset.deposito_porcentaje}
+                    comisionPorcentaje={asset.comision_porcentaje}
+                    defaultName={userName}
+                    defaultEmail={userEmail}
+                  />
+                )}
+
+                {/* Action buttons */}
+                <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
                   <Button
-                    onClick={() => setShowOffer(!showOffer)}
-                    className="w-full gap-2 mb-3"
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}
                   >
-                    <Euro className="w-4 h-4" />
-                    {showOffer ? "Ocultar formulario" : "¡Haz tu oferta!"}
+                    <Download className="w-4 h-4" />
+                    Descargar Dossier
                   </Button>
-                )}
 
-                <Button
-                  variant="outline"
-                  className="w-full gap-2 mb-3"
-                  onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}
-                >
-                  <Download className="w-4 h-4" />
-                  Descargar Dossier
-                </Button>
+                  <EnrichedDossierButton
+                    dossierData={nplAssetToDossier(asset as any)}
+                    variant="outline"
+                    className="w-full"
+                  />
 
-                <EnrichedDossierButton
-                  dossierData={nplAssetToDossier(asset as any)}
-                  variant="outline"
-                  className="w-full mb-3"
-                />
+                  <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
+                    <Button variant="outline" className="w-full gap-2">
+                      <Mail className="w-4 h-4" />
+                      Enviar Dossier por Email
+                    </Button>
+                  </ShareDossierDialog>
 
-                <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
-                  <Button variant="outline" className="w-full gap-2 mb-3">
-                    <Mail className="w-4 h-4" />
-                    Enviar Dossier por Email
+                  <Button variant="outline" className="w-full gap-2" asChild>
+                    <a href="#contacto">
+                      <FileText className="w-4 h-4" />
+                      Solicitar información
+                    </a>
                   </Button>
-                </ShareDossierDialog>
-
-                <Button variant="outline" className="w-full gap-2" asChild>
-                  <a href="#contacto">
-                    <FileText className="w-4 h-4" />
-                    Solicitar información
-                  </a>
-                </Button>
-
-                {showOffer && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <OfferForm
-                      propertyId={asset.id}
-                      propertyReference={asset.referencia_fencia || asset.asset_id || asset.id.slice(0, 8)}
-                    />
-                  </div>
-                )}
-              </div>
+                </div>
 
               {/* Quick stats */}
               <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
