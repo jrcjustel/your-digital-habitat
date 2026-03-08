@@ -14,7 +14,6 @@ import {
   Users,
   BadgePercent,
   X,
-  ChevronDown,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState } from "react";
+import PriceCycleGraph from "@/components/PriceCycleGraph";
+import ProcessTimeline from "@/components/ProcessTimeline";
 
 /* ── Small reusable pieces ── */
 
