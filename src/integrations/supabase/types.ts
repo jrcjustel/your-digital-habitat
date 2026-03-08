@@ -44,6 +44,87 @@ export type Database = {
         }
         Relationships: []
       }
+      broadcast_messages: {
+        Row: {
+          channel: Database["public"]["Enums"]["channel_type"]
+          content: string
+          created_at: string
+          failed_count: number | null
+          id: string
+          metadata: Json | null
+          sent_at: string | null
+          sent_count: number | null
+          status: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["channel_type"]
+          content: string
+          created_at?: string
+          failed_count?: number | null
+          id?: string
+          metadata?: Json | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["channel_type"]
+          content?: string
+          created_at?: string
+          failed_count?: number | null
+          id?: string
+          metadata?: Json | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
+      channel_subscribers: {
+        Row: {
+          channel: Database["public"]["Enums"]["channel_type"]
+          created_at: string
+          display_name: string | null
+          external_id: string | null
+          id: string
+          is_active: boolean
+          preferences: Json
+          segments: string[]
+          subscribed_at: string
+          unsubscribed_at: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["channel_type"]
+          created_at?: string
+          display_name?: string | null
+          external_id?: string | null
+          id?: string
+          is_active?: boolean
+          preferences?: Json
+          segments?: string[]
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["channel_type"]
+          created_at?: string
+          display_name?: string | null
+          external_id?: string | null
+          id?: string
+          is_active?: boolean
+          preferences?: Json
+          segments?: string[]
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
@@ -495,6 +576,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      channel_type:
+        | "whatsapp"
+        | "telegram"
+        | "whatsapp_channel"
+        | "telegram_channel"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -623,6 +709,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      channel_type: [
+        "whatsapp",
+        "telegram",
+        "whatsapp_channel",
+        "telegram_channel",
+      ],
     },
   },
 } as const
