@@ -151,16 +151,64 @@ const Valorador = () => {
     setLoading(true);
     setError(null);
     setValuation(null);
+    setCatastroData(null);
+    setFormSnapshot(data);
 
     try {
-      const { data: res, error: fnError } = await supabase.functions.invoke("valorar-inmueble", { body: data });
-      if (fnError) throw fnError;
-      if (!res?.success) throw new Error(res?.error || "Error en la valoración");
-      setValuation(res.valuation);
+      // Run valuation + catastro lookup in parallel if ref catastral is available
+      const valuationPromise = supabase.functions.invoke("valorar-inmueble", { body: data });
+      
+      let catastroPromise: Promise<any> | null = null;
+      if (refCatastral.trim()) {
+        catastroPromise = supabase.functions.invoke("catastro-lookup", {
+          body: { ref_catastral: refCatastral.trim() },
+        });
+      }
+
+      const [valuationResult, catastroResult] = await Promise.all([
+        valuationPromise,
+        catastroPromise || Promise.resolve(null),
+      ]);
+
+      if (valuationResult.error) throw valuationResult.error;
+      if (!valuationResult.data?.success) throw new Error(valuationResult.data?.error || "Error en la valoración");
+      setValuation(valuationResult.data.valuation);
+
+      // Save catastro data if available
+      if (catastroResult?.data?.success) {
+        setCatastroData(catastroResult.data.data);
+      }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!valuation || !formSnapshot) return;
+    setGeneratingPdf(true);
+    try {
+      // Try loading catastro facade image
+      let fachadaBase64: string | null = null;
+      if (catastroData?.ref_catastral) {
+        fachadaBase64 = await loadCatastroFachadaImage(catastroData.ref_catastral);
+      }
+
+      await generateValuationPdf({
+        ...formSnapshot,
+        telefono: formSnapshot.telefono || undefined,
+        codigo_postal: formSnapshot.codigo_postal || undefined,
+        valuation,
+        catastro: catastroData || undefined,
+        catastroFachadaBase64: fachadaBase64 || undefined,
+      });
+      toast.success("PDF descargado correctamente");
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      toast.error("Error al generar el PDF");
+    } finally {
+      setGeneratingPdf(false);
     }
   };
 
