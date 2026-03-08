@@ -167,9 +167,9 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
 
   // ── SECTION 4: Valoración del Colateral ───────────────
   y = drawSectionHeader(doc, "Valoración del Colateral", y, 4);
-  y = drawRow(doc, "Precio medio m² zona", `${fmt(data.pricePerSqm)} €/m²`, y);
-  y = drawRow(doc, "Superficie adoptada", `${fmt(data.adoptedArea)} m²`, y);
-  y = drawRow(doc, "Valoración total inmueble", `${fmt(data.totalValuation)} €`, y);
+  y = drawRow(doc, "Precio medio m2 zona", `${fmt(data.pricePerSqm)} EUR/m2`, y);
+  y = drawRow(doc, "Superficie adoptada", `${fmt(data.adoptedArea)} m2`, y);
+  y = drawRow(doc, "Valoracion total inmueble", `${fmt(data.totalValuation)} EUR`, y);
   y += 4;
 
   // Comparative bar chart
