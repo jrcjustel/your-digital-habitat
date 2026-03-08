@@ -180,6 +180,23 @@ const Valorador = () => {
       if (catastroResult?.data?.success) {
         const cd = catastroResult.data.data;
         setCatastroData(cd);
+
+        // Override formSnapshot with accurate catastro location data
+        if (cd.municipio || cd.provincia) {
+          setFormSnapshot(prev => prev ? {
+            ...prev,
+            municipio: cd.municipio || prev.municipio,
+            provincia: (() => {
+              if (!cd.provincia) return prev.provincia;
+              const match = provincias.find(
+                (p) => p.toLowerCase() === cd.provincia.toLowerCase() ||
+                  cd.provincia.toLowerCase().includes(p.toLowerCase()) ||
+                  p.toLowerCase().includes(cd.provincia.toLowerCase())
+              );
+              return match || prev.provincia;
+            })(),
+          } : prev);
+        }
         
         // Use server-proxied fachada image (base64) and Google Maps embed
         if (cd.fachada_base64) {
