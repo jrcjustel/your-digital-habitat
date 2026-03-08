@@ -273,6 +273,7 @@ interface AlertCardProps {
   filters: AlertFilters;
   isOpen: boolean;
   isSaving: boolean;
+  matchCount: number;
   onToggleOpen: () => void;
   onToggleActive: (active: boolean) => void;
   onDelete: () => void;
@@ -280,7 +281,7 @@ interface AlertCardProps {
 }
 
 const AlertCard = ({
-  index, alert, filters: initialFilters, isOpen, isSaving,
+  index, alert, filters: initialFilters, isOpen, isSaving, matchCount,
   onToggleOpen, onToggleActive, onDelete, onSave,
 }: AlertCardProps) => {
   const [filters, setFilters] = useState<AlertFilters>(initialFilters);
