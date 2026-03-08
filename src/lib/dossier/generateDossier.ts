@@ -198,7 +198,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(BRAND_GRAY[0], BRAND_GRAY[1], BRAND_GRAY[2]);
-    doc.text("📍 Ver en Google Maps:", MARGIN + 2, y + 3);
+    doc.text("Ver en Google Maps:", MARGIN + 2, y + 3);
     const mapsUrl = `https://www.google.com/maps?q=${data.lat},${data.lng}`;
     doc.setTextColor(BRAND_BLUE[0], BRAND_BLUE[1], BRAND_BLUE[2]);
     doc.textWithLink(mapsUrl.substring(0, 60) + "...", MARGIN + 35, y + 3, { url: mapsUrl });
