@@ -76,6 +76,8 @@ const PropertyDetail = () => {
     }, 30000);
     return () => clearTimeout(timer);
   }, [property?.id]);
+
+  const toggleFavorite = async () => {
     if (!user) {
       toast.error("Inicia sesión para guardar favoritos");
       return;
