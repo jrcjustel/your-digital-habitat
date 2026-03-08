@@ -192,6 +192,8 @@ const OfferForm = ({
     </div>
   );
 
+  const [showLegalFull, setShowLegalFull] = useState(false);
+
   const ConsentCheckboxes = () => (
     <div className="border-t border-border pt-3 space-y-3">
       <div className="flex items-start gap-2">
@@ -203,11 +205,22 @@ const OfferForm = ({
       <div className="flex items-start gap-2">
         <Checkbox id="marketing" checked={marketing} onCheckedChange={(v) => setMarketing(v === true)} className="mt-0.5" />
         <Label htmlFor="marketing" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-          Acepto recibir comunicaciones comerciales de IKESA, incluso por medios digitales.
-          IKESA es el responsable del tratamiento de tus datos personales. Puedes ejercer tus derechos dirigiéndote a{" "}
-          <a href="mailto:protecciondatos@ikesa.es" className="text-primary underline hover:text-primary/80">protecciondatos@ikesa.es</a>
-          , y consultar la información detallada{" "}
-          <a href="/politica-privacidad" className="text-primary underline hover:text-primary/80">aquí</a>.
+          Acepto recibir comunicaciones comerciales de IKESA.
+          {showLegalFull && (
+            <span className="block mt-1">
+              IKESA es el responsable del tratamiento de tus datos personales. Puedes ejercer tus derechos en materia de protección de datos, inclusive revocar su consentimiento, dirigiéndote a{" "}
+              <a href="mailto:protecciondatos@ikesa.es" className="text-primary underline hover:text-primary/80">protecciondatos@ikesa.es</a>
+              , y consultar la información detallada sobre tratamiento de tus datos{" "}
+              <a href="/politica-privacidad" className="text-primary underline hover:text-primary/80">aquí</a>.
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setShowLegalFull(!showLegalFull); }}
+            className="text-primary underline hover:text-primary/80 ml-1"
+          >
+            {showLegalFull ? "Ver menos" : "Ver más"}
+          </button>
         </Label>
       </div>
     </div>
