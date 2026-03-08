@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import SocialMediaManager from "@/components/SocialMediaManager";
 import AdminUserDetail from "@/components/AdminUserDetail";
+import AdminGestores from "@/components/AdminGestores";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -377,9 +378,11 @@ const AdminPanel = () => {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 max-w-4xl">
+          <TabsList className="grid w-full grid-cols-9 max-w-5xl">
             <TabsTrigger value="users" className="gap-1 text-xs"><Users className="w-4 h-4" /> Usuarios</TabsTrigger>
             <TabsTrigger value="offers" className="gap-1 text-xs"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
+            <TabsTrigger value="gestores" className="gap-1 text-xs"><MapPin className="w-4 h-4" /> Gestores</TabsTrigger>
+            <TabsTrigger value="contacts" className="gap-1 text-xs"><MessageCircle className="w-4 h-4" /> Contactos</TabsTrigger>
             <TabsTrigger value="social" className="gap-1 text-xs"><Share2 className="w-4 h-4" /> Social</TabsTrigger>
             <TabsTrigger value="charts" className="gap-1 text-xs"><BarChart3 className="w-4 h-4" /> Gráficos</TabsTrigger>
             <TabsTrigger value="matching" className="gap-1 text-xs"><Zap className="w-4 h-4" /> Matching</TabsTrigger>
