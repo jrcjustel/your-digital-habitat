@@ -1,6 +1,7 @@
-import { AlertTriangle, Home, Gavel, CreditCard, Ban, Building2, Scale, Clock, ExternalLink, Eye, EyeOff } from "lucide-react";
+import { AlertTriangle, Home, Gavel, CreditCard, Ban, Building2, Scale, Clock, ExternalLink, Eye, EyeOff, FileText } from "lucide-react";
 import type { SaleType } from "@/data/properties";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface SaleTypeBannerProps {
   saleType: SaleType;
