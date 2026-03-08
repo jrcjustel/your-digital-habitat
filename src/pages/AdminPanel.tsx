@@ -14,8 +14,9 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
-  Zap, History, Share2,
+  Zap, History, Share2, MapPin,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface KPIs {
