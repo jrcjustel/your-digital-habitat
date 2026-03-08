@@ -704,7 +704,7 @@ const Valorador = () => {
                 ¿Quieres una tasación más precisa? Nuestros expertos pueden ayudarte.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); }}>
+                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); setCatastroFachadaUrl(null); setCatastroCartoUrl(null); }}>
                   Valorar otro inmueble
                 </Button>
                 <Button size="lg" variant="outline" asChild>
