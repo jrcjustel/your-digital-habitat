@@ -269,10 +269,12 @@ const AdminPanel = () => {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-2xl">
+          <TabsList className="grid w-full grid-cols-6 max-w-3xl">
             <TabsTrigger value="users" className="gap-2"><Users className="w-4 h-4" /> Usuarios</TabsTrigger>
             <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
             <TabsTrigger value="charts" className="gap-2"><BarChart3 className="w-4 h-4" /> Gráficos</TabsTrigger>
+            <TabsTrigger value="matching" className="gap-2"><Zap className="w-4 h-4" /> Matching</TabsTrigger>
+            <TabsTrigger value="activity" className="gap-2"><History className="w-4 h-4" /> Actividad</TabsTrigger>
             <TabsTrigger value="broadcasts" className="gap-2"><Send className="w-4 h-4" /> Difusión</TabsTrigger>
           </TabsList>
 
