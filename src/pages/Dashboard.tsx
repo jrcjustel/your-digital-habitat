@@ -15,6 +15,7 @@ import { toast } from "@/components/ui/sonner";
 import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight, Download, Activity, FileDown } from "lucide-react";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import AlertsCreator from "@/components/AlertsCreator";
+import NdaSigningFlow from "@/components/NdaSigningFlow";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
