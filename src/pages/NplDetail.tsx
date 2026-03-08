@@ -210,19 +210,31 @@ const NplDetail = () => {
 
           <div className="p-6 md:p-8">
             {/* Type badge + reference */}
-            <div className="flex items-center gap-3 mb-4 flex-wrap">
-              <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
-                {asset.tipo_activo || "Activo"}
-              </span>
-              {asset.referencia_fencia && (
-                <span className="text-xs font-mono text-muted-foreground">
-                  Ref: {asset.referencia_fencia}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full">
+                  {asset.tipo_activo || "Activo"}
                 </span>
-              )}
-              {asset.cartera && (
-                <span className="bg-secondary text-foreground text-xs font-medium px-3 py-1 rounded-full">
-                  Cartera: {asset.cartera}
-                </span>
+                {asset.referencia_fencia && (
+                  <span className="text-xs font-mono text-muted-foreground">
+                    Ref: {asset.referencia_fencia}
+                  </span>
+                )}
+                {asset.cartera && (
+                  <span className="bg-secondary text-foreground text-xs font-medium px-3 py-1 rounded-full">
+                    Cartera: {asset.cartera}
+                  </span>
+                )}
+                {asset.estado && asset.estado !== "disponible" && (
+                  <Badge variant={asset.estado === "cerrado" ? "destructive" : "secondary"} className="text-[10px]">
+                    {asset.estado === "oferta_gestion" ? "En gestión de oferta" : asset.estado === "cerrado" ? "Operación cerrada" : asset.estado}
+                  </Badge>
+                )}
+              </div>
+              {user && (
+                <button onClick={toggleFavorite} className="p-2 rounded-full hover:bg-accent/10 transition-colors" title={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}>
+                  <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground hover:text-accent"}`} />
+                </button>
               )}
             </div>
 
