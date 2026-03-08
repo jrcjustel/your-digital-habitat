@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { academyArticles, academyCategories, academyRoutes } from "@/data/academy-articles";
-import { BookOpen, Clock, ArrowRight, GraduationCap, Search, CheckCircle2, TrendingUp, Users, Award, Layers } from "lucide-react";
+import { BookOpen, Clock, ArrowRight, GraduationCap, Search, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 import rutaOcupadosImg from "@/assets/ruta-ocupados.jpg";
@@ -19,24 +18,12 @@ const routeImages: Record<string, string> = {
   "deuda-npl": rutaNplImg,
 };
 
-const routeIcons: Record<string, React.ReactNode> = {
-  "ocupados": <Layers className="w-5 h-5" />,
-  "cesiones-remate": <Award className="w-5 h-5" />,
-  "subastas-boe": <TrendingUp className="w-5 h-5" />,
-  "deuda-npl": <Users className="w-5 h-5" />,
-};
-
 const stats = [
   { value: "4", label: "Rutas formativas" },
   { value: "40+", label: "Artículos prácticos" },
   { value: "16", label: "Módulos especializados" },
   { value: "100%", label: "Contenido gratuito" },
 ];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5, ease: [0, 0, 0.2, 1] as const } }),
-};
 
 const Academia = () => {
   const navigate = useNavigate();
@@ -64,42 +51,27 @@ const Academia = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(199_82%_58%/0.1),transparent_50%)]" />
         <div className="container mx-auto px-4 relative z-10 max-w-5xl">
           <div className="text-center">
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-bold tracking-wider uppercase rounded-full bg-accent/20 text-accent border border-accent/20">
-                <GraduationCap className="w-4 h-4" />
-                Formación práctica para inversores
-              </span>
-            </motion.div>
-            <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-bold tracking-wider uppercase rounded-full bg-accent/20 text-accent border border-accent/20">
+              <GraduationCap className="w-4 h-4" />
+              Formación práctica para inversores
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5">
               Academia <span className="text-accent">Ikesa</span>
-            </motion.h1>
-            <motion.p
-              className="text-lg md:text-xl text-primary-foreground/60 leading-relaxed max-w-2xl mx-auto mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            </h1>
+            <p className="text-lg md:text-xl text-primary-foreground/60 leading-relaxed max-w-2xl mx-auto mb-12">
               Domina la inversión en activos inmobiliarios distressed. Guías prácticas con datos reales, casos de estudio y herramientas para tomar mejores decisiones.
-            </motion.p>
+            </p>
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
               {stats.map((s, i) => (
-                <motion.div
+                <div
                   key={i}
                   className="bg-primary-foreground/5 backdrop-blur-sm border border-primary-foreground/10 rounded-2xl p-4"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
                 >
                   <p className="text-2xl md:text-3xl font-extrabold text-accent">{s.value}</p>
                   <p className="text-xs text-primary-foreground/50 mt-1">{s.label}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -120,14 +92,11 @@ const Academia = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {academyRoutes.map((ruta, i) => (
-              <motion.button
+            {academyRoutes.map((ruta) => (
+              <button
                 key={ruta.id}
                 onClick={() => navigate(`/academia/ruta/${ruta.slug}`)}
                 className="group text-left rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 bg-card"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
               >
                 {/* Image header */}
                 <div className="relative h-44 overflow-hidden">
@@ -171,7 +140,7 @@ const Academia = () => {
                     </span>
                   </div>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
@@ -188,16 +157,11 @@ const Academia = () => {
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
-              {featured.map((article, i) => (
-                <motion.button
+              {featured.map((article) => (
+                <button
                   key={article.slug}
                   onClick={() => navigate(`/academia/${article.slug}`)}
                   className="group text-left bg-card rounded-2xl border border-border p-6 hover:shadow-lg hover:border-accent/30 transition-all duration-300"
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
                 >
                   <div className="flex items-center gap-2 mb-4">
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${categoryColor(article.category)}`}>
@@ -214,7 +178,7 @@ const Academia = () => {
                   <span className="flex items-center gap-1.5 text-xs text-accent font-bold group-hover:gap-2.5 transition-all">
                     Leer guía <ArrowRight className="w-3.5 h-3.5" />
                   </span>
-                </motion.button>
+                </button>
               ))}
             </div>
           </div>
@@ -266,16 +230,11 @@ const Academia = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {filtered.map((article, i) => (
-              <motion.button
+            {filtered.map((article) => (
+              <button
                 key={article.slug}
                 onClick={() => navigate(`/academia/${article.slug}`)}
                 className="group text-left bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all duration-300"
-                custom={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-30px" }}
-                variants={fadeUp}
               >
                 {/* Colored top bar */}
                 <div className="h-1.5 bg-gradient-to-r from-accent to-primary" />
@@ -296,7 +255,7 @@ const Academia = () => {
                     Leer artículo <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
-              </motion.button>
+              </button>
             ))}
           </div>
         )}

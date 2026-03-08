@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { academyRoutes, academyArticles, academyCategories } from "@/data/academy-articles";
-import { ArrowLeft, ChevronRight, ChevronDown, BookOpen, Clock, CheckCircle2, ArrowRight, GraduationCap, Layers } from "lucide-react";
+import { ArrowLeft, ChevronRight, ChevronDown, BookOpen, Clock, CheckCircle2, ArrowRight, GraduationCap } from "lucide-react";
 
 import rutaOcupadosImg from "@/assets/ruta-ocupados.jpg";
 import rutaCesionesImg from "@/assets/ruta-cesiones-remate.jpg";
@@ -16,11 +15,6 @@ const routeImages: Record<string, string> = {
   "cesiones-remate": rutaCesionesImg,
   "subastas-boe": rutaSubastasImg,
   "deuda-npl": rutaNplImg,
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.12, duration: 0.5, ease: [0, 0, 0.2, 1] as const } }),
 };
 
 const AcademiaRuta = () => {
@@ -79,45 +73,27 @@ const AcademiaRuta = () => {
         </div>
         <div className="relative py-20 md:py-28">
           <div className="container mx-auto px-4 max-w-4xl">
-            <motion.button
+            <button
               onClick={() => navigate("/academia")}
               className="flex items-center gap-1.5 text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors mb-8"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
             >
               <ArrowLeft className="w-4 h-4" /> Volver a la Academia
-            </motion.button>
+            </button>
 
-            <motion.div
-              className="flex items-center gap-3 mb-5"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-            >
+            <div className="flex items-center gap-3 mb-5">
               <span className="text-4xl">{ruta.icon}</span>
               <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-accent/20 text-accent border border-accent/20 backdrop-blur-sm">
                 Prioridad {ruta.priority} · {ruta.modules.length} módulos · {totalLessons} lecciones
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-5 text-primary-foreground"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-            >
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-5 text-primary-foreground">
               {ruta.title}
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              className="text-lg text-primary-foreground/60 leading-relaxed max-w-3xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
-            >
+            <p className="text-lg text-primary-foreground/60 leading-relaxed max-w-3xl">
               {ruta.intro}
-            </motion.p>
+            </p>
           </div>
         </div>
       </section>
@@ -138,14 +114,9 @@ const AcademiaRuta = () => {
           {ruta.modules.map((mod, idx) => {
             const isOpen = openModule === idx;
             return (
-              <motion.div
+              <div
                 key={idx}
                 className={`rounded-2xl border transition-all duration-300 ${isOpen ? "border-accent/40 shadow-lg bg-card" : "border-border bg-card hover:border-accent/20"}`}
-                custom={idx}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeUp}
               >
                 <button
                   onClick={() => setOpenModule(isOpen ? -1 : idx)}
@@ -163,37 +134,24 @@ const AcademiaRuta = () => {
                   <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${isOpen ? "rotate-180 text-accent" : ""}`} />
                 </button>
 
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 md:px-8 pb-6 md:pb-8 pt-0">
-                        <div className="border-t border-border pt-5">
-                          <ul className="space-y-3">
-                            {mod.lessons.map((lesson, lIdx) => (
-                              <motion.li
-                                key={lIdx}
-                                className="flex items-start gap-3 text-sm text-muted-foreground"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: lIdx * 0.05, duration: 0.3 }}
-                              >
-                                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                                <span className="leading-relaxed">{lesson}</span>
-                              </motion.li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                {isOpen && (
+                  <div className="px-6 md:px-8 pb-6 md:pb-8 pt-0">
+                    <div className="border-t border-border pt-5">
+                      <ul className="space-y-3">
+                        {mod.lessons.map((lesson, lIdx) => (
+                          <li
+                            key={lIdx}
+                            className="flex items-start gap-3 text-sm text-muted-foreground"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                            <span className="leading-relaxed">{lesson}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -210,16 +168,11 @@ const AcademiaRuta = () => {
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {relatedArticles.map((article, i) => (
-                <motion.button
+              {relatedArticles.map((article) => (
+                <button
                   key={article.slug}
                   onClick={() => navigate(`/academia/${article.slug}`)}
                   className="group text-left bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-accent/30 transition-all duration-300"
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeUp}
                 >
                   <div className="h-1.5 bg-gradient-to-r from-accent to-primary" />
                   <div className="p-5">
@@ -239,7 +192,7 @@ const AcademiaRuta = () => {
                       Leer <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
-                </motion.button>
+                </button>
               ))}
             </div>
           </div>
