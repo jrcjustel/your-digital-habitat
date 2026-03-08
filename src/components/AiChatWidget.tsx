@@ -277,11 +277,33 @@ const AiChatWidget = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertFilters, setAlertFilters] = useState({ provincia: "", tipo_activo: "", precio_max: "" });
+  const [proactiveBubble, setProactiveBubble] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Listen for proactive triggers from other components
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      const { message, openChat } = e.detail || {};
+      if (openChat && message) {
+        setProactiveBubble(message);
+        // Auto-open and send after a small delay
+        setTimeout(() => {
+          setIsOpen(true);
+          setProactiveBubble(null);
+          // Auto-send the proactive message
+          handleSend(message);
+        }, 500);
+      } else if (message) {
+        setProactiveBubble(message);
+      }
+    };
+    window.addEventListener("ikesa-proactive-chat" as any, handler as any);
+    return () => window.removeEventListener("ikesa-proactive-chat" as any, handler as any);
+  }, [messages, isLoading, activeConvId]);
 
   const loadConversations = useCallback(async () => {
     if (!user) return;
