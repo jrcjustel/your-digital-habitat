@@ -544,12 +544,78 @@ const Valorador = () => {
               </CardContent>
             </Card>
 
+            {/* Catastro data summary if available */}
+            {catastroData && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <FileText className="w-4 h-4 text-accent" /> Datos Catastrales
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Ref. catastral</span>
+                      <span className="font-mono font-medium text-foreground">{catastroData.ref_catastral}</span>
+                    </div>
+                    {catastroData.uso_catastral && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Uso</span>
+                        <span className="font-medium text-foreground">{catastroData.uso_catastral}</span>
+                      </div>
+                    )}
+                    {catastroData.superficie_construida > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Superficie (Catastro)</span>
+                        <span className="font-medium text-foreground">{catastroData.superficie_construida} m²</span>
+                      </div>
+                    )}
+                    {catastroData.clase && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Clase</span>
+                        <span className="font-medium text-foreground">{catastroData.clase}</span>
+                      </div>
+                    )}
+                  </div>
+                  {catastroData.urls?.ficha_catastral && (
+                    <a
+                      href={catastroData.urls.ficha_catastral}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline mt-3"
+                    >
+                      <MapPin className="w-3 h-3" /> Ver ficha completa en Catastro
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             <div className="text-center space-y-4">
+              {/* PDF Download */}
+              <Button
+                size="lg"
+                variant="default"
+                className="w-full sm:w-auto gap-2"
+                onClick={handleDownloadPdf}
+                disabled={generatingPdf}
+              >
+                {generatingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generando PDF…
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Descargar Informe PDF
+                  </>
+                )}
+              </Button>
+
               <p className="text-muted-foreground text-sm">
                 ¿Quieres una tasación más precisa? Nuestros expertos pueden ayudarte.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" onClick={() => { setValuation(null); setCatastroFilled(false); }}>
+                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); }}>
                   Valorar otro inmueble
                 </Button>
                 <Button size="lg" variant="outline" asChild>
