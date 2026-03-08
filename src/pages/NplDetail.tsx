@@ -19,6 +19,7 @@ import DocumentsPanel from "@/components/DocumentsPanel";
 import OfferForm from "@/components/OfferForm";
 import RelatedAssets from "@/components/RelatedAssets";
 import WaitlistButton from "@/components/WaitlistButton";
+import CatastroPanel from "@/components/CatastroPanel";
 
 interface NplAsset {
   id: string;
