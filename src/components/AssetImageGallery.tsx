@@ -218,14 +218,20 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
                 i === current ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
               }`}
             >
-              <img
-                src={item.src}
-                alt={item.caption}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder.svg";
-                }}
-              />
+              {item.embedSrc ? (
+                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                  <Map className="w-5 h-5 text-primary" />
+                </div>
+              ) : (
+                <img
+                  src={item.src}
+                  alt={item.caption}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              )}
               {item.type === "fachada" && (
                 <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Catastro</span>
               )}
