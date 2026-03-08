@@ -346,6 +346,10 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
+        {selectedUserId ? (
+          <AdminUserDetail userId={selectedUserId} onBack={() => setSelectedUserId(null)} />
+        ) : (
+        <>
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
