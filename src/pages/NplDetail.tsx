@@ -23,6 +23,7 @@ import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
 import CdrAnalysisPanel from "@/components/CdrAnalysisPanel";
 import OcupadoAnalysisPanel from "@/components/OcupadoAnalysisPanel";
+import NplAnalysisPanel from "@/components/NplAnalysisPanel";
 import {
   Tooltip,
   TooltipContent,
