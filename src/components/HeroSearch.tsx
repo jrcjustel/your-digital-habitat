@@ -1,114 +1,133 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, ArrowRight, GraduationCap, TrendingUp, Shield, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { Search, ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
-
-const stats = [
-  { value: "4", label: "Rutas formativas" },
-  { value: "+40", label: "Lecciones prácticas" },
-  { value: "100%", label: "Gratuito" },
-];
-
-const pillars = [
-  { icon: GraduationCap, title: "Aprende", desc: "Formación estructurada en activos distressed" },
-  { icon: TrendingUp, title: "Analiza", desc: "Herramientas profesionales de valoración" },
-  { icon: Shield, title: "Invierte", desc: "Acceso directo a oportunidades reales" },
-];
 
 const HeroSearch = () => {
   const navigate = useNavigate();
+  const [operation, setOperation] = useState("comprar");
+  const [saleType, setSaleType] = useState("");
+  const [type, setType] = useState("");
+  const [query, setQuery] = useState("");
+
+  const handleSearch = () => {
+    // If sale type is an investor product, redirect to the investor marketplace
+    if (saleType === "npl") {
+      const params = new URLSearchParams();
+      if (query.trim()) params.set("q", query.trim());
+      navigate(`/inversores/npl${params.toString() ? `?${params}` : ""}`);
+      return;
+    }
+    if (saleType === "cesion-remate") {
+      const params = new URLSearchParams();
+      if (query.trim()) params.set("q", query.trim());
+      navigate(`/inversores/cesiones-remate${params.toString() ? `?${params}` : ""}`);
+      return;
+    }
+    if (saleType === "ocupados") {
+      const params = new URLSearchParams();
+      if (query.trim()) params.set("q", query.trim());
+      navigate(`/inversores/ocupados${params.toString() ? `?${params}` : ""}`);
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (operation === "alquilar") params.set("operation", "alquiler");
+    if (saleType) params.set("saleType", saleType);
+    if (type) params.set("type", type);
+    if (query.trim()) params.set("q", query.trim());
+    navigate(`/inmuebles${params.toString() ? `?${params}` : ""}`);
+  };
 
   return (
     <section className="relative overflow-hidden">
-      {/* Background */}
       <div className="absolute inset-0">
         <img src={heroBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/95 to-primary/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-primary/50" />
+        <div className="absolute inset-0 hero-section opacity-90" />
       </div>
 
-      <div className="relative container mx-auto px-4 py-24 md:py-36">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left – Copy */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+      <div className="relative container mx-auto px-4 py-20 md:py-28 text-center">
+        <p className="text-primary-foreground/70 text-sm font-medium mb-3 animate-fade-in tracking-wider uppercase">
+          Democratizamos la inversión inmobiliaria
+        </p>
+        <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground mb-4 animate-slide-up">
+          Inversión inmobiliaria
+          <br />
+          accesible para todos
+        </h1>
+        <p className="text-primary-foreground/60 text-lg mb-10 max-w-2xl mx-auto animate-slide-up">
+          Accede a oportunidades antes reservadas a grandes fondos. Transparencia, tecnología y acompañamiento experto al alcance de cualquier inversor.
+        </p>
+
+        <div className="max-w-5xl mx-auto bg-card rounded-2xl shadow-xl p-2 animate-slide-up">
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+            className="flex flex-col md:flex-row items-stretch gap-2"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-bold tracking-[0.15em] uppercase rounded bg-accent/20 text-accent">
-              <GraduationCap className="w-3.5 h-3.5" />
-              IKESA Investor Academy
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-black text-primary-foreground leading-[1.08] tracking-tight mb-4">
-              Aprende a invertir en inmobiliario
-              <span className="block text-accent">desde cero</span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-primary-foreground/50 font-medium mb-2 leading-relaxed">
-              La academia que democratiza la inversión inmobiliaria en España
-            </p>
-
-            <p className="text-sm text-primary-foreground/40 leading-relaxed mb-8 max-w-lg">
-              IKESA Investor Academy es una plataforma educativa diseñada para enseñar a cualquier persona cómo invertir en el mercado inmobiliario de forma segura y profesional.
-            </p>
-
-            <div className="flex flex-wrap gap-3 mb-10">
-              <button
-                onClick={() => navigate("/academia")}
-                className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold bg-accent text-accent-foreground rounded-lg hover:brightness-110 transition-all shadow-lg shadow-accent/20"
+            {/* Operación */}
+            <div className="relative flex-shrink-0">
+              <select
+                value={operation}
+                onChange={(e) => setOperation(e.target.value)}
+                className="appearance-none w-full md:w-36 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
               >
-                <Play className="w-4 h-4" />
-                Empieza gratis
-              </button>
-              <button
-                onClick={() => navigate("/como-funciona")}
-                className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold text-primary-foreground/80 bg-primary-foreground/10 hover:bg-primary-foreground/15 rounded-lg transition-all border border-primary-foreground/10"
+                <option value="comprar">Comprar</option>
+                <option value="alquilar">Alquilar</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+
+            {/* Tipo de venta / producto */}
+            <div className="relative flex-shrink-0">
+              <select
+                value={saleType}
+                onChange={(e) => setSaleType(e.target.value)}
+                className="appearance-none w-full md:w-48 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
               >
-                Cómo funciona
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                <option value="">Tipo de venta</option>
+                <option value="compraventa">Compraventa directa</option>
+                <option value="obra-nueva">Obra nueva</option>
+                <option value="npl">NPL (Compra de crédito)</option>
+                <option value="cesion-remate">Cesión de remate</option>
+                <option value="ocupados">Inmueble ocupado</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-8">
-              {stats.map((s) => (
-                <div key={s.label}>
-                  <p className="text-2xl font-black text-accent">{s.value}</p>
-                  <p className="text-xs text-primary-foreground/40">{s.label}</p>
-                </div>
-              ))}
+            {/* Tipo inmueble */}
+            <div className="relative flex-shrink-0">
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="appearance-none w-full md:w-40 bg-secondary text-foreground rounded-xl px-4 py-3.5 pr-10 text-sm font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent"
+              >
+                <option value="">Todos los tipos</option>
+                <option value="vivienda">Vivienda</option>
+                <option value="local">Local</option>
+                <option value="oficina">Oficina</option>
+                <option value="terreno">Terreno</option>
+                <option value="nave">Nave</option>
+                <option value="edificio">Edificio</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             </div>
-          </motion.div>
 
-          {/* Right – Pillar cards */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden lg:flex flex-col gap-4"
-          >
-            {pillars.map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <motion.div
-                  key={p.title}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.15 }}
-                  className="flex items-start gap-4 p-5 rounded-xl bg-primary-foreground/5 border border-primary-foreground/10 backdrop-blur-sm hover:border-accent/30 transition-colors"
-                >
-                  <div className="flex-shrink-0 w-11 h-11 rounded-lg bg-accent/15 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-accent" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-primary-foreground text-sm mb-0.5">{p.title}</h3>
-                    <p className="text-xs text-primary-foreground/45">{p.desc}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+            {/* Búsqueda libre */}
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Población, zona, provincia..."
+                className="w-full bg-transparent text-foreground rounded-xl px-4 py-3.5 text-sm placeholder:text-muted-foreground focus:outline-none"
+              />
+            </div>
+
+            <button type="submit" className="btn-search flex items-center justify-center gap-2 rounded-xl">
+              <Search className="w-4 h-4" />
+              Buscar
+            </button>
+          </form>
         </div>
       </div>
     </section>
