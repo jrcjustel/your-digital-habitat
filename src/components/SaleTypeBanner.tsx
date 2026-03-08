@@ -1,6 +1,7 @@
-import { AlertTriangle, Home, Gavel, CreditCard, Ban, Building2, Scale, Clock, ExternalLink, Eye, EyeOff } from "lucide-react";
+import { AlertTriangle, Home, Gavel, CreditCard, Ban, Building2, Scale, Clock, ExternalLink, Eye, EyeOff, FileText } from "lucide-react";
 import type { SaleType } from "@/data/properties";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface SaleTypeBannerProps {
   saleType: SaleType;
@@ -143,15 +144,26 @@ const SaleTypeBanner = ({ saleType, compact = false }: SaleTypeBannerProps) => {
         <p className={`text-xs text-muted-foreground leading-relaxed ${!expanded && hasWarnings ? "line-clamp-3" : ""}`}>
           {config.legalText}
         </p>
-        {hasWarnings && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="text-xs font-medium text-accent hover:underline mt-1 flex items-center gap-1"
-          >
-            {expanded ? "Leer menos" : "Leer aviso legal completo"}
-            <ExternalLink className="w-3 h-3" />
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          {hasWarnings && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-xs font-medium text-accent hover:underline mt-1 flex items-center gap-1"
+            >
+              {expanded ? "Leer menos" : "Leer más"}
+            </button>
+          )}
+          {hasWarnings && (
+            <Link
+              to={`/aviso-legal-activos?tipo=${saleType}`}
+              className="text-xs font-medium text-accent hover:underline mt-1 flex items-center gap-1"
+            >
+              <FileText className="w-3 h-3" />
+              Ver documento legal
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
