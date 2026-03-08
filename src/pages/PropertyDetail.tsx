@@ -443,6 +443,7 @@ const PropertyDetail = () => {
                   </Tabs>
                 </div>
               </NdaGate>
+              <SaleTypeBanner saleType={property.saleType} />
               <ValuationPanel property={property} />
               <InvestmentCalculator property={property} />
               </>
