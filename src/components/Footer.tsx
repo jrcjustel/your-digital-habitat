@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { MessageCircle, Send } from "lucide-react";
 
 const footerSections = [
   {
@@ -90,6 +91,49 @@ const Footer = () => {
                 {search.label}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Canales de difusión */}
+        <div className="border-t border-primary-foreground/10 pt-8 mb-8">
+          <h4 className="font-heading font-bold text-sm mb-4">Síguenos en nuestros canales</h4>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="https://whatsapp.com/channel/IKESA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Canal WhatsApp
+            </a>
+            <a
+              href="https://wa.me/34600000000?text=Hola%2C%20quiero%20información%20sobre%20activos%20IKESA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp directo
+            </a>
+            <a
+              href="https://t.me/ikesa_inversiones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b3] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <Send className="w-4 h-4" />
+              Canal Telegram
+            </a>
+            <a
+              href="https://t.me/ikesa_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#0088cc]/20 hover:bg-[#0088cc]/30 text-[#0088cc] border border-[#0088cc]/30 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <Send className="w-4 h-4" />
+              Bot Telegram
+            </a>
           </div>
         </div>
 
