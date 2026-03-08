@@ -464,6 +464,11 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* SOCIAL MEDIA TAB */}
+          <TabsContent value="social">
+            <SocialMediaManager />
+          </TabsContent>
+
           {/* CHARTS TAB */}
           <TabsContent value="charts">
             <div className="grid gap-6 md:grid-cols-2">
