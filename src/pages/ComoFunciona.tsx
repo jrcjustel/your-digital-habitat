@@ -14,7 +14,6 @@ import {
   Users,
   BadgePercent,
   X,
-  ChevronDown,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState } from "react";
+import PriceCycleGraph from "@/components/PriceCycleGraph";
+import ProcessTimeline from "@/components/ProcessTimeline";
 
 /* ── Small reusable pieces ── */
 
@@ -47,33 +47,7 @@ const Bullet = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   </li>
 );
 
-/* ── Timeline step for the "Ciclo" section ── */
-const TimelineStep = ({
-  number,
-  title,
-  description,
-  duration,
-}: {
-  number: number;
-  title: string;
-  description: string;
-  duration: string;
-}) => (
-  <div className="relative flex gap-5 group">
-    {/* vertical line */}
-    <div className="flex flex-col items-center">
-      <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-sm z-10">
-        {number}
-      </div>
-      <div className="flex-1 w-px bg-border group-last:hidden" />
-    </div>
-    <div className="pb-10 group-last:pb-0">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">{duration}</span>
-      <h4 className="font-bold text-foreground mt-1 mb-1">{title}</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-    </div>
-  </div>
-);
+
 
 /* ── Product data ── */
 
@@ -164,45 +138,8 @@ const products = [
   },
 ];
 
-/* ── Cycle timeline data (inspired by Auctree) ── */
-const cycleSteps = [
-  {
-    title: "Haz tu oferta",
-    description:
-      "Encuentra tu activo y envía una oferta por debajo, igual o superior al precio orientativo. Recibirás notificaciones sobre el estado de tu oferta en tiempo real.",
-    duration: "Oferta",
-  },
-  {
-    title: "Revisión y depósito de reserva",
-    description:
-      "Revisamos tu oferta y confirmamos si ha sido pre-aprobada. En las siguientes 24-48h tras la pre-aprobación, el comprador abona el depósito de reserva.",
-    duration: "2-3 días",
-  },
-  {
-    title: "Prevención de blanqueo de capitales",
-    description:
-      "Te solicitamos documentación sobre el origen de los fondos. Por ley, es obligatorio verificar que los fondos provengan de fuentes legítimas (Ley 10/2010).",
-    duration: "1-2 semanas",
-  },
-  {
-    title: "Contrato de arras o reserva",
-    description:
-      "Se establece las condiciones de la operación y garantiza el cumplimiento entre las partes. El comprador habrá pagado el 10% para reservar su derecho de compra.",
-    duration: "1 semana",
-  },
-  {
-    title: "Transferencia de propiedad",
-    description:
-      "En inmuebles judiciales, un tribunal local supervisa la transferencia. El juez revisará la operación y cancelará las cargas pendientes para que la propiedad quede inscrita libre de cargas a tu nombre.",
-    duration: "2-5 meses",
-  },
-  {
-    title: "¡Llaves en mano!",
-    description:
-      "Acabas de adquirir un inmueble por debajo del precio de mercado. Ya puedes inscribirlo en el Registro de la Propiedad y empezar a rentabilizar tu inversión.",
-    duration: "Entrega",
-  },
-];
+
+
 
 /* ── Pros / Cons balance (Auctree style) ── */
 const balancePros = [
@@ -282,21 +219,21 @@ const ComoFunciona = () => {
         </div>
       </section>
 
-      {/* ── Balance: Pros & Cons (Auctree style) ── */}
+      {/* ── Price Cycle Graph (Auctree-inspired visual) ── */}
       <section className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <div className="text-center mb-10">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
             <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Bajo Riesgo y Alto Rendimiento</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
               Una jugada <span className="text-accent">inteligente</span>
             </h2>
             <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-              Comprar inmuebles judiciales ofrece una oportunidad única de invertir por debajo del precio de mercado con margen de seguridad. El potencial de descuento hace que sea una inversión que realmente vale la pena.
+              El valor del inmueble cae durante el proceso judicial y se recupera tras la adquisición. Compra en el punto más bajo y captura toda la plusvalía.
             </p>
           </div>
+          <PriceCycleGraph />
 
-          <div className="grid sm:grid-cols-2 gap-6">
-            {/* Cons */}
+          <div className="grid sm:grid-cols-2 gap-6 mt-12 max-w-3xl mx-auto">
             <Card className="border-red-200/50 bg-red-50/30 dark:bg-red-950/10 dark:border-red-900/30">
               <CardContent className="p-6">
                 <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">A tener en cuenta</h4>
@@ -307,7 +244,6 @@ const ComoFunciona = () => {
                 </ul>
               </CardContent>
             </Card>
-            {/* Pros */}
             <Card className="border-green-200/50 bg-green-50/30 dark:bg-green-950/10 dark:border-green-900/30">
               <CardContent className="p-6">
                 <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">Ventajas</h4>
@@ -322,9 +258,9 @@ const ComoFunciona = () => {
         </div>
       </section>
 
-      {/* ── Process timeline (Auctree-inspired) ── */}
+      {/* ── Visual Process Timeline ── */}
       <section className="border-b border-border">
-        <div className="container mx-auto px-4 py-16 max-w-3xl">
+        <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Nuestro equipo de expertos a tu disposición</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
@@ -332,18 +268,7 @@ const ComoFunciona = () => {
               <span className="text-accent">sin sorpresas</span>
             </h2>
           </div>
-
-          <div className="space-y-0">
-            {cycleSteps.map((step, idx) => (
-              <TimelineStep
-                key={idx}
-                number={idx + 1}
-                title={step.title}
-                description={step.description}
-                duration={step.duration}
-              />
-            ))}
-          </div>
+          <ProcessTimeline />
         </div>
       </section>
 
