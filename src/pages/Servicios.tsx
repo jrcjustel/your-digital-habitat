@@ -212,7 +212,7 @@ const Servicios = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mt-8"
             >
-              <Link to="/valorar">
+              <Link to="/contacto">
                 <Button size="lg" variant="secondary" className="gap-2 font-semibold">
                   <Mail className="w-4 h-4" />
                   Solicitar presupuesto personalizado

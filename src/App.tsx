@@ -73,6 +73,7 @@ const App = () => (
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="/valorar" element={<Valorador />} />
+            <Route path="/contacto" element={<Contacto />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AiChatWidget />
