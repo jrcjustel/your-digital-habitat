@@ -27,6 +27,7 @@ import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
+import AdminPanel from "./pages/AdminPanel";
 import Academia from "./pages/Academia";
 import AcademiaArticle from "./pages/AcademiaArticle";
 import AcademiaRuta from "./pages/AcademiaRuta";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
             <Route path="/admin/leads-valoracion" element={<AdminRoute><AdminValuationLeads /></AdminRoute>} />
+            <Route path="/admin/panel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
             {/* Redirects from old investor routes */}
             <Route path="/inversores" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/inversores/npl" element={<Navigate to="/inmuebles?saleType=npl" replace />} />
