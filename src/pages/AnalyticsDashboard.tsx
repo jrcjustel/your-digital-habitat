@@ -28,9 +28,12 @@ const AnalyticsDashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto">
+          <TabsList className="grid w-full grid-cols-6 max-w-4xl mx-auto">
             <TabsTrigger value="dashboard" className="gap-2 text-xs sm:text-sm">
               <BarChart3 className="w-4 h-4" /> Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="trends" className="gap-2 text-xs sm:text-sm">
+              <Activity className="w-4 h-4" /> Tendencias
             </TabsTrigger>
             <TabsTrigger value="market" className="gap-2 text-xs sm:text-sm">
               <TrendingUp className="w-4 h-4" /> Mercado
