@@ -105,7 +105,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 130, 160);
-  doc.text("IKESA Inmobiliaria Real — Dossier de Inversión Confidencial", MARGIN, 280);
+  doc.text("IKESA Inmobiliaria Real - Dossier de Inversion Confidencial", MARGIN, 280);
   doc.text(`Generado: ${new Date().toLocaleDateString("es-ES")}`, PAGE_WIDTH - MARGIN, 280, { align: "right" });
 
   // Accent line at bottom
