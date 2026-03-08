@@ -600,34 +600,84 @@ const AdminPanel = () => {
 
           {/* BROADCASTS TAB */}
           <TabsContent value="broadcasts">
-            <div className="space-y-3">
-              {broadcasts.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Send className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No se han enviado difusiones todavía</p>
-                </div>
-              ) : broadcasts.map((b) => (
-                <Card key={b.id}>
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      b.channel === "whatsapp" ? "bg-[#25D366]/15" : "bg-[#0088cc]/15"
-                    }`}>
-                      {b.channel === "whatsapp" ? <MessageCircle className="w-5 h-5 text-[#25D366]" /> : <Send className="w-5 h-5 text-[#0088cc]" />}
+            <div className="space-y-6">
+              {/* Composer */}
+              <Card className="border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Send className="w-5 h-5" /> Enviar Difusión Manual
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <textarea
+                    className="w-full min-h-[120px] rounded-xl border border-border bg-background p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 resize-y"
+                    placeholder="Escribe el mensaje de difusión... Soporta *negrita* para WhatsApp y <b>negrita</b> para Telegram."
+                    value={broadcastText}
+                    onChange={(e) => setBroadcastText(e.target.value)}
+                  />
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-sm text-muted-foreground">Canal:</span>
+                    <div className="flex gap-2">
+                      {(["both", "telegram", "whatsapp"] as const).map((ch) => (
+                        <Button
+                          key={ch}
+                          variant={broadcastChannel === ch ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setBroadcastChannel(ch)}
+                          className="gap-1.5 text-xs"
+                        >
+                          {ch === "telegram" && <Send className="w-3.5 h-3.5" />}
+                          {ch === "whatsapp" && <MessageCircle className="w-3.5 h-3.5" />}
+                          {ch === "both" && <><Send className="w-3.5 h-3.5" /><MessageCircle className="w-3.5 h-3.5" /></>}
+                          {ch === "both" ? "Ambos" : ch === "telegram" ? "Telegram" : "WhatsApp"}
+                        </Button>
+                      ))}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground line-clamp-2">{b.content}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {b.sent_at ? new Date(b.sent_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Sin enviar"}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-sm font-semibold text-foreground">{b.sent_count} enviados</p>
-                      {b.failed_count > 0 && <p className="text-xs text-destructive">{b.failed_count} fallidos</p>}
-                      <Badge variant={b.status === "sent" ? "default" : "secondary"} className="text-[10px] mt-1">{b.status}</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <div className="flex-1" />
+                    <span className="text-xs text-muted-foreground">{broadcastText.length} caracteres</span>
+                    <Button
+                      onClick={sendBroadcast}
+                      disabled={broadcastSending || !broadcastText.trim()}
+                      className="gap-2"
+                    >
+                      {broadcastSending ? <Activity className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                      Enviar ahora
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* History */}
+              <div>
+                <h3 className="text-sm font-semibold text-foreground mb-3">Historial de difusiones</h3>
+                {broadcasts.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Send className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No se han enviado difusiones todavía</p>
+                  </div>
+                ) : broadcasts.map((b) => (
+                  <Card key={b.id} className="mb-2">
+                    <CardContent className="flex items-center gap-4 p-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                        b.channel === "whatsapp" ? "bg-[#25D366]/15" : "bg-[#0088cc]/15"
+                      }`}>
+                        {b.channel === "whatsapp" ? <MessageCircle className="w-5 h-5 text-[#25D366]" /> : <Send className="w-5 h-5 text-[#0088cc]" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-foreground line-clamp-2">{b.content}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {b.sent_at ? new Date(b.sent_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "Sin enviar"}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-sm font-semibold text-foreground">{b.sent_count} enviados</p>
+                        {(b.failed_count ?? 0) > 0 && <p className="text-xs text-destructive">{b.failed_count} fallidos</p>}
+                        <Badge variant={b.status === "sent" ? "default" : b.status === "failed" ? "destructive" : "secondary"} className="text-[10px] mt-1">{b.status}</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
