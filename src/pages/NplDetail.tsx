@@ -23,6 +23,7 @@ import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
 import CdrAnalysisPanel from "@/components/CdrAnalysisPanel";
 import OcupadoAnalysisPanel from "@/components/OcupadoAnalysisPanel";
+import NplAnalysisPanel from "@/components/NplAnalysisPanel";
 import {
   Tooltip,
   TooltipContent,
@@ -506,77 +507,9 @@ const NplDetail = () => {
                   </>
                 ) : (
                   <>
-                    {/* Inmueble section */}
-                    <AnalysisSection title="Inmueble" icon={Building2}>
-                      <div className="divide-y divide-border">
-                        <InfoRow label="Comunidad autónoma" value={asset.comunidad_autonoma} />
-                        <InfoRow label="Provincia" value={asset.provincia} />
-                        <InfoRow label="Municipio" value={asset.municipio} />
-                        <InfoRow label="Código postal" value={asset.codigo_postal} />
-                        <InfoRow label="Dirección" value={asset.direccion} />
-                        <InfoRow label="Tipo de activo" value={asset.tipo_activo} />
-                        <InfoRow label="Metros construidos" value={asset.sqm > 0 ? `${asset.sqm.toLocaleString("es-ES")} m²` : null} />
-                        <InfoRow label="VPO" value={asset.vpo ? "SÍ" : "NO"} />
-                        <InfoRow label="Año construcción" value={asset.anio_construccion} />
-                        <InfoRow label="Referencia catastral" value={asset.ref_catastral} />
-                        <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional || "n.a."} />
-                        <InfoRow label="Persona" value={asset.persona_tipo === "juridica" ? "Jurídica" : asset.persona_tipo === "fisica" ? "Física" : asset.persona_tipo} />
-                        <InfoRow label="Titulares" value={asset.num_titulares} />
-                        <InfoRow label="Finca registral" value={asset.finca_registral} />
-                        <InfoRow label="Registro propiedad" value={asset.registro_propiedad} />
-                      </div>
-                    </AnalysisSection>
+                    {/* NPL and subasta use the full NplAnalysisPanel */}
+                    <NplAnalysisPanel asset={asset} />
 
-                    {/* Préstamo / Deuda section (NPL only) */}
-                    {isNpl && (
-                      <AnalysisSection title="Préstamo / Crédito" icon={CreditCard}>
-                        <div className="divide-y divide-border">
-                          <InfoRow label="Rango" value={asset.rango_deuda} />
-                          <InfoRow label="Deuda actual" value={asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : "n.a."} highlight />
-                          <InfoRow label="Valor del activo" value={asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : "n.a."} />
-                          <InfoRow label="NDG" value={asset.ndg} />
-                          <InfoRow label="Asset ID" value={asset.asset_id} />
-                        </div>
-
-                        {/* LTV Analysis */}
-                        {asset.deuda_ob > 0 && asset.valor_activo > 0 && (
-                          <div className="mt-4 bg-secondary rounded-xl p-4">
-                            <h4 className="text-sm font-bold text-foreground mb-3">Análisis LTV (Loan-to-Value)</h4>
-                            <div className="grid grid-cols-3 gap-3 text-center">
-                              <div>
-                                <p className="text-xs text-muted-foreground">Deuda / Valor activo</p>
-                                <p className="text-lg font-bold text-foreground">{Math.round((asset.deuda_ob / asset.valor_activo) * 100)}%</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-muted-foreground">Precio / Deuda</p>
-                                <p className="text-lg font-bold text-accent">{asset.precio_orientativo > 0 ? `${Math.round((asset.precio_orientativo / asset.deuda_ob) * 100)}%` : "N/D"}</p>
-                              </div>
-                              <div>
-                                <p className="text-xs text-muted-foreground">Descuento s/deuda</p>
-                                <p className="text-lg font-bold text-primary">{asset.precio_orientativo > 0 ? `${Math.round((1 - asset.precio_orientativo / asset.deuda_ob) * 100)}%` : "N/D"}</p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </AnalysisSection>
-                    )}
-
-                    {/* Judicial section */}
-                    <AnalysisSection title="Situación Judicial" icon={Scale}>
-                      <div className="divide-y divide-border">
-                        <InfoRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} highlight={asset.judicializado} />
-                        <InfoRow label="Fase judicial actual" value={asset.fase_judicial || asset.estado_judicial || "n.a."} />
-                        <InfoRow label="Tipo de procedimiento" value={asset.tipo_procedimiento || "n.a."} />
-                        <InfoRow label="Cesión de remate" value={asset.cesion_remate ? "SÍ" : "NO"} />
-                        <InfoRow label="Cesión de crédito" value={asset.cesion_credito ? "SÍ" : "NO"} />
-                        <InfoRow label="Postura en subasta" value={asset.postura_subasta ? "SÍ" : "NO"} />
-                        <InfoRow label="Importe pre-aprobado" value={asset.importe_preaprobado > 0 ? `${asset.importe_preaprobado.toLocaleString("es-ES")} €` : "n.a."} />
-                        <InfoRow label="Oferta aprobada" value={asset.oferta_aprobada ? "SÍ" : "NO"} />
-                        <InfoRow label="Tipo de venta" value={opLabel} />
-                      </div>
-                    </AnalysisSection>
-
-                    {/* Comisiones section */}
                     <AnalysisSection title="Condiciones comerciales" icon={Euro} defaultOpen={false}>
                       <div className="divide-y divide-border">
                         <InfoRow label="Comisión IKESA" value={asset.comision_porcentaje > 0 ? `${asset.comision_porcentaje}% (a cargo del comprador)` : "Exenta (asumida por el fondo)"} />
@@ -586,12 +519,10 @@ const NplDetail = () => {
                       </div>
                     </AnalysisSection>
 
-                    {/* Catastro section */}
                     <AnalysisSection title="Información catastral" icon={MapPin} defaultOpen={false}>
                       <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
                     </AnalysisSection>
 
-                    {/* Documents section */}
                     <AnalysisSection title="Documentación" icon={FolderOpen} defaultOpen={false}>
                       <DocumentsPanel nplAssetId={asset.id} compact showFilters />
                     </AnalysisSection>
