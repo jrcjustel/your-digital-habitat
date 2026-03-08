@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import SocialMediaManager from "@/components/SocialMediaManager";
+import AdminUserDetail from "@/components/AdminUserDetail";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,6 +88,7 @@ const AdminPanel = () => {
   const [matchingAssetId, setMatchingAssetId] = useState("");
   const [matchingResult, setMatchingResult] = useState<number | null>(null);
   const [matchingLoading, setMatchingLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [broadcastText, setBroadcastText] = useState("");
   const [broadcastChannel, setBroadcastChannel] = useState<"whatsapp" | "telegram" | "both">("both");
   const [broadcastSending, setBroadcastSending] = useState(false);
@@ -344,6 +346,10 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
+        {selectedUserId ? (
+          <AdminUserDetail userId={selectedUserId} onBack={() => setSelectedUserId(null)} />
+        ) : (
+        <>
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
@@ -408,7 +414,7 @@ const AdminPanel = () => {
                 </thead>
                 <tbody>
                   {filteredUsers.map((u) => (
-                    <tr key={u.user_id} className="border-b border-border/50 hover:bg-secondary/30">
+                    <tr key={u.user_id} className="border-b border-border/50 hover:bg-secondary/30 cursor-pointer" onClick={() => setSelectedUserId(u.user_id)}>
                       <td className="py-2.5 px-2">
                         <p className="font-medium text-foreground">{u.display_name || "Sin nombre"}</p>
                         <p className="text-[10px] text-muted-foreground">{u.phone || "Sin teléfono"}</p>
@@ -773,6 +779,8 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
         </Tabs>
+        </>
+        )}
       </div>
       <Footer />
     </div>
