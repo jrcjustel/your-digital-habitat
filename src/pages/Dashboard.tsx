@@ -172,6 +172,26 @@ const Dashboard = () => {
     { icon: Home, label: "Inmuebles Ocupados", href: "/inversores/ocupados", color: "bg-primary/10 text-primary" },
   ];
 
+  // If NDA not signed, show signing flow
+  if (!profile.nda_signed) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Completa tu registro</h1>
+              <p className="text-muted-foreground">{user.email}</p>
+            </div>
+            <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
+          </div>
+          <NdaSigningFlow user={user} onComplete={() => loadData()} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
