@@ -274,27 +274,50 @@ const Servicios = () => {
             </TabsContent>
 
             <TabsContent value="mediacion">
-              <div className="space-y-6">
+              <Accordion type="single" collapsible className="space-y-4">
                 {tarifasMediacion.map((grupo) => (
-                  <div key={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
-                    <div className="bg-primary/5 px-5 py-3 border-b border-border">
-                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide">
+                  <AccordionItem key={grupo.categoria} value={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline bg-primary/5">
+                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide text-left">
                         {grupo.categoria}
                       </h3>
-                    </div>
-                    <div className="divide-y divide-border">
-                      {grupo.items.map((item) => (
-                        <div key={item.concepto} className="flex items-center justify-between px-5 py-3">
-                          <span className="text-sm text-foreground">{item.concepto}</span>
-                          <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
-                            {item.honorarios}
-                          </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-5 pb-5 pt-3">
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                        {grupo.descripcion}
+                      </p>
+                      {grupo.gestiones.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-2">Gestiones que realizamos:</p>
+                          <ul className="space-y-1">
+                            {grupo.gestiones.map((g) => (
+                              <li key={g} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                                {g}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      )}
+                      {grupo.items.length > 0 && (
+                        <div className="border-t border-border pt-4">
+                          <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-2">Tarifas:</p>
+                          <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                            {grupo.items.map((item) => (
+                              <div key={item.concepto} className="flex items-center justify-between px-4 py-2.5 bg-secondary/30">
+                                <span className="text-sm text-foreground">{item.concepto}</span>
+                                <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
+                                  {item.honorarios}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </TabsContent>
           </Tabs>
 
