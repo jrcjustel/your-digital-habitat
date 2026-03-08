@@ -1,4 +1,4 @@
-import { Building2, Euro, Calendar, TrendingUp, Scale, Landmark, ArrowRight, Info } from "lucide-react";
+import { Building2, Euro, Calendar, TrendingUp, Scale, Landmark, Info } from "lucide-react";
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableFooter,
 } from "@/components/ui/table";
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { KpiCards, ComparisonBarChart, GanttCalendar, SensitivityRow } from "@/components/analysis/AnalysisCharts";
 
 interface CdrAsset {
   direccion: string | null;
@@ -39,11 +40,9 @@ interface Props {
   asset: CdrAsset;
 }
 
-/** Format number to Spanish locale with € */
 const fmt = (n: number) => n.toLocaleString("es-ES");
-const fmtK = (n: number) => `${(n / 1000).toFixed(0)}k`;
+const fmtK = (n: number) => `€${(n / 1000).toFixed(0)}k`;
 
-/** Small info row for tables */
 const DataRow = ({ label, value, highlight, note }: {
   label: string; value: string | number | null | undefined; highlight?: boolean; note?: string;
 }) => {
@@ -75,20 +74,20 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
   const pricePerSqm = area > 0 ? Math.round(market / area) : 0;
 
   // === Financial model (CDR) ===
-  const itp = Math.round(price * 0.10); // IVA/ITP ~10%
-  const ajd = 0; // AJD typically 0 for CDR
-  const reforma = Math.round(area * 25); // ~25€/m² light capex
+  const itp = Math.round(price * 0.10);
+  const ajd = 0;
+  const reforma = Math.round(area * 25);
   const notariaRegistro = 900;
   const comisionCosts = asset.comision_porcentaje > 0 ? Math.round(price * asset.comision_porcentaje / 100) : 500;
   const costesLegales = 1100;
-  const cargasPreferentes = Math.round(area * 3.8 * 4); // ~IBI+comunidad x4 years estimate
+  const cargasPreferentes = Math.round(area * 3.8 * 4);
   const costeInmueble = Math.round((notariaRegistro + comisionCosts + costesLegales + cargasPreferentes) * 0.3);
 
   const cfInversionY1 = -(price + itp + ajd);
   const cfInversionY2 = -reforma;
   const cfInversionTotal = cfInversionY1 + cfInversionY2;
 
-  const ventaPrice = Math.round(market * 0.92); // sell at ~92% market
+  const ventaPrice = Math.round(market * 0.92);
   const costesY1 = -(notariaRegistro + comisionCosts + cargasPreferentes);
   const costesY2 = -(costesLegales + costeInmueble);
   const costesTotal = costesY1 + costesY2;
@@ -104,7 +103,9 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
   const totalInvested = Math.abs(cfInversionTotal) + Math.abs(costesTotal);
   const tirBruta = totalInvested > 0 ? Math.round((totalNet / totalInvested) * 100 / (durationMonths / 12) * 10) / 10 : 0;
 
-  // Sensitivity analysis: different purchase prices
+  const discount = market > 0 && price > 0 ? Math.round((1 - price / market) * 100) : 0;
+
+  // Sensitivity
   const sensitivities = [-5000, -2000, 0, 2000, 5000].map(delta => {
     const p = price + delta;
     const itpS = Math.round(p * 0.10);
@@ -114,13 +115,21 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
     return { price: p, tir };
   });
 
-  // Calendar milestones
-  const calendar = [
-    { label: "Arras", months: 0, icon: "📝" },
-    { label: "Escritura", months: 5, icon: "🏛️" },
-    { label: "Posesión", months: 12, icon: "🔑" },
-    { label: "Reforma", months: 13, icon: "🔨" },
-    { label: "Venta", months: 18, icon: "🏠" },
+  // Gantt calendar items
+  const ganttItems = [
+    { label: "Arras", startMonth: 0, durationMonths: 1 },
+    { label: "Escritura", startMonth: 4, durationMonths: 2 },
+    { label: "Posesión", startMonth: 8, durationMonths: 5 },
+    { label: "Capex", startMonth: 13, durationMonths: 2 },
+    { label: "Venta", startMonth: 18, durationMonths: 6 },
+  ];
+
+  // Bar chart data
+  const barData = [
+    ...(asset.deuda_ob > 0 ? [{ name: "Deuda Actual", value: asset.deuda_ob, color: "hsl(var(--destructive))" }] : []),
+    ...(asset.importe_preaprobado > 0 ? [{ name: "Valor Subasta", value: asset.importe_preaprobado, color: "hsl(var(--muted-foreground))" }] : []),
+    ...(market > 0 ? [{ name: "Valoración", value: market, color: "hsl(var(--primary))" }] : []),
+    ...(price > 0 ? [{ name: "Precio Compra", value: price, color: "hsl(var(--accent))" }] : []),
   ];
 
   const fmtCF = (n: number) => {
@@ -130,7 +139,7 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
 
   return (
     <div className="space-y-6">
-      {/* ── SECTION 1: Detalle General ── */}
+      {/* ── Detalle General ── */}
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Building2 className="w-5 h-5 text-accent" />
@@ -140,13 +149,21 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
           <p className="text-sm text-muted-foreground leading-relaxed">
             Se comercializa <strong>{asset.tipo_activo || "Inmueble"}</strong> en cesión de remate
             {asset.municipio ? ` sito en ${asset.municipio}` : ""}
-            {market > 0 ? `, valorado en ${fmtK(market)} €` : ""}
-            {price > 0 ? `. El precio potencial de compra propuesto es de ${fmtK(price)} €.` : "."}
+            {market > 0 ? `, valorado en ${fmtK(market)}` : ""}
+            {price > 0 ? `. El precio potencial de compra propuesto es de ${fmtK(price)}.` : "."}
           </p>
         </div>
       </div>
 
-      {/* ── SECTION 2: Colateral ── */}
+      {/* ── KPI Cards ── */}
+      <KpiCards items={[
+        { label: "Valoración Colateral", value: fmtK(market) },
+        { label: "Precio Orientativo", value: fmtK(price), accent: true },
+        { label: "Margen Estimado", value: `${fmtK(Math.max(totalNet, 0))}` },
+        { label: "TIR Bruta", value: `${tirBruta}%`, sublabel: `${durationMonths} meses`, accent: true },
+      ]} />
+
+      {/* ── Colateral + Valoración ── */}
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -169,28 +186,22 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
               note="Asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años."
             />
             {asset.vpo && <DataRow label="VPO" value="SÍ" highlight />}
-            <DataRow label="Persona" value={asset.persona_tipo === "juridica" ? "Jurídica" : asset.persona_tipo === "fisica" ? "Física" : asset.persona_tipo} />
-            <DataRow label="Titulares" value={asset.num_titulares} />
-            <DataRow label="Finca registral" value={asset.finca_registral} />
-            <DataRow label="Registro propiedad" value={asset.registro_propiedad} />
           </div>
         </div>
 
         <div className="space-y-6">
-          {/* Valoración Colateral */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Euro className="w-4 h-4 text-accent" />
               <h4 className="text-sm font-bold text-foreground">Valoración Colateral</h4>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <DataRow label="Valoración (€/m²)" value={pricePerSqm > 0 ? `${fmt(pricePerSqm)} €/m²` : null} highlight />
+              <DataRow label="Valoración (€/m²)" value={pricePerSqm > 0 ? `${fmt(pricePerSqm)} €/m²` : null} />
               <DataRow label="Superficie adoptada (m²)" value={area > 0 ? `${fmt(area)} m²` : null} />
               <DataRow label="Valoración total (€)" value={market > 0 ? `${fmt(market)} €` : null} highlight />
             </div>
           </div>
 
-          {/* Situación Judicial */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Scale className="w-4 h-4 text-accent" />
@@ -202,10 +213,13 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
               <DataRow label="Importe pre-aprobado" value={asset.importe_preaprobado > 0 ? `${fmt(asset.importe_preaprobado)} €` : "n.a."} highlight />
             </div>
           </div>
+
+          {/* Bar chart */}
+          {barData.length >= 2 && <ComparisonBarChart data={barData} />}
         </div>
       </div>
 
-      {/* ── SECTION 3: Análisis Financiero CDR ── */}
+      {/* ── Análisis Financiero CDR ── */}
       <div>
         <div className="flex items-center gap-2 mb-2">
           <TrendingUp className="w-5 h-5 text-accent" />
@@ -213,7 +227,7 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
         </div>
         <p className="text-sm text-muted-foreground mb-4">
           En este escenario, se asume la compra del inmueble en cesión de remate.
-          Se estima un margen de <strong className="text-foreground">{fmt(Math.max(totalNet, 0))} €</strong> y
+          Se estima un margen de <strong className="text-foreground">{fmtK(Math.max(totalNet, 0))}</strong> y
           una TIR Bruta del <strong className="text-accent">{tirBruta}%</strong> en
           una operación que finalizaría en <strong className="text-foreground">{durationMonths} meses</strong>.
         </p>
@@ -230,7 +244,6 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {/* CF Inversión group */}
               <TableRow className="bg-secondary/30">
                 <TableCell className="font-bold text-foreground">CF Inversión</TableCell>
                 <TableCell className="text-right font-bold text-destructive">{fmtCF(cfInversionY1)}</TableCell>
@@ -262,18 +275,26 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
                 <TableCell className="text-right">{fmtCF(-reforma)}</TableCell>
               </TableRow>
 
-              {/* CF Explotación group */}
+              {/* Ingresos */}
               <TableRow className="bg-secondary/30">
-                <TableCell className="font-bold text-foreground">CF Explotación</TableCell>
-                <TableCell className="text-right font-bold text-destructive">{fmtCF(cfExplotacionY1)}</TableCell>
-                <TableCell className="text-right font-bold text-primary">{fmtCF(cfExplotacionY2)}</TableCell>
-                <TableCell className="text-right font-bold text-primary">{fmtCF(cfExplotacionTotal)}</TableCell>
+                <TableCell className="font-bold text-foreground">Ingresos</TableCell>
+                <TableCell className="text-right text-muted-foreground">–</TableCell>
+                <TableCell className="text-right font-bold text-primary">{fmt(ventaPrice)}</TableCell>
+                <TableCell className="text-right font-bold text-primary">{fmt(ventaPrice)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="pl-6 text-muted-foreground">Ingresos (Venta)</TableCell>
+                <TableCell className="pl-6 text-muted-foreground">Venta</TableCell>
                 <TableCell className="text-right text-muted-foreground">–</TableCell>
                 <TableCell className="text-right text-primary">{fmt(ventaPrice)}</TableCell>
-                <TableCell className="text-right text-primary">{fmt(ventaPrice)}</TableCell>
+                <TableCell className="text-right font-bold">{fmt(ventaPrice)}</TableCell>
+              </TableRow>
+
+              {/* Costes */}
+              <TableRow className="bg-secondary/30">
+                <TableCell className="font-bold text-foreground">Costes</TableCell>
+                <TableCell className="text-right font-bold text-destructive">{fmtCF(costesY1)}</TableCell>
+                <TableCell className="text-right font-bold text-destructive">{fmtCF(costesY2)}</TableCell>
+                <TableCell className="text-right font-bold text-destructive">{fmtCF(costesTotal)}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="pl-6 text-muted-foreground">Notaría y Registro</TableCell>
@@ -299,6 +320,18 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
                 <TableCell className="text-right text-muted-foreground">–</TableCell>
                 <TableCell className="text-right">{fmtCF(-cargasPreferentes)}</TableCell>
               </TableRow>
+              <TableRow>
+                <TableCell className="pl-6 text-muted-foreground">Cashout <sup>(1)</sup></TableCell>
+                <TableCell className="text-right text-muted-foreground">–</TableCell>
+                <TableCell className="text-right text-muted-foreground">–</TableCell>
+                <TableCell className="text-right">–</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="pl-6 text-muted-foreground">Coste Inmueble</TableCell>
+                <TableCell className="text-right text-muted-foreground">–</TableCell>
+                <TableCell className="text-right text-muted-foreground">{fmtCF(-costeInmueble)}</TableCell>
+                <TableCell className="text-right">{fmtCF(-costeInmueble)}</TableCell>
+              </TableRow>
             </TableBody>
             <TableFooter>
               <TableRow className="bg-accent/10 border-t-2 border-accent/30">
@@ -312,72 +345,16 @@ const CdrAnalysisPanel = ({ asset }: Props) => {
         </div>
       </div>
 
-      {/* ── SECTION 4: Calendar Timeline ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-accent" />
-          <h3 className="text-base font-bold text-foreground">Calendario estimado</h3>
-          <Badge variant="outline" className="text-xs">{durationMonths} meses</Badge>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-5">
-          <div className="relative">
-            {/* Timeline bar */}
-            <div className="absolute top-5 left-6 right-6 h-0.5 bg-border" />
-            <div className="flex justify-between relative z-10">
-              {calendar.map((item, i) => (
-                <div key={i} className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-full bg-accent/10 border-2 border-accent flex items-center justify-center text-lg mb-2">
-                    {item.icon}
-                  </div>
-                  <span className="text-xs font-bold text-foreground">{item.label}</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5">Mes {item.months}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── SECTION 5: Sensitivity Analysis ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-accent" />
-          <h4 className="text-sm font-bold text-foreground">Análisis de Sensibilidad</h4>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          TIR Bruta estimada según distintos precios de compra.
-        </p>
-        <div className="border border-border rounded-xl overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-secondary">
-                <TableHead className="font-bold text-foreground">Precio de Compra</TableHead>
-                <TableHead className="text-right font-bold text-foreground">TIR Bruta</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sensitivities.map((s, i) => {
-                const isBase = s.price === price;
-                return (
-                  <TableRow key={i} className={isBase ? "bg-accent/5" : ""}>
-                    <TableCell className={isBase ? "font-bold text-accent" : ""}>
-                      {fmt(s.price)} €
-                      {isBase && <Badge variant="secondary" className="ml-2 text-[10px]">Base</Badge>}
-                    </TableCell>
-                    <TableCell className={`text-right font-bold ${s.tir > 20 ? "text-primary" : s.tir > 10 ? "text-accent" : "text-muted-foreground"}`}>
-                      {s.tir}%
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+      {/* ── Gantt Calendar + Sensitivity side by side ── */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <GanttCalendar items={ganttItems} totalMonths={durationMonths} />
+        <SensitivityRow items={sensitivities} basePrice={price} />
       </div>
 
       {/* ── Footnote ── */}
       <div className="bg-secondary/50 rounded-xl p-4 text-[10px] text-muted-foreground leading-relaxed space-y-1">
-        <p><strong>(1)</strong> Cargas preferentes: asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años.</p>
+        <p><strong>(1)</strong> Dinero a consignar en el juzgado al superar el importe de adjudicación la deuda acreditada.</p>
+        <p>Cargas preferentes: asunción basada en datos estimados de IBI y Comunidad limitada a los últimos cuatro años.</p>
         <p>Los datos financieros son estimativos y no constituyen asesoramiento de inversión. Se recomienda verificación independiente.</p>
       </div>
     </div>
