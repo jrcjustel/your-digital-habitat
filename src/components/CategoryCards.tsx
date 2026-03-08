@@ -3,6 +3,9 @@ import categoryViviendas from "@/assets/category-viviendas.jpg";
 import categoryTerrenos from "@/assets/category-terrenos.jpg";
 import categoryLocales from "@/assets/category-locales.jpg";
 import categoryOficinas from "@/assets/category-oficinas.jpg";
+import rutaNpl from "@/assets/ruta-deuda-npl.jpg";
+import rutaCdr from "@/assets/ruta-cesiones-remate.jpg";
+import rutaOcupados from "@/assets/ruta-ocupados.jpg";
 
 const categories = [
   {
@@ -28,6 +31,27 @@ const categories = [
     description: "Activos profesionales de alta rentabilidad. Inversión institucional al alcance de todos.",
     image: categoryOficinas,
     href: "/inmuebles?type=nave",
+  },
+];
+
+const investmentCategories = [
+  {
+    title: "Cesiones de préstamos hipotecarios",
+    description: "Adquiere carteras de deuda hipotecaria con descuentos significativos. Rentabilidades superiores al mercado tradicional.",
+    image: rutaNpl,
+    href: "/inmuebles?saleType=npl",
+  },
+  {
+    title: "Cesiones de remate a terceros",
+    description: "Accede a adjudicaciones judiciales cedidas por debajo del valor de mercado. Márgenes atractivos con respaldo legal.",
+    image: rutaCdr,
+    href: "/inmuebles?saleType=cesion-remate",
+  },
+  {
+    title: "Activos ocupados",
+    description: "Inmuebles con ocupantes a precios muy reducidos. Estrategias de recuperación con acompañamiento profesional.",
+    image: rutaOcupados,
+    href: "/inmuebles?saleType=ocupado",
   },
 ];
 
