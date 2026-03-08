@@ -217,7 +217,17 @@ const PropertyDetail = () => {
                   <MapPin className="w-5 h-5 text-accent" />
                 </div>
               </div>
-              <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-2">{property.title}</h1>
+              <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-2">{(() => {
+                const loc = property.municipality || property.province || property.location;
+                const tipo = property.type === "vivienda" ? "Piso" : property.type === "local" ? "Local" : property.type === "nave" ? "Nave" : property.type === "oficina" ? "Oficina" : property.type === "terreno" ? "Terreno" : property.type === "edificio" ? "Edificio" : property.type === "obra-parada" ? "Obra parada" : "Activo";
+                const area = property.area ? `· ${property.area} m²` : "";
+                const disc = property.marketValue && property.price && property.marketValue > 0 ? Math.round((1 - property.price / property.marketValue) * 100) : null;
+                const discTxt = disc && disc > 0 ? `· ${disc}% bajo mercado` : "";
+                if (property.saleType === "ocupado") return `${tipo} sin posesión en ${loc} ${area} ${discTxt}`.trim();
+                if (property.saleType === "npl") return `Crédito con colateral ${tipo.toLowerCase()} en ${loc} ${discTxt}`.trim();
+                if (property.saleType === "cesion-remate") return `${tipo} en cesión de remate en ${loc} ${area}`.trim();
+                return property.title;
+              })()}</h1>
               <p className="text-sm text-muted-foreground mb-1">{property.municipality}, {property.province}</p>
               {property.isNew && <span className="inline-block text-xs font-bold bg-accent text-accent-foreground px-2 py-0.5 rounded-full mb-4">Nuevo</span>}
             </div>
