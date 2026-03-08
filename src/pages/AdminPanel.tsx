@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import SocialMediaManager from "@/components/SocialMediaManager";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,7 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
-  Zap, History,
+  Zap, History, Share2,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
