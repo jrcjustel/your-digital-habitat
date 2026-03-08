@@ -203,6 +203,63 @@ const AdminPanel = () => {
     setMatchingLoading(false);
   };
 
+  const sendBroadcast = async () => {
+    if (!broadcastText.trim()) {
+      toast.error("Escribe un mensaje para difundir");
+      return;
+    }
+    setBroadcastSending(true);
+    const channels = broadcastChannel === "both" ? ["telegram", "whatsapp"] : [broadcastChannel];
+    let success = 0;
+    let failed = 0;
+
+    for (const ch of channels) {
+      try {
+        await supabase.from("broadcast_messages").insert({
+          channel: ch as any,
+          content: broadcastText.trim(),
+          status: "sending",
+        });
+
+        if (ch === "telegram") {
+          const { error } = await supabase.functions.invoke("telegram-bot", {
+            body: { action: "broadcast", text: broadcastText.trim() },
+          });
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.functions.invoke("whatsapp-api", {
+            body: { action: "broadcast", message: broadcastText.trim() },
+          });
+          if (error) throw error;
+        }
+
+        await supabase
+          .from("broadcast_messages")
+          .update({ status: "sent", sent_at: new Date().toISOString() })
+          .eq("content", broadcastText.trim())
+          .eq("channel", ch as any)
+          .eq("status", "sending");
+
+        success++;
+      } catch (e) {
+        console.error(`Broadcast ${ch} failed:`, e);
+        failed++;
+        await supabase
+          .from("broadcast_messages")
+          .update({ status: "failed" })
+          .eq("content", broadcastText.trim())
+          .eq("channel", ch as any)
+          .eq("status", "sending");
+      }
+    }
+
+    if (success > 0) toast.success(`Difusión enviada a ${success} canal(es)`);
+    if (failed > 0) toast.error(`${failed} canal(es) fallaron`);
+    setBroadcastText("");
+    setBroadcastSending(false);
+    loadBroadcasts();
+  };
+
   const updateOfferStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("offers").update({ status }).eq("id", id);
     if (error) toast.error("Error al actualizar oferta");
