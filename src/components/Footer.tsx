@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, Instagram, Facebook } from "lucide-react";
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.74a8.18 8.18 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.17z" />
+  </svg>
+);
 
 const footerSections = [
   {
@@ -133,6 +139,33 @@ const Footer = () => {
             >
               <Send className="w-4 h-4" />
               Bot Telegram
+            </a>
+            <a
+              href="https://instagram.com/ikesa_inversiones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#E4405F] hover:bg-[#d63150] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <Instagram className="w-4 h-4" />
+              Instagram
+            </a>
+            <a
+              href="https://tiktok.com/@ikesa_inversiones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <TikTokIcon className="w-4 h-4" />
+              TikTok
+            </a>
+            <a
+              href="https://facebook.com/ikesainversiones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-[#1877F2] hover:bg-[#1565d8] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
+            >
+              <Facebook className="w-4 h-4" />
+              Facebook
             </a>
           </div>
         </div>

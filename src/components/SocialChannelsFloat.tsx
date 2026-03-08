@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, Send, X, Instagram, Facebook } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Placeholder URLs — replace with your real channel/number links
-const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/IKESA"; // WhatsApp Channel de difusión
-const WHATSAPP_CHAT_URL = "https://wa.me/34600000000?text=Hola%2C%20me%20interesa%20una%20consulta%20sobre%20activos%20de%20IKESA"; // Chat directo
-const TELEGRAM_CHANNEL_URL = "https://t.me/ikesa_inversiones"; // Canal Telegram
-const TELEGRAM_BOT_URL = "https://t.me/ikesa_bot"; // Bot Telegram
+const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/IKESA";
+const WHATSAPP_CHAT_URL = "https://wa.me/34600000000?text=Hola%2C%20me%20interesa%20una%20consulta%20sobre%20activos%20de%20IKESA";
+const TELEGRAM_CHANNEL_URL = "https://t.me/ikesa_inversiones";
+const TELEGRAM_BOT_URL = "https://t.me/ikesa_bot";
+const INSTAGRAM_URL = "https://instagram.com/ikesa_inversiones";
+const TIKTOK_URL = "https://tiktok.com/@ikesa_inversiones";
+const FACEBOOK_URL = "https://facebook.com/ikesainversiones";
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.74a8.18 8.18 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.17z" />
+  </svg>
+);
 
 const SocialChannelsFloat = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +52,30 @@ const SocialChannelsFloat = () => {
       icon: <Send className="w-5 h-5" />,
       color: "bg-[#0088cc]",
       hoverColor: "hover:bg-[#0077b3]",
+    },
+    {
+      label: "Instagram",
+      description: "Contenido visual",
+      url: INSTAGRAM_URL,
+      icon: <Instagram className="w-5 h-5" />,
+      color: "bg-[#E4405F]",
+      hoverColor: "hover:bg-[#d63150]",
+    },
+    {
+      label: "TikTok",
+      description: "Vídeos cortos",
+      url: TIKTOK_URL,
+      icon: <TikTokIcon className="w-5 h-5" />,
+      color: "bg-[#010101]",
+      hoverColor: "hover:bg-[#333]",
+    },
+    {
+      label: "Facebook",
+      description: "Comunidad inversora",
+      url: FACEBOOK_URL,
+      icon: <Facebook className="w-5 h-5" />,
+      color: "bg-[#1877F2]",
+      hoverColor: "hover:bg-[#1565d8]",
     },
   ];
 

@@ -10,9 +10,16 @@ import {
   Send, Sparkles, Calendar, BarChart3, Twitter, MessageCircle,
   Linkedin, Clock, CheckCircle, XCircle, RefreshCw, Trash2,
   Eye, Plus, Wand2, Copy, TrendingUp, Users, MousePointerClick, Target,
+  Instagram, Facebook,
 } from "lucide-react";
 
-type Channel = "twitter" | "telegram" | "whatsapp" | "linkedin";
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.74a8.18 8.18 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.17z" />
+  </svg>
+);
+
+type Channel = "twitter" | "telegram" | "whatsapp" | "linkedin" | "instagram" | "tiktok" | "facebook";
 type PostStatus = "draft" | "scheduled" | "publishing" | "published" | "failed";
 
 interface SocialPost {
@@ -46,11 +53,14 @@ interface AssetOption {
   comunidad_autonoma: string | null;
 }
 
-const channelConfig: Record<Channel, { label: string; icon: typeof Twitter; color: string; bgColor: string }> = {
+const channelConfig: Record<Channel, { label: string; icon: any; color: string; bgColor: string }> = {
   twitter: { label: "Twitter/X", icon: Twitter, color: "text-foreground", bgColor: "bg-foreground/10" },
   telegram: { label: "Telegram", icon: Send, color: "text-[#0088cc]", bgColor: "bg-[#0088cc]/10" },
   whatsapp: { label: "WhatsApp", icon: MessageCircle, color: "text-[#25D366]", bgColor: "bg-[#25D366]/10" },
   linkedin: { label: "LinkedIn", icon: Linkedin, color: "text-[#0A66C2]", bgColor: "bg-[#0A66C2]/10" },
+  instagram: { label: "Instagram", icon: Instagram, color: "text-[#E4405F]", bgColor: "bg-[#E4405F]/10" },
+  tiktok: { label: "TikTok", icon: TikTokIcon, color: "text-foreground", bgColor: "bg-foreground/10" },
+  facebook: { label: "Facebook", icon: Facebook, color: "text-[#1877F2]", bgColor: "bg-[#1877F2]/10" },
 };
 
 const SocialMediaManager = () => {
