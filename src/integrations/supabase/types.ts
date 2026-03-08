@@ -431,38 +431,92 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acepta_marketing: boolean | null
           avatar_url: string | null
+          cif_nif: string | null
+          ciudad: string | null
+          comunidad_autonoma: string | null
           created_at: string
           display_name: string | null
+          empresa: string | null
           id: string
+          intereses: string[] | null
+          investor_level: Database["public"]["Enums"]["investor_level"] | null
+          lead_score: number | null
           nda_signed: boolean
           nda_signed_at: string | null
+          notas_admin: string | null
+          num_favoritos: number | null
+          num_ofertas: number | null
+          origen: string | null
+          persona_tipo: Database["public"]["Enums"]["persona_tipo"] | null
           phone: string | null
+          presupuesto_max: number | null
+          presupuesto_min: number | null
+          provincias_interes: string[] | null
           search_preferences: Json | null
+          tipos_activo_preferidos: string[] | null
+          ultima_actividad: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          acepta_marketing?: boolean | null
           avatar_url?: string | null
+          cif_nif?: string | null
+          ciudad?: string | null
+          comunidad_autonoma?: string | null
           created_at?: string
           display_name?: string | null
+          empresa?: string | null
           id?: string
+          intereses?: string[] | null
+          investor_level?: Database["public"]["Enums"]["investor_level"] | null
+          lead_score?: number | null
           nda_signed?: boolean
           nda_signed_at?: string | null
+          notas_admin?: string | null
+          num_favoritos?: number | null
+          num_ofertas?: number | null
+          origen?: string | null
+          persona_tipo?: Database["public"]["Enums"]["persona_tipo"] | null
           phone?: string | null
+          presupuesto_max?: number | null
+          presupuesto_min?: number | null
+          provincias_interes?: string[] | null
           search_preferences?: Json | null
+          tipos_activo_preferidos?: string[] | null
+          ultima_actividad?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          acepta_marketing?: boolean | null
           avatar_url?: string | null
+          cif_nif?: string | null
+          ciudad?: string | null
+          comunidad_autonoma?: string | null
           created_at?: string
           display_name?: string | null
+          empresa?: string | null
           id?: string
+          intereses?: string[] | null
+          investor_level?: Database["public"]["Enums"]["investor_level"] | null
+          lead_score?: number | null
           nda_signed?: boolean
           nda_signed_at?: string | null
+          notas_admin?: string | null
+          num_favoritos?: number | null
+          num_ofertas?: number | null
+          origen?: string | null
+          persona_tipo?: Database["public"]["Enums"]["persona_tipo"] | null
           phone?: string | null
+          presupuesto_max?: number | null
+          presupuesto_min?: number | null
+          provincias_interes?: string[] | null
           search_preferences?: Json | null
+          tipos_activo_preferidos?: string[] | null
+          ultima_actividad?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -566,6 +620,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_lead_score: { Args: { p_user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -573,6 +628,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      refresh_profile_stats: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -581,6 +637,8 @@ export type Database = {
         | "telegram"
         | "whatsapp_channel"
         | "telegram_channel"
+      investor_level: "principiante" | "intermedio" | "avanzado" | "profesional"
+      persona_tipo: "fisica" | "juridica"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -715,6 +773,8 @@ export const Constants = {
         "whatsapp_channel",
         "telegram_channel",
       ],
+      investor_level: ["principiante", "intermedio", "avanzado", "profesional"],
+      persona_tipo: ["fisica", "juridica"],
     },
   },
 } as const
