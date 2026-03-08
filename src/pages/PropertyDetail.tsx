@@ -696,6 +696,10 @@ const PropertyDetail = () => {
             </div>
           </div>
         )}
+        {/* Disclaimer */}
+        <div className="max-w-5xl mx-auto px-4">
+          <Disclaimer type={property.saleType === "ocupado" ? "ocupados" : property.saleType === "npl" ? "npl" : property.saleType === "cesion-remate" ? "cesion-remate" : "compraventa"} />
+        </div>
       </div>
 
       <Footer />
