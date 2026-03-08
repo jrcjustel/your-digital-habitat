@@ -282,21 +282,21 @@ const ComoFunciona = () => {
         </div>
       </section>
 
-      {/* ── Balance: Pros & Cons (Auctree style) ── */}
+      {/* ── Price Cycle Graph (Auctree-inspired visual) ── */}
       <section className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <div className="text-center mb-10">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
             <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Bajo Riesgo y Alto Rendimiento</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
               Una jugada <span className="text-accent">inteligente</span>
             </h2>
             <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-              Comprar inmuebles judiciales ofrece una oportunidad única de invertir por debajo del precio de mercado con margen de seguridad. El potencial de descuento hace que sea una inversión que realmente vale la pena.
+              El valor del inmueble cae durante el proceso judicial y se recupera tras la adquisición. Compra en el punto más bajo y captura toda la plusvalía.
             </p>
           </div>
+          <PriceCycleGraph />
 
-          <div className="grid sm:grid-cols-2 gap-6">
-            {/* Cons */}
+          <div className="grid sm:grid-cols-2 gap-6 mt-12 max-w-3xl mx-auto">
             <Card className="border-red-200/50 bg-red-50/30 dark:bg-red-950/10 dark:border-red-900/30">
               <CardContent className="p-6">
                 <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">A tener en cuenta</h4>
@@ -307,7 +307,6 @@ const ComoFunciona = () => {
                 </ul>
               </CardContent>
             </Card>
-            {/* Pros */}
             <Card className="border-green-200/50 bg-green-50/30 dark:bg-green-950/10 dark:border-green-900/30">
               <CardContent className="p-6">
                 <h4 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wider">Ventajas</h4>
@@ -322,9 +321,9 @@ const ComoFunciona = () => {
         </div>
       </section>
 
-      {/* ── Process timeline (Auctree-inspired) ── */}
+      {/* ── Visual Process Timeline ── */}
       <section className="border-b border-border">
-        <div className="container mx-auto px-4 py-16 max-w-3xl">
+        <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <span className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">Nuestro equipo de expertos a tu disposición</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mt-2">
@@ -332,18 +331,7 @@ const ComoFunciona = () => {
               <span className="text-accent">sin sorpresas</span>
             </h2>
           </div>
-
-          <div className="space-y-0">
-            {cycleSteps.map((step, idx) => (
-              <TimelineStep
-                key={idx}
-                number={idx + 1}
-                title={step.title}
-                description={step.description}
-                duration={step.duration}
-              />
-            ))}
-          </div>
+          <ProcessTimeline />
         </div>
       </section>
 
