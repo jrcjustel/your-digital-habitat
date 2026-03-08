@@ -405,6 +405,14 @@ const NplDetail = () => {
                     <h3 className="font-heading text-base font-bold text-foreground mb-4">Documentación del activo</h3>
                     <DocumentsPanel nplAssetId={asset.id} compact showFilters />
                   </TabsContent>
+                  {/* Catastro */}
+                  <TabsContent value="catastro" className="p-6 mt-0">
+                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información catastral</h3>
+                    <CatastroPanel
+                      refCatastral={asset.ref_catastral}
+                      assetId={asset.id}
+                    />
+                  </TabsContent>
                 </Tabs>
               </div>
             </div>
