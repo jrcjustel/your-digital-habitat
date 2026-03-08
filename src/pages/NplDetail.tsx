@@ -19,6 +19,7 @@ import DocumentsPanel from "@/components/DocumentsPanel";
 import OfferForm from "@/components/OfferForm";
 import RelatedAssets from "@/components/RelatedAssets";
 import WaitlistButton from "@/components/WaitlistButton";
+import CatastroPanel from "@/components/CatastroPanel";
 
 interface NplAsset {
   id: string;
@@ -337,6 +338,9 @@ const NplDetail = () => {
                     <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
                       <FolderOpen className="w-4 h-4" /> Documentos
                     </TabsTrigger>
+                    <TabsTrigger value="catastro" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
+                      <MapPin className="w-4 h-4" /> Catastro
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* Información de la propiedad */}
@@ -400,6 +404,14 @@ const NplDetail = () => {
                   <TabsContent value="documentos" className="p-6 mt-0">
                     <h3 className="font-heading text-base font-bold text-foreground mb-4">Documentación del activo</h3>
                     <DocumentsPanel nplAssetId={asset.id} compact showFilters />
+                  </TabsContent>
+                  {/* Catastro */}
+                  <TabsContent value="catastro" className="p-6 mt-0">
+                    <h3 className="font-heading text-base font-bold text-foreground mb-4">Información catastral</h3>
+                    <CatastroPanel
+                      refCatastral={asset.ref_catastral}
+                      assetId={asset.id}
+                    />
                   </TabsContent>
                 </Tabs>
               </div>
