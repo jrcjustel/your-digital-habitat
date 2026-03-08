@@ -468,8 +468,7 @@ const NplDetail = () => {
                     </a>
                   </Button>
                 </div>
-
-              {/* Quick stats */}
+              </div>
               <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
                 <h4 className="text-sm font-bold text-foreground">Resumen</h4>
                 {asset.valor_mercado > 0 && (
