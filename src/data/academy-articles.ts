@@ -19,6 +19,7 @@ export interface AcademyRoute {
   priority: number;
   color: string;
   intro: string;
+  image?: string;
   modules: AcademyModule[];
   cta: { label: string; href: string };
 }
@@ -87,6 +88,7 @@ export const academyRoutes: AcademyRoute[] = [
         ],
       },
     ],
+    image: "/src/assets/ruta-ocupados.jpg",
     cta: { label: "Quiero que Ikesa analice mis ocupados", href: "/inmuebles?saleType=ocupado" },
   },
   {
@@ -136,6 +138,7 @@ export const academyRoutes: AcademyRoute[] = [
         ],
       },
     ],
+    image: "/src/assets/ruta-cesiones-remate.jpg",
     cta: { label: "Buscar cesiones de remate con Ikesa", href: "/inmuebles?saleType=cesion-remate" },
   },
   {
@@ -185,6 +188,7 @@ export const academyRoutes: AcademyRoute[] = [
         ],
       },
     ],
+    image: "/src/assets/ruta-subastas-boe.jpg",
     cta: { label: "Ver subastas analizadas por Ikesa", href: "/inmuebles?saleType=subasta" },
   },
   {
@@ -234,6 +238,7 @@ export const academyRoutes: AcademyRoute[] = [
         ],
       },
     ],
+    image: "/src/assets/ruta-deuda-npl.jpg",
     cta: { label: "Explorar oportunidades NPL con Ikesa", href: "/inmuebles?saleType=npl" },
   },
 ];
