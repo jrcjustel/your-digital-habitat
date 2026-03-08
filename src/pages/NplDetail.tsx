@@ -541,6 +541,14 @@ const NplDetail = () => {
             </div>
           </div>
         </NdaGate>
+
+        {/* Related assets */}
+        <RelatedAssets
+          currentAssetId={asset.id}
+          tipoActivo={asset.tipo_activo}
+          provincia={asset.provincia}
+          comunidadAutonoma={asset.comunidad_autonoma}
+        />
       </div>
 
       <Footer />
