@@ -313,6 +313,9 @@ const AlertCard = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-foreground text-sm">Alerta {index}</h3>
+                {matchCount > 0 && (
+                  <Badge className="bg-accent text-accent-foreground text-xs">{matchCount} activo{matchCount !== 1 ? "s" : ""}</Badge>
+                )}
                 {!alert.is_active && (
                   <Badge variant="secondary" className="text-xs">Pausada</Badge>
                 )}
