@@ -70,6 +70,7 @@ const App = () => (
             <Route path="/npl/:id" element={<NplDetail />} />
             {/* Legal */}
             <Route path="/aviso-legal" element={<AvisoLegal />} />
+            <Route path="/aviso-legal-activos" element={<AvisoLegalNpl />} />
             <Route path="/privacidad" element={<PoliticaPrivacidad />} />
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
