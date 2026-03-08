@@ -374,7 +374,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(6.5);
     doc.setTextColor(BRAND_NAVY[0], BRAND_NAVY[1], BRAND_NAVY[2]);
-    doc.text("IKESA — Dossier de Inversión Confidencial", MARGIN, 288);
+    doc.text("IKESA - Dossier de Inversion Confidencial", MARGIN, 288);
     doc.setTextColor(140, 140, 140);
     doc.text(`Ref: ${data.reference}`, PAGE_WIDTH / 2, 288, { align: "center" });
     doc.text(`Página ${i} de ${totalPages}`, PAGE_WIDTH - MARGIN, 288, { align: "right" });

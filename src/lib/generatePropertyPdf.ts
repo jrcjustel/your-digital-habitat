@@ -248,7 +248,7 @@ export const generatePropertyPdf = async (property: Property) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(...BRAND_NAVY);
-    doc.text("IKESA Inmobiliaria Real — Documento confidencial", margin, 289);
+    doc.text("IKESA Inmobiliaria Real - Documento confidencial", margin, 289);
     doc.setTextColor(140, 140, 140);
     doc.text(`Página ${i} de ${totalPages}`, pageWidth - margin, 289, { align: "right" });
   }
