@@ -402,7 +402,7 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
-
+          <TabsContent value="offers">
             {offers.length === 0 ? (
               <Card><CardContent className="py-12 text-center">
                 <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
