@@ -514,6 +514,16 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
 
+          {/* GESTORES TAB */}
+          <TabsContent value="gestores">
+            <AdminGestores />
+          </TabsContent>
+
+          {/* CONTACTS TAB */}
+          <TabsContent value="contacts">
+            <ContactLogTab />
+          </TabsContent>
+
           {/* SOCIAL MEDIA TAB */}
           <TabsContent value="social">
             <SocialMediaManager />
