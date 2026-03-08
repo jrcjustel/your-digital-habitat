@@ -221,13 +221,15 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="favorites" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
-            <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Favoritos</TabsTrigger>
-            <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Documentos</TabsTrigger>
-            <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Alertas</TabsTrigger>
-            <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Perfil</TabsTrigger>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1">
+            <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Mis datos</TabsTrigger>
+            <TabsTrigger value="operations" className="gap-2"><Clock className="w-4 h-4" /> Operaciones</TabsTrigger>
+            <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Mis favoritos</TabsTrigger>
+            <TabsTrigger value="download" className="gap-2"><FileText className="w-4 h-4" /> Descargar datos</TabsTrigger>
+            <TabsTrigger value="offers" className="gap-2"><Euro className="w-4 h-4" /> Mis ofertas</TabsTrigger>
+            <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Mis documentos</TabsTrigger>
+            <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Mis alertas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="favorites">
