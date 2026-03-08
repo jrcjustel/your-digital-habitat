@@ -47,33 +47,7 @@ const Bullet = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   </li>
 );
 
-/* ── Timeline step for the "Ciclo" section ── */
-const TimelineStep = ({
-  number,
-  title,
-  description,
-  duration,
-}: {
-  number: number;
-  title: string;
-  description: string;
-  duration: string;
-}) => (
-  <div className="relative flex gap-5 group">
-    {/* vertical line */}
-    <div className="flex flex-col items-center">
-      <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-sm z-10">
-        {number}
-      </div>
-      <div className="flex-1 w-px bg-border group-last:hidden" />
-    </div>
-    <div className="pb-10 group-last:pb-0">
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">{duration}</span>
-      <h4 className="font-bold text-foreground mt-1 mb-1">{title}</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-    </div>
-  </div>
-);
+
 
 /* ── Product data ── */
 
@@ -164,45 +138,8 @@ const products = [
   },
 ];
 
-/* ── Cycle timeline data (inspired by Auctree) ── */
-const cycleSteps = [
-  {
-    title: "Haz tu oferta",
-    description:
-      "Encuentra tu activo y envía una oferta por debajo, igual o superior al precio orientativo. Recibirás notificaciones sobre el estado de tu oferta en tiempo real.",
-    duration: "Oferta",
-  },
-  {
-    title: "Revisión y depósito de reserva",
-    description:
-      "Revisamos tu oferta y confirmamos si ha sido pre-aprobada. En las siguientes 24-48h tras la pre-aprobación, el comprador abona el depósito de reserva.",
-    duration: "2-3 días",
-  },
-  {
-    title: "Prevención de blanqueo de capitales",
-    description:
-      "Te solicitamos documentación sobre el origen de los fondos. Por ley, es obligatorio verificar que los fondos provengan de fuentes legítimas (Ley 10/2010).",
-    duration: "1-2 semanas",
-  },
-  {
-    title: "Contrato de arras o reserva",
-    description:
-      "Se establece las condiciones de la operación y garantiza el cumplimiento entre las partes. El comprador habrá pagado el 10% para reservar su derecho de compra.",
-    duration: "1 semana",
-  },
-  {
-    title: "Transferencia de propiedad",
-    description:
-      "En inmuebles judiciales, un tribunal local supervisa la transferencia. El juez revisará la operación y cancelará las cargas pendientes para que la propiedad quede inscrita libre de cargas a tu nombre.",
-    duration: "2-5 meses",
-  },
-  {
-    title: "¡Llaves en mano!",
-    description:
-      "Acabas de adquirir un inmueble por debajo del precio de mercado. Ya puedes inscribirlo en el Registro de la Propiedad y empezar a rentabilizar tu inversión.",
-    duration: "Entrega",
-  },
-];
+
+
 
 /* ── Pros / Cons balance (Auctree style) ── */
 const balancePros = [
