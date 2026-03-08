@@ -469,6 +469,81 @@ export type Database = {
           },
         ]
       }
+      contact_log: {
+        Row: {
+          ai_response: string | null
+          asset_id: string | null
+          asset_reference: string | null
+          channel: string
+          comunidad_autonoma: string | null
+          created_at: string
+          gestor_id: string | null
+          gestor_notified: boolean
+          gestor_notified_at: string | null
+          id: string
+          lead_email: string | null
+          lead_name: string | null
+          lead_phone: string | null
+          message: string | null
+          provincia: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          ai_response?: string | null
+          asset_id?: string | null
+          asset_reference?: string | null
+          channel?: string
+          comunidad_autonoma?: string | null
+          created_at?: string
+          gestor_id?: string | null
+          gestor_notified?: boolean
+          gestor_notified_at?: string | null
+          id?: string
+          lead_email?: string | null
+          lead_name?: string | null
+          lead_phone?: string | null
+          message?: string | null
+          provincia?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          ai_response?: string | null
+          asset_id?: string | null
+          asset_reference?: string | null
+          channel?: string
+          comunidad_autonoma?: string | null
+          created_at?: string
+          gestor_id?: string | null
+          gestor_notified?: boolean
+          gestor_notified_at?: string | null
+          id?: string
+          lead_email?: string | null
+          lead_name?: string | null
+          lead_phone?: string | null
+          message?: string | null
+          provincia?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_log_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_log_gestor_id_fkey"
+            columns: ["gestor_id"]
+            isOneToOne: false
+            referencedRelation: "gestores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: string
@@ -543,6 +618,48 @@ export type Database = {
           id?: string
           property_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      gestores: {
+        Row: {
+          comunidades_autonomas: string[]
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          nombre: string
+          provincias: string[]
+          telefono: string | null
+          tipos_activo: string[]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          comunidades_autonomas?: string[]
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          nombre: string
+          provincias?: string[]
+          telefono?: string | null
+          tipos_activo?: string[]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          comunidades_autonomas?: string[]
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          nombre?: string
+          provincias?: string[]
+          telefono?: string | null
+          tipos_activo?: string[]
+          updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
