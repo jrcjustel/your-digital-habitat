@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map } from "lucide-react";
 
 interface AssetImage {
   id: string;
@@ -14,6 +14,7 @@ interface AssetImage {
 interface GalleryItem {
   id: string;
   src: string;
+  embedSrc?: string; // For iframe-based items (Google Maps)
   caption: string;
   type: "uploaded" | "fachada" | "satellite";
 }
@@ -75,14 +76,15 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
         }
       }
 
-      // 3. Add Google Maps satellite static image
+      // 3. Add Google Maps satellite embed
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
-        const googleMapsUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(fullAddress)}&zoom=18&size=800x450&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
         items.push({
           id: "google-satellite",
-          src: googleMapsUrl,
+          src: "", // No static image
+          embedSrc: embedUrl,
           caption: "Vista satelite (Google Maps)",
           type: "satellite",
         });
@@ -138,16 +140,27 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
   return (
     <>
       <div className="relative rounded-2xl overflow-hidden group">
-        {/* Main image */}
+        {/* Main image or embed */}
         <div className="aspect-[16/9] bg-muted">
-          <img
-            src={currentItem.src}
-            alt={currentItem.caption}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder.svg";
-            }}
-          />
+          {currentItem.embedSrc ? (
+            <iframe
+              src={currentItem.embedSrc}
+              title={currentItem.caption}
+              className="w-full h-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          ) : (
+            <img
+              src={currentItem.src}
+              alt={currentItem.caption}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/placeholder.svg";
+              }}
+            />
+          )}
         </div>
 
         {/* Type badge */}
@@ -205,14 +218,20 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
                 i === current ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
               }`}
             >
-              <img
-                src={item.src}
-                alt={item.caption}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder.svg";
-                }}
-              />
+              {item.embedSrc ? (
+                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                  <Map className="w-5 h-5 text-primary" />
+                </div>
+              ) : (
+                <img
+                  src={item.src}
+                  alt={item.caption}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder.svg";
+                  }}
+                />
+              )}
               {item.type === "fachada" && (
                 <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Catastro</span>
               )}
@@ -236,12 +255,23 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
           >
             ✕
           </button>
-          <img
-            src={currentItem.src}
-            alt={currentItem.caption}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {currentItem.embedSrc ? (
+            <iframe
+              src={currentItem.embedSrc}
+              title={currentItem.caption}
+              className="w-[90vw] h-[80vh] border-0 rounded-lg"
+              loading="lazy"
+              allowFullScreen
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={currentItem.src}
+              alt={currentItem.caption}
+              className="max-w-[90vw] max-h-[90vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           {galleryItems.length > 1 && (
             <>
               <button
