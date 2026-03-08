@@ -1,11 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCircle2, Mail } from "lucide-react";
+import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCircle2, Mail, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { motion } from "framer-motion";
 
 const serviciosIncluidos = [
   {
@@ -174,96 +174,135 @@ const Servicios = () => {
       />
       <Navbar />
 
-      {/* Hero */}
-      <section className="bg-primary py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
-            Servicios & Honorarios
-          </h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg leading-relaxed">
-            Todo lo que necesitas para invertir con claridad, criterio y acompañamiento experto.
-          </p>
-          <p className="text-primary-foreground/60 max-w-2xl mx-auto mt-2">
-            En IKESA te damos el análisis y el soporte necesarios para tomar decisiones informadas y ejecutar cada operación con seguridad.
-          </p>
+      {/* Hero — asymmetric split */}
+      <section className="relative overflow-hidden bg-primary">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent blur-[120px] translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent blur-[100px] -translate-x-1/3 translate-y-1/3" />
+        </div>
+        <div className="container mx-auto px-4 py-20 md:py-28 relative z-10">
+          <div className="max-w-3xl">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-accent font-medium text-sm tracking-widest uppercase mb-4"
+            >
+              Transparencia total
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-5 leading-tight"
+            >
+              Servicios & Honorarios
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-primary-foreground/75 text-lg md:text-xl max-w-2xl leading-relaxed"
+            >
+              Cada operación incluye análisis experto. Y si necesitas más, aquí tienes todos los servicios complementarios con sus tarifas.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-8"
+            >
+              <Link to="/valorar">
+                <Button size="lg" variant="secondary" className="gap-2 font-semibold">
+                  <Mail className="w-4 h-4" />
+                  Solicitar presupuesto personalizado
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Servicios incluidos */}
-      <section className="py-16 md:py-20">
+      {/* Servicios incluidos — horizontal scrolling cards on mobile, staggered grid on desktop */}
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-6">
-            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
-              Servicios incluidos en cada operación
-            </h2>
-            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Los honorarios contemplados en cada producto incluyen acompañamiento y análisis experto. De la oferta a la firma, y el seguimiento.
-            </p>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-1 rounded-full bg-accent" />
+            <p className="text-accent font-semibold text-sm tracking-widest uppercase">Incluido en cada operación</p>
           </div>
+          <h2 className="font-heading text-2xl md:text-4xl font-bold text-foreground mb-4">
+            Tu equipo de análisis
+          </h2>
+          <p className="text-muted-foreground max-w-xl mb-12 text-lg">
+            Los honorarios de cada producto ya incluyen este acompañamiento. De la oferta a la firma.
+          </p>
 
-          <div className="flex justify-center mb-10">
-            <Link to="/valorar">
-              <Button variant="outline" className="gap-2">
-                <Mail className="w-4 h-4" />
-                Solicitar presupuesto personalizado
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {serviciosIncluidos.map((service) => (
-              <div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden border border-border">
+            {serviciosIncluidos.map((service, i) => (
+              <motion.div
                 key={service.title}
-                className="bg-card rounded-2xl border border-border p-6 hover:border-accent/30 transition-colors"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+                className="bg-card p-8 group hover:bg-secondary/30 transition-colors duration-300"
               >
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-4">
+                <div className="w-11 h-11 rounded-lg bg-accent/10 flex items-center justify-center mb-5 group-hover:bg-accent/20 transition-colors">
                   <service.icon className="w-5 h-5 text-accent" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-foreground mb-2">
+                <h3 className="font-heading text-base font-bold text-foreground mb-2">
                   {service.title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {service.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Tarifas y Honorarios */}
-      <section className="py-16 md:py-20 bg-secondary">
+      {/* Divider */}
+      <div className="container mx-auto px-4">
+        <div className="h-px bg-border" />
+      </div>
+
+      {/* Tarifas — unified view with two columns */}
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
-              Tarifas y honorarios
-            </h2>
-            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Servicios complementarios de gestoría y mediación legal para cubrir todas las necesidades de tu operación.
-            </p>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-1 rounded-full bg-accent" />
+            <p className="text-accent font-semibold text-sm tracking-widest uppercase">Servicios complementarios</p>
           </div>
+          <h2 className="font-heading text-2xl md:text-4xl font-bold text-foreground mb-4">
+            Tarifas y honorarios
+          </h2>
+          <p className="text-muted-foreground max-w-xl mb-12 text-lg">
+            Gestoría y mediación legal para cubrir cada fase de tu operación, con total transparencia.
+          </p>
 
-          <Tabs defaultValue="gestoria" className="max-w-4xl mx-auto">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="gestoria">Gestoría</TabsTrigger>
-              <TabsTrigger value="mediacion">Mediación Legal</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="gestoria">
-              <Accordion type="single" collapsible className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Left column — Gestoría */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <FileText className="w-5 h-5 text-accent" />
+                <h3 className="font-heading text-xl font-bold text-foreground">Gestoría</h3>
+              </div>
+              <Accordion type="single" collapsible className="space-y-3">
                 {tarifasGestoria.map((grupo) => (
                   <AccordionItem key={grupo.categoria} value={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
-                    <AccordionTrigger className="px-5 py-4 hover:no-underline bg-primary/5">
-                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide text-left">
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-secondary/30 transition-colors">
+                      <span className="font-heading font-semibold text-foreground text-sm text-left flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4 text-accent shrink-0 transition-transform" />
                         {grupo.categoria}
-                      </h3>
+                      </span>
                     </AccordionTrigger>
-                    <AccordionContent className="px-5 pb-5 pt-3">
-                      <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                    <AccordionContent className="px-5 pb-4 pt-1">
+                      <div className="space-y-0 divide-y divide-border">
                         {grupo.items.map((item) => (
-                          <div key={item.concepto} className="flex items-center justify-between px-4 py-2.5 bg-secondary/30">
-                            <span className="text-sm text-foreground">{item.concepto}</span>
-                            <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
+                          <div key={item.concepto} className="flex items-center justify-between py-2.5">
+                            <span className="text-sm text-muted-foreground">{item.concepto}</span>
+                            <span className="text-sm font-semibold text-foreground whitespace-nowrap ml-4 tabular-nums">
                               {item.honorarios}
                             </span>
                           </div>
@@ -273,16 +312,22 @@ const Servicios = () => {
                   </AccordionItem>
                 ))}
               </Accordion>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="mediacion">
-              <Accordion type="single" collapsible className="space-y-4">
+            {/* Right column — Mediación Legal */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <Scale className="w-5 h-5 text-accent" />
+                <h3 className="font-heading text-xl font-bold text-foreground">Mediación Legal</h3>
+              </div>
+              <Accordion type="single" collapsible className="space-y-3">
                 {tarifasMediacion.map((grupo) => (
                   <AccordionItem key={grupo.categoria} value={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
-                    <AccordionTrigger className="px-5 py-4 hover:no-underline bg-primary/5">
-                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide text-left">
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-secondary/30 transition-colors">
+                      <span className="font-heading font-semibold text-foreground text-sm text-left flex items-center gap-2">
+                        <ChevronRight className="w-4 h-4 text-accent shrink-0 transition-transform" />
                         {grupo.categoria}
-                      </h3>
+                      </span>
                     </AccordionTrigger>
                     <AccordionContent className="px-5 pb-5 pt-3">
                       <p className="text-sm text-muted-foreground leading-relaxed mb-4">
@@ -291,10 +336,10 @@ const Servicios = () => {
                       {grupo.gestiones.length > 0 && (
                         <div className="mb-4">
                           <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-2">Gestiones que realizamos:</p>
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {grupo.gestiones.map((g) => (
                               <li key={g} className="flex items-start gap-2 text-sm text-muted-foreground">
-                                <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                                <CheckCircle2 className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
                                 {g}
                               </li>
                             ))}
@@ -302,13 +347,13 @@ const Servicios = () => {
                         </div>
                       )}
                       {grupo.items.length > 0 && (
-                        <div className="border-t border-border pt-4">
+                        <div className="border-t border-border pt-4 mt-4">
                           <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-2">Tarifas:</p>
-                          <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                          <div className="space-y-0 divide-y divide-border">
                             {grupo.items.map((item) => (
-                              <div key={item.concepto} className="flex items-center justify-between px-4 py-2.5 bg-secondary/30">
-                                <span className="text-sm text-foreground">{item.concepto}</span>
-                                <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
+                              <div key={item.concepto} className="flex items-center justify-between py-2.5">
+                                <span className="text-sm text-muted-foreground">{item.concepto}</span>
+                                <span className="text-sm font-semibold text-foreground whitespace-nowrap ml-4 tabular-nums">
                                   {item.honorarios}
                                 </span>
                               </div>
@@ -320,23 +365,23 @@ const Servicios = () => {
                   </AccordionItem>
                 ))}
               </Accordion>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
 
-          <p className="text-xs text-muted-foreground text-center mt-6 max-w-2xl mx-auto">
+          <p className="text-xs text-muted-foreground text-center mt-10 max-w-2xl mx-auto">
             * Todos los importes son orientativos y no incluyen IVA. Consulta con nuestro equipo para un presupuesto personalizado.
           </p>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-16">
+      <section className="py-16 bg-secondary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-3">
             ¿Necesitas asesoramiento personalizado?
           </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Nuestro equipo está disponible para resolver tus dudas y acompañarte en todo el proceso de inversión.
+          <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+            Nuestro equipo está disponible para resolver tus dudas y acompañarte en todo el proceso.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/inmuebles">
