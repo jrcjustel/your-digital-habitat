@@ -190,7 +190,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   if (data.absorptionRate) y = drawRow(doc, "Tasa de absorción", `${data.absorptionRate}%`, y);
   if (data.population) y = drawRow(doc, "Población", fmt(data.population), y);
   if (data.unemploymentRate) y = drawRow(doc, "Tasa de paro", `${data.unemploymentRate}%`, y);
-  if (data.averageFamilyIncome) y = drawRow(doc, "Renta media familiar", `${fmt(data.averageFamilyIncome)} €`, y);
+  if (data.averageFamilyIncome) y = drawRow(doc, "Renta media familiar", `${fmt(data.averageFamilyIncome)} EUR`, y);
 
   // Google Maps link
   if (data.lat && data.lng) {
