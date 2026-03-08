@@ -140,16 +140,27 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
   return (
     <>
       <div className="relative rounded-2xl overflow-hidden group">
-        {/* Main image */}
+        {/* Main image or embed */}
         <div className="aspect-[16/9] bg-muted">
-          <img
-            src={currentItem.src}
-            alt={currentItem.caption}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder.svg";
-            }}
-          />
+          {currentItem.embedSrc ? (
+            <iframe
+              src={currentItem.embedSrc}
+              title={currentItem.caption}
+              className="w-full h-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          ) : (
+            <img
+              src={currentItem.src}
+              alt={currentItem.caption}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/placeholder.svg";
+              }}
+            />
+          )}
         </div>
 
         {/* Type badge */}
