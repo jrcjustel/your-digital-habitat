@@ -19,6 +19,9 @@ Deno.serve(async (req) => {
       telegram: 'Telegram: Formato HTML (<b>negrita</b>, <i>cursiva</i>). Mensaje más extenso (500-800 chars). Usa emojis como separadores visuales. Incluye toda la info relevante del activo. CTA con enlace.',
       whatsapp: 'WhatsApp: Formato con *negrita* y _cursiva_. Mensaje medio (300-500 chars). Emojis moderados. Estructura clara con líneas separadas. CTA directo.',
       linkedin: 'LinkedIn: Tono profesional e institucional. 500-1000 chars. Sin emojis excesivos (máx 3-4). Enfoque en datos de mercado, rentabilidad y oportunidad de inversión. Incluye hashtags profesionales (#RealEstate #NPL #InvestmentOpportunity). Párrafos cortos.',
+      instagram: 'Instagram: Caption de 300-600 chars. Emojis abundantes y visuales. Hashtags al final (8-15 hashtags relevantes: #InversionInmobiliaria #NPL #RealEstate #Oportunidad #Inmuebles #España). Primera línea gancho. Incluye CTA tipo "Link en bio 👆".',
+      tiktok: 'TikTok: Caption corto de 100-200 chars. Tono informal y directo. Emojis llamativos. 3-5 hashtags trending (#inversión #inmobiliaria #oportunidad #fyp #parati). Incluye gancho tipo "¿Sabías que...?" o "POV:".',
+      facebook: 'Facebook: Post de 200-500 chars. Tono cercano pero profesional. Emojis moderados. Pregunta al público para generar engagement. Incluye CTA claro hacia ikesa.es. 2-3 hashtags.',
     };
 
     let assetContext = '';
