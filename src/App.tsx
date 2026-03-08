@@ -60,6 +60,7 @@ const App = () => (
             <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
             <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
+            <Route path="/servicios" element={<Servicios />} />
             <Route path="/academia" element={<Academia />} />
             <Route path="/academia/ruta/:rutaSlug" element={<AcademiaRuta />} />
             <Route path="/academia/:slug" element={<AcademiaArticle />} />
