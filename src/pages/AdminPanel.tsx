@@ -779,6 +779,8 @@ const AdminPanel = () => {
             </div>
           </TabsContent>
         </Tabs>
+        </>
+        )}
       </div>
       <Footer />
     </div>
