@@ -347,6 +347,7 @@ const PropertyDetail = () => {
                         <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
                         <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
                       </div>
+                      <Disclaimer type={property.saleType === "ocupado" ? "ocupados" : property.saleType === "npl" ? "npl" : property.saleType === "cesion-remate" ? "cesion-remate" : "compraventa"} />
                       {/* CEE - Certificado Eficiencia Energética (obligatorio RD 235/2013) */}
                       <div className="mt-6 p-4 bg-secondary rounded-xl">
                         <h4 className="text-sm font-bold text-foreground mb-3">Certificado de Eficiencia Energética (CEE)</h4>
@@ -535,6 +536,7 @@ const PropertyDetail = () => {
                         <InfoRow label="Vivienda habitual" value={property.isHabitualResidence ? "SÍ" : "NO"} />
                         <InfoRow label="Titularidad sobre inmueble" value={property.ownershipPercent ? `${property.ownershipPercent}%` : undefined} />
                       </div>
+                      <Disclaimer type={property.saleType === "ocupado" ? "ocupados" : property.saleType === "npl" ? "npl" : property.saleType === "cesion-remate" ? "cesion-remate" : "compraventa"} />
                       {/* CEE - Certificado Eficiencia Energética (obligatorio RD 235/2013) */}
                       <div className="mt-6 p-4 bg-secondary rounded-xl">
                         <h4 className="text-sm font-bold text-foreground mb-3">Certificado de Eficiencia Energética (CEE)</h4>
@@ -695,10 +697,7 @@ const PropertyDetail = () => {
             </div>
           </div>
         )}
-        {/* Disclaimer */}
-        <div className="max-w-5xl mx-auto px-4">
-          <Disclaimer type={property.saleType === "ocupado" ? "ocupados" : property.saleType === "npl" ? "npl" : property.saleType === "cesion-remate" ? "cesion-remate" : "compraventa"} />
-        </div>
+      </div>
       </div>
 
       <Footer />
