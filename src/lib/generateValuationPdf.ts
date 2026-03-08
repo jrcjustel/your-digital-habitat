@@ -435,7 +435,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7);
   doc.setTextColor(160, 120, 40);
-  doc.text("⚠ AVISO LEGAL", margin + 5, y + 3);
+  doc.text("AVISO LEGAL", margin + 5, y + 3);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(100, 80, 40);

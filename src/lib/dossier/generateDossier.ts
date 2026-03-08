@@ -354,10 +354,10 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(60, 60, 60);
-  doc.text("📧  info@ikesa.es", MARGIN + 4, y + 13);
-  doc.text("📞  +34 900 000 000", MARGIN + 70, y + 13);
-  doc.text("💬  WhatsApp: +34 600 000 000", MARGIN + 4, y + 19);
-  doc.text("🌐  www.ikesa.es", MARGIN + 70, y + 19);
+  doc.text("Email: info@ikesa.es", MARGIN + 4, y + 13);
+  doc.text("Tel: +34 900 000 000", MARGIN + 70, y + 13);
+  doc.text("WhatsApp: +34 600 000 000", MARGIN + 4, y + 19);
+  doc.text("Web: www.ikesa.es", MARGIN + 70, y + 19);
 
   // ═══════════════════════════════════════════════════════
   // FOOTERS on all pages

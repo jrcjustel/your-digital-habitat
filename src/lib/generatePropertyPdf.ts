@@ -177,12 +177,12 @@ export const generatePropertyPdf = async (property: Property) => {
 
   // Google Maps link
   const mapsUrl = `https://www.google.com/maps?q=${property.lat},${property.lng}`;
-  addLink("📍 Ver en Google Maps", mapsUrl);
+  addLink("Ver en Google Maps", mapsUrl);
 
   // Wikibarrio link
   const wikibarrioSlug = property.municipality.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
   const wikibarrioUrl = `https://www.wikibarrio.es/${wikibarrioSlug}`;
-  addLink("🏘️ Info del barrio (Wikibarrio)", wikibarrioUrl);
+  addLink("Info del barrio (Wikibarrio)", wikibarrioUrl);
 
   // ── Property details ────────────────────────────────────
   addSection("Características del Inmueble");
