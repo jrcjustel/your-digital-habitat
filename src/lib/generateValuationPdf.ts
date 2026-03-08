@@ -263,7 +263,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(...BRAND_GREEN);
-      doc.text("✓ Factores positivos", margin, y);
+      doc.text("[+] Factores positivos", margin, y);
       y += 5;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
