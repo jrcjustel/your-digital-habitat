@@ -222,10 +222,8 @@ const PropertyDetail = () => {
                 const loc = property.municipality || property.province || property.location;
                 const tipo = property.type === "vivienda" ? "Piso" : property.type === "local" ? "Local" : property.type === "nave" ? "Nave" : property.type === "oficina" ? "Oficina" : property.type === "terreno" ? "Terreno" : property.type === "edificio" ? "Edificio" : property.type === "obra-parada" ? "Obra parada" : "Activo";
                 const area = property.area ? `· ${property.area} m²` : "";
-                const hasDiscount = property.marketValue && property.price && property.price < property.marketValue;
-                const discTag = hasDiscount ? "· Precio por debajo de mercado" : "";
-                if (property.saleType === "ocupado") return `${tipo} sin posesión en ${loc} ${area} ${discTag}`.trim();
-                if (property.saleType === "npl") return `Crédito con colateral ${tipo.toLowerCase()} en ${loc} ${discTag}`.trim();
+                if (property.saleType === "ocupado") return `${tipo} sin posesión en ${loc} ${area}`.trim();
+                if (property.saleType === "npl") return `Crédito con colateral ${tipo.toLowerCase()} en ${loc}`.trim();
                 if (property.saleType === "cesion-remate") return `${tipo} en cesión de remate en ${loc} ${area}`.trim();
                 return property.title;
               })()}</h1>
