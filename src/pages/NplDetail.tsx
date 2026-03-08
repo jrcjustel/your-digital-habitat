@@ -61,6 +61,7 @@ interface NplAsset {
   descripcion: string | null;
   deposito_porcentaje: number;
   comision_porcentaje: number;
+  estado: string | null;
 }
 
 const InfoRow = ({ label, value, highlight }: { label: string; value: string | number | null | undefined; highlight?: boolean }) => {
