@@ -194,28 +194,26 @@ const PropertyDetail = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {property.marketValue && (
-              <div className="bg-secondary rounded-xl p-5 text-center">
-                <p className="text-2xl font-bold text-foreground">{property.marketValue.toLocaleString("es-ES")} €</p>
-                <p className="text-sm text-muted-foreground mt-1">Valor de mercado</p>
-              </div>
-            )}
             <div className="bg-accent/10 border-2 border-accent rounded-xl p-5 text-center">
-              <p className="text-2xl font-bold text-accent">{property.price.toLocaleString("es-ES")} €{property.operation === "alquiler" ? "/mes" : ""}</p>
-              <p className="text-sm text-muted-foreground mt-1">Precio orientativo</p>
+              <p className="text-sm text-muted-foreground mb-1">Precio orientativo</p>
+              <p className="text-2xl font-bold text-accent">{property.price ? `${property.price.toLocaleString("es-ES")} €${property.operation === "alquiler" ? "/mes" : ""}` : "A consultar"}</p>
             </div>
-            {discount > 0 && (
-              <div className="bg-secondary rounded-xl p-5 text-center">
-                <p className="text-2xl font-bold text-foreground">-{discount}%</p>
-                <p className="text-sm text-muted-foreground mt-1">Descuento</p>
-                {property.profitability && (
-                  <div className="flex items-center justify-center gap-1 mt-2 text-accent">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-sm font-bold">{property.profitability}% rentabilidad est.</span>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="bg-secondary rounded-xl p-5 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Deuda aproximada</p>
+              <p className="text-2xl font-bold text-foreground">
+                {property.debtInfo?.outstandingDebt
+                  ? `${property.debtInfo.outstandingDebt.toLocaleString("es-ES")} €`
+                  : "A consultar"}
+              </p>
+            </div>
+            <div className="bg-secondary rounded-xl p-5 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Valor de tasación a efectos de subasta</p>
+              <p className="text-2xl font-bold text-foreground">
+                {property.marketValue
+                  ? `${property.marketValue.toLocaleString("es-ES")} €`
+                  : "A consultar"}
+              </p>
+            </div>
           </div>
         </div>
 
