@@ -5,6 +5,7 @@ import { academyArticles, academyCategories } from "@/data/academy-articles";
 import { ArrowLeft, Clock, BookOpen, ChevronRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
+import SEOHead, { createArticleSchema, createBreadcrumbSchema } from "@/components/SEOHead";
 
 const AcademiaArticle = () => {
   const { slug } = useParams();
