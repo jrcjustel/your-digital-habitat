@@ -549,6 +549,27 @@ const AiChatWidget = () => {
 
   return (
     <>
+      {/* Proactive bubble */}
+      {proactiveBubble && !isOpen && (
+        <div className="fixed bottom-24 right-6 z-[9999] max-w-[280px] animate-in slide-in-from-bottom-2 fade-in">
+          <div className="bg-card border border-primary/30 rounded-2xl rounded-br-sm p-3 shadow-xl">
+            <p className="text-xs text-foreground leading-relaxed">{proactiveBubble}</p>
+            <div className="flex items-center gap-2 mt-2">
+              <Button size="sm" className="text-[10px] h-6 gap-1" onClick={() => {
+                setIsOpen(true);
+                setProactiveBubble(null);
+                handleSend(proactiveBubble);
+              }}>
+                <Sparkles className="w-3 h-3" /> Hablar con asesor
+              </Button>
+              <Button size="sm" variant="ghost" className="text-[10px] h-6" onClick={() => setProactiveBubble(null)}>
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
