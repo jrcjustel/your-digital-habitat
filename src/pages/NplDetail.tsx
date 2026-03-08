@@ -313,9 +313,9 @@ const NplDetail = () => {
                 </div>
               )}
               {discount !== null && discount > 0 && (
-                <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                  <p className="text-xs text-green-700 dark:text-green-400 mb-1">Descuento s/ mercado</p>
-                  <p className="text-lg font-bold text-green-700 dark:text-green-400 flex items-center gap-1">
+                <div className="bg-accent/10 border border-accent/20 rounded-xl p-4">
+                  <p className="text-xs text-accent mb-1">Descuento s/ mercado</p>
+                  <p className="text-lg font-bold text-accent flex items-center gap-1">
                     <TrendingDown className="w-4 h-4" /> {discount}%
                   </p>
                 </div>
