@@ -81,7 +81,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.setTextColor(180, 210, 230);
-    doc.text(`${fmt(data.estimatedAssetValue)} €`, MARGIN, y + 38);
+    doc.text(`${fmt(data.estimatedAssetValue)} EUR`, MARGIN, y + 38);
   }
 
   if (data.discount && data.discount > 0) {
