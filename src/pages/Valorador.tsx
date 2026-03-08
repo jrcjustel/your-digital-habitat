@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText, Download } from "lucide-react";
+import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText, Download, Building, Image } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
@@ -96,6 +96,8 @@ const Valorador = () => {
   const [catastroData, setCatastroData] = useState<any>(null);
   const [formSnapshot, setFormSnapshot] = useState<FormData | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [catastroFachadaUrl, setCatastroFachadaUrl] = useState<string | null>(null);
+  const [catastroCartoUrl, setCatastroCartoUrl] = useState<string | null>(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -174,9 +176,20 @@ const Valorador = () => {
       if (!valuationResult.data?.success) throw new Error(valuationResult.data?.error || "Error en la valoración");
       setValuation(valuationResult.data.valuation);
 
-      // Save catastro data if available
+      // Save catastro data and load images if available
       if (catastroResult?.data?.success) {
-        setCatastroData(catastroResult.data.data);
+        const cd = catastroResult.data.data;
+        setCatastroData(cd);
+        
+        // Build catastro image URLs
+        if (cd.ref_catastral) {
+          setCatastroFachadaUrl(
+            `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${cd.ref_catastral}`
+          );
+        }
+        if (cd.urls?.cartografia) {
+          setCatastroCartoUrl(cd.urls.cartografia);
+        }
       }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
@@ -489,6 +502,33 @@ const Valorador = () => {
                   <p className="text-muted-foreground">Estimación basada en datos del mercado inmobiliario español</p>
                 </div>
 
+                {/* Property type + location summary */}
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+                  {formSnapshot?.tipo_inmueble && (
+                    <span className="inline-flex items-center gap-1.5 bg-accent/10 text-accent px-3 py-1.5 rounded-full text-sm font-medium">
+                      <Building className="w-3.5 h-3.5" />
+                      {tiposInmueble.find(t => t.value === formSnapshot.tipo_inmueble)?.label || formSnapshot.tipo_inmueble}
+                    </span>
+                  )}
+                  {catastroData?.uso_catastral && (
+                    <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+                      <FileText className="w-3.5 h-3.5" />
+                      Catastro: {catastroData.uso_catastral}
+                    </span>
+                  )}
+                  {formSnapshot?.superficie_m2 && (
+                    <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+                      {formSnapshot.superficie_m2} m²
+                    </span>
+                  )}
+                  {formSnapshot && (
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground text-sm">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {formSnapshot.municipio}, {formSnapshot.provincia}
+                    </span>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="text-center p-6 bg-secondary rounded-xl">
                     <p className="text-sm text-muted-foreground mb-1">Valor mínimo</p>
@@ -544,13 +584,44 @@ const Valorador = () => {
               </CardContent>
             </Card>
 
-            {/* Catastro data summary if available */}
+            {/* Catastro photos + data */}
             {catastroData && (
               <Card>
                 <CardContent className="pt-6 pb-6">
                   <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
                     <FileText className="w-4 h-4 text-accent" /> Datos Catastrales
                   </h3>
+
+                  {/* Catastro photos */}
+                  {catastroFachadaUrl && (
+                    <div className="mb-6">
+                      <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                        <Image className="w-3.5 h-3.5" /> Fotografía oficial del Catastro
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="rounded-lg overflow-hidden border bg-muted">
+                          <img
+                            src={catastroFachadaUrl}
+                            alt="Fachada del inmueble - Catastro"
+                            className="w-full h-48 object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                          <p className="text-xs text-muted-foreground text-center py-1.5">Fachada</p>
+                        </div>
+                        {catastroCartoUrl && (
+                          <div className="rounded-lg overflow-hidden border bg-muted">
+                            <iframe
+                              src={catastroCartoUrl}
+                              title="Cartografia catastral"
+                              className="w-full h-48 border-0"
+                            />
+                            <p className="text-xs text-muted-foreground text-center py-1.5">Cartografia catastral</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Ref. catastral</span>
@@ -558,8 +629,14 @@ const Valorador = () => {
                     </div>
                     {catastroData.uso_catastral && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Uso</span>
+                        <span className="text-muted-foreground">Uso catastral</span>
                         <span className="font-medium text-foreground">{catastroData.uso_catastral}</span>
+                      </div>
+                    )}
+                    {catastroData.uso_predominante && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Uso predominante</span>
+                        <span className="font-medium text-foreground">{catastroData.uso_predominante}</span>
                       </div>
                     )}
                     {catastroData.superficie_construida > 0 && (
@@ -572,6 +649,18 @@ const Valorador = () => {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Clase</span>
                         <span className="font-medium text-foreground">{catastroData.clase}</span>
+                      </div>
+                    )}
+                    {catastroData.anio_construccion && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Año construcción</span>
+                        <span className="font-medium text-foreground">{catastroData.anio_construccion}</span>
+                      </div>
+                    )}
+                    {catastroData.coeficiente_participacion && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Coef. participación</span>
+                        <span className="font-medium text-foreground">{catastroData.coeficiente_participacion}</span>
                       </div>
                     )}
                   </div>
@@ -615,7 +704,7 @@ const Valorador = () => {
                 ¿Quieres una tasación más precisa? Nuestros expertos pueden ayudarte.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); }}>
+                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); setCatastroFachadaUrl(null); setCatastroCartoUrl(null); }}>
                   Valorar otro inmueble
                 </Button>
                 <Button size="lg" variant="outline" asChild>
