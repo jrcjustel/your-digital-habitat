@@ -429,13 +429,29 @@ const NplDetail = () => {
                   </div>
                 )}
 
-                <Button
-                  onClick={() => setShowOffer(!showOffer)}
-                  className="w-full gap-2 mb-3"
-                >
-                  <Euro className="w-4 h-4" />
-                  {showOffer ? "Ocultar formulario" : "Presentar oferta"}
-                </Button>
+                {/* Conditional: show offer form or waitlist based on estado */}
+                {asset.estado === "oferta_gestion" ? (
+                  <div className="mb-3">
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mb-3">
+                      <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
+                      <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
+                    </div>
+                    <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
+                  </div>
+                ) : asset.estado === "cerrado" ? (
+                  <div className="bg-muted rounded-xl p-3 mb-3">
+                    <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
+                    <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => setShowOffer(!showOffer)}
+                    className="w-full gap-2 mb-3"
+                  >
+                    <Euro className="w-4 h-4" />
+                    {showOffer ? "Ocultar formulario" : "¡Haz tu oferta!"}
+                  </Button>
+                )}
 
                 <Button
                   variant="outline"
