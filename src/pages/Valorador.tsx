@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -167,6 +168,16 @@ const Valorador = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Valorar mi Inmueble Gratis — Tasación Online con IA | IKESA"
+        description="Obtén una valoración gratuita e instantánea de tu inmueble con inteligencia artificial. Estimación de mercado basada en datos reales de transacciones en España."
+        canonical="/valorar"
+        keywords="valorar inmueble gratis, tasación online, cuánto vale mi casa, valoración vivienda, precio metro cuadrado, tasación IA"
+        jsonLd={createBreadcrumbSchema([
+          { name: "Inicio", url: "/" },
+          { name: "Valorar Inmueble", url: "/valorar" },
+        ])}
+      />
       <Navbar />
 
       {/* Hero */}
