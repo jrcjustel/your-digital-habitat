@@ -93,6 +93,9 @@ const Valorador = () => {
   const [refCatastral, setRefCatastral] = useState("");
   const [lookingUp, setLookingUp] = useState(false);
   const [catastroFilled, setCatastroFilled] = useState(false);
+  const [catastroData, setCatastroData] = useState<any>(null);
+  const [formSnapshot, setFormSnapshot] = useState<FormData | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
