@@ -179,6 +179,159 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_images: {
+        Row: {
+          asset_id: string
+          caption: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          is_cover: boolean
+          sort_order: number
+          uploaded_by: string | null
+        }
+        Insert: {
+          asset_id: string
+          caption?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          is_cover?: boolean
+          sort_order?: number
+          uploaded_by?: string | null
+        }
+        Update: {
+          asset_id?: string
+          caption?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          is_cover?: boolean
+          sort_order?: number
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_images_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auction_settings: {
+        Row: {
+          asset_id: string
+          auction_type: string
+          bid_increment: number | null
+          created_at: string
+          end_date: string | null
+          id: string
+          is_active: boolean
+          min_bid: number | null
+          start_date: string | null
+        }
+        Insert: {
+          asset_id: string
+          auction_type?: string
+          bid_increment?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          min_bid?: number | null
+          start_date?: string | null
+        }
+        Update: {
+          asset_id?: string
+          auction_type?: string
+          bid_increment?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          min_bid?: number | null
+          start_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_settings_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: true
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bids: {
+        Row: {
+          amount: number
+          asset_id: string
+          cif: string | null
+          created_at: string
+          email: string
+          empresa: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          persona_tipo: string | null
+          phone: string | null
+          representacion: string | null
+          represented_name: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          asset_id: string
+          cif?: string | null
+          created_at?: string
+          email: string
+          empresa?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          persona_tipo?: string | null
+          phone?: string | null
+          representacion?: string | null
+          represented_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          asset_id?: string
+          cif?: string | null
+          created_at?: string
+          email?: string
+          empresa?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          persona_tipo?: string | null
+          phone?: string | null
+          representacion?: string | null
+          represented_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       broadcast_messages: {
         Row: {
           channel: Database["public"]["Enums"]["channel_type"]
