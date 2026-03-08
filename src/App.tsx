@@ -26,6 +26,7 @@ import CanalDenuncias from "./pages/CanalDenuncias";
 import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import Servicios from "./pages/Servicios";
+import Contacto from "./pages/Contacto";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import AdminPanel from "./pages/AdminPanel";
