@@ -25,6 +25,7 @@ import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
 import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
+import Servicios from "./pages/Servicios";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import AdminPanel from "./pages/AdminPanel";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
             <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
+            <Route path="/servicios" element={<Servicios />} />
             <Route path="/academia" element={<Academia />} />
             <Route path="/academia/ruta/:rutaSlug" element={<AcademiaRuta />} />
             <Route path="/academia/:slug" element={<AcademiaArticle />} />

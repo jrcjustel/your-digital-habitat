@@ -9,6 +9,7 @@ const navItems = [
   { label: "Inmuebles", href: "/inmuebles" },
   { label: "Academia", href: "/academia" },
   { label: "Cómo funciona", href: "/como-funciona" },
+  { label: "Servicios", href: "/servicios" },
   { label: "Valorar inmueble", href: "/valorar" },
 ];
 
