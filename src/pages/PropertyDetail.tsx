@@ -163,10 +163,6 @@ const PropertyDetail = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Sale type context banner */}
-        <div className="mb-6">
-          <SaleTypeBanner saleType={property.saleType} />
-        </div>
 
         {/* Header card - reference + prices */}
         <div className="bg-card rounded-2xl border border-border p-6 mb-6">
@@ -447,6 +443,7 @@ const PropertyDetail = () => {
                   </Tabs>
                 </div>
               </NdaGate>
+              <SaleTypeBanner saleType={property.saleType} />
               <ValuationPanel property={property} />
               <InvestmentCalculator property={property} />
               </>
@@ -635,6 +632,7 @@ const PropertyDetail = () => {
                     </TabsContent>
                   </Tabs>
                 </div>
+                <SaleTypeBanner saleType={property.saleType} />
               </>
             )}
 
