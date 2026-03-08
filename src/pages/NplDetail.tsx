@@ -99,6 +99,9 @@ const NplDetail = () => {
   const [loading, setLoading] = useState(true);
   const [ndaSigned, setNdaSigned] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
     if (!id) return;
