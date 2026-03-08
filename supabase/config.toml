@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.catastro-lookup]
 verify_jwt = false
+
+[functions.bulk-catastro-enrich]
+verify_jwt = false
