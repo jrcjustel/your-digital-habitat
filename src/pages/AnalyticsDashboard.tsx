@@ -5,8 +5,9 @@ import MarketIntelligence from "@/components/MarketIntelligence";
 import AssetComparator from "@/components/AssetComparator";
 import AlertsManager from "@/components/AlertsManager";
 import LegalForms from "@/components/LegalForms";
+import AnalyticsTrends from "@/components/AnalyticsTrends";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, TrendingUp, GitCompare, Bell, Scale } from "lucide-react";
+import { BarChart3, TrendingUp, GitCompare, Bell, Scale, Activity } from "lucide-react";
 
 const AnalyticsDashboard = () => {
   return (
