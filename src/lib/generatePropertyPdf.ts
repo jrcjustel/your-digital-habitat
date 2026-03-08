@@ -144,7 +144,7 @@ export const generatePropertyPdf = async (property: Property) => {
     const disc = Math.round(((property.marketValue - property.price) / property.marketValue) * 100);
     doc.setFontSize(11);
     doc.setTextColor(130, 130, 130);
-    doc.text(`${property.marketValue.toLocaleString("es-ES")} €`, pageWidth / 2, y + 5);
+    doc.text(`${property.marketValue.toLocaleString("es-ES")} EUR`, pageWidth / 2, y + 5);
     doc.setFontSize(8);
     doc.text("Valor de mercado", pageWidth / 2, y + 11);
 
