@@ -64,7 +64,9 @@ const CategoryCards = () => {
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
             Oportunidades inmobiliarias sin barreras de entrada
           </h2>
-        {/* Investment categories */}
+        </div>
+
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
           {investmentCategories.map((cat) => (
             <Link
