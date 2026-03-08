@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import SocialMediaManager from "@/components/SocialMediaManager";
+import AdminUserDetail from "@/components/AdminUserDetail";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -408,7 +409,7 @@ const AdminPanel = () => {
                 </thead>
                 <tbody>
                   {filteredUsers.map((u) => (
-                    <tr key={u.user_id} className="border-b border-border/50 hover:bg-secondary/30">
+                    <tr key={u.user_id} className="border-b border-border/50 hover:bg-secondary/30 cursor-pointer" onClick={() => setSelectedUserId(u.user_id)}>
                       <td className="py-2.5 px-2">
                         <p className="font-medium text-foreground">{u.display_name || "Sin nombre"}</p>
                         <p className="text-[10px] text-muted-foreground">{u.phone || "Sin teléfono"}</p>
