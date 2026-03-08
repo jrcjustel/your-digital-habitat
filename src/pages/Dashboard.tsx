@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
-import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight } from "lucide-react";
+import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight, Download, Activity, FileDown } from "lucide-react";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -221,13 +221,15 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="favorites" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
-            <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Favoritos</TabsTrigger>
-            <TabsTrigger value="offers" className="gap-2"><FileText className="w-4 h-4" /> Ofertas</TabsTrigger>
-            <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Documentos</TabsTrigger>
-            <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Alertas</TabsTrigger>
-            <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Perfil</TabsTrigger>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1">
+            <TabsTrigger value="profile" className="gap-2"><User className="w-4 h-4" /> Mis datos</TabsTrigger>
+            <TabsTrigger value="operations" className="gap-2"><Clock className="w-4 h-4" /> Operaciones</TabsTrigger>
+            <TabsTrigger value="favorites" className="gap-2"><Heart className="w-4 h-4" /> Mis favoritos</TabsTrigger>
+            <TabsTrigger value="download" className="gap-2"><FileText className="w-4 h-4" /> Descargar datos</TabsTrigger>
+            <TabsTrigger value="offers" className="gap-2"><Euro className="w-4 h-4" /> Mis ofertas</TabsTrigger>
+            <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Mis documentos</TabsTrigger>
+            <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Mis alertas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="favorites">
@@ -268,6 +270,136 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Operaciones realizadas */}
+          <TabsContent value="operations">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2"><Activity className="w-5 h-5 text-accent" /> Operaciones realizadas</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {offers.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <Activity className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+                    <p className="text-muted-foreground">No tienes operaciones registradas todavía.</p>
+                    <p className="text-sm text-muted-foreground mt-1">Aquí aparecerán tus ofertas aceptadas, reservas y compras finalizadas.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {offers.filter(o => o.status === "accepted").length === 0 ? (
+                      <div className="py-8 text-center">
+                        <Activity className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
+                        <p className="text-muted-foreground text-sm">No tienes operaciones completadas.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Las ofertas aceptadas aparecerán aquí como operaciones.</p>
+                      </div>
+                    ) : (
+                      offers.filter(o => o.status === "accepted").map((op) => (
+                        <div key={op.id} className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl border border-border">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-foreground text-sm">Activo {op.property_reference || op.property_id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Oferta aceptada · {new Date(op.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })}
+                            </p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="font-bold text-foreground">{op.offer_amount.toLocaleString("es-ES")} €</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Descargar datos (RGPD) */}
+          <TabsContent value="download">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2"><FileDown className="w-5 h-5 text-accent" /> Descargar mis datos</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-sm text-muted-foreground">
+                  Conforme al Reglamento General de Protección de Datos (RGPD), puedes descargar una copia de todos los datos personales que tenemos almacenados sobre ti.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button
+                    variant="outline"
+                    className="gap-2 justify-start h-auto py-4"
+                    onClick={() => {
+                      const data = {
+                        perfil: profile,
+                        email: user.email,
+                        favoritos: favorites.length,
+                        ofertas: offers,
+                        alertas: alerts,
+                        fecha_exportacion: new Date().toISOString(),
+                      };
+                      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `ikesa-mis-datos-${new Date().toISOString().slice(0, 10)}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Datos descargados correctamente");
+                    }}
+                  >
+                    <Download className="w-5 h-5 text-accent" />
+                    <div className="text-left">
+                      <p className="font-medium text-foreground">Descargar datos (JSON)</p>
+                      <p className="text-xs text-muted-foreground">Perfil, ofertas, alertas y preferencias</p>
+                    </div>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="gap-2 justify-start h-auto py-4"
+                    onClick={() => {
+                      const rows = [
+                        ["Campo", "Valor"],
+                        ["Nombre", profile.display_name || ""],
+                        ["Email", user.email || ""],
+                        ["Teléfono", profile.phone || ""],
+                        ["Tipo persona", profile.persona_tipo || ""],
+                        ["Empresa", profile.empresa || ""],
+                        ["CIF/NIF", profile.cif_nif || ""],
+                        ["Comunidad Autónoma", profile.comunidad_autonoma || ""],
+                        ["Ciudad", profile.ciudad || ""],
+                        ["Nivel inversor", profile.investor_level || ""],
+                        ["NDA firmado", profile.nda_signed ? "Sí" : "No"],
+                        ["Favoritos", String(favorites.length)],
+                        ["Ofertas enviadas", String(offers.length)],
+                        ["Alertas activas", String(alerts.filter(a => a.is_active).length)],
+                      ];
+                      const csv = rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+                      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `ikesa-mis-datos-${new Date().toISOString().slice(0, 10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Datos descargados en CSV");
+                    }}
+                  >
+                    <Download className="w-5 h-5 text-primary" />
+                    <div className="text-left">
+                      <p className="font-medium text-foreground">Descargar datos (CSV)</p>
+                      <p className="text-xs text-muted-foreground">Formato compatible con Excel</p>
+                    </div>
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Si deseas solicitar la eliminación completa de tu cuenta y datos, contacta con nosotros en{" "}
+                  <a href="mailto:privacidad@ikesa.es" className="text-accent underline">privacidad@ikesa.es</a>.
+                </p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="offers">
@@ -320,12 +452,41 @@ const Dashboard = () => {
           </TabsContent>
           <TabsContent value="documents">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-heading text-lg font-bold text-foreground">Centro de documentación</h2>
-                  <p className="text-sm text-muted-foreground">Documentos compartidos y tu documentación personal. Sube DNI, escrituras, justificantes u otros archivos necesarios.</p>
-                </div>
+              <div>
+                <h2 className="font-heading text-lg font-bold text-foreground">Mis documentos</h2>
+                <p className="text-sm text-muted-foreground">NDA firmado, DNI, escrituras, justificantes de fondos y toda la documentación relativa a tu expediente de cliente.</p>
               </div>
+
+              {/* NDA status card */}
+              <Card className="border-accent/20">
+                <CardContent className="flex items-center gap-4 p-4">
+                  {profile.nda_signed ? (
+                    <>
+                      <div className="p-2.5 rounded-lg bg-primary/10">
+                        <ShieldCheck className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground">NDA firmado digitalmente</p>
+                        <p className="text-xs text-muted-foreground">
+                          Firmado el {profile.nda_signed_at ? new Date(profile.nda_signed_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "—"}
+                        </p>
+                      </div>
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">Vigente</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-2.5 rounded-lg bg-destructive/10">
+                        <ShieldX className="w-5 h-5 text-destructive" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground">NDA pendiente de firma</p>
+                        <p className="text-xs text-muted-foreground">Accede a un activo NPL o Cesión de Remate para firmar el NDA.</p>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
               <DocumentsPanel showFilters={true} allowUpload={true} />
             </div>
           </TabsContent>
