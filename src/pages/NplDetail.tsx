@@ -338,6 +338,9 @@ const NplDetail = () => {
                     <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
                       <FolderOpen className="w-4 h-4" /> Documentos
                     </TabsTrigger>
+                    <TabsTrigger value="catastro" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-5 py-3 gap-2 text-xs sm:text-sm">
+                      <MapPin className="w-4 h-4" /> Catastro
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* Información de la propiedad */}
