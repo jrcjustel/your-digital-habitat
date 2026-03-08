@@ -14,8 +14,9 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
-  Zap, History, Share2,
+  Zap, History, Share2, MapPin,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface KPIs {
@@ -89,6 +90,10 @@ const AdminPanel = () => {
   const [broadcastText, setBroadcastText] = useState("");
   const [broadcastChannel, setBroadcastChannel] = useState<"whatsapp" | "telegram" | "both">("both");
   const [broadcastSending, setBroadcastSending] = useState(false);
+  const [catastroRunning, setCatastroRunning] = useState(false);
+  const [catastroProgress, setCatastroProgress] = useState<{
+    totalProcessed: number; totalEnriched: number; totalErrors: number; done: boolean; batches: number;
+  } | null>(null);
 
   useEffect(() => {
     loadAll();
@@ -259,6 +264,42 @@ const AdminPanel = () => {
     setBroadcastText("");
     setBroadcastSending(false);
     loadBroadcasts();
+  };
+
+  const runBulkCatastro = async () => {
+    setCatastroRunning(true);
+    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalErrors: 0, done: false, batches: 0 });
+    let offset = 0;
+    const batchSize = 30;
+    let totalProcessed = 0;
+    let totalEnriched = 0;
+    let totalErrors = 0;
+    let batches = 0;
+
+    try {
+      while (true) {
+        const { data, error } = await supabase.functions.invoke("bulk-catastro-enrich", {
+          body: { batch_size: batchSize, offset },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Error desconocido");
+
+        batches++;
+        totalProcessed += data.total_in_batch || 0;
+        totalEnriched += data.enriched || 0;
+        totalErrors += data.errors || 0;
+        setCatastroProgress({ totalProcessed, totalEnriched, totalErrors, done: data.done, batches });
+
+        if (data.done || !data.next_offset) break;
+        offset = data.next_offset;
+      }
+
+      toast.success(`Enriquecimiento completado: ${totalEnriched} activos actualizados`);
+    } catch (e: any) {
+      toast.error("Error en enriquecimiento masivo: " + (e.message || "Error"));
+    } finally {
+      setCatastroRunning(false);
+    }
   };
 
   const updateOfferStatus = async (id: string, status: string) => {
@@ -558,6 +599,50 @@ const AdminPanel = () => {
                       <span className="text-foreground font-semibold">Umbral mínimo</span>
                       <Badge variant="default">{">"}20 pts</Badge>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Bulk Catastro Enrichment */}
+              <Card className="md:col-span-2 border-accent/20">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <MapPin className="w-5 h-5" /> Enriquecimiento masivo con Catastro
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral
+                    y rellena dirección, municipio, provincia, superficie y año de construcción donde falten datos.
+                    Se procesan en lotes de 30 con pausa de 1s entre consultas.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={runBulkCatastro}
+                      disabled={catastroRunning}
+                      className="gap-2"
+                    >
+                      {catastroRunning ? <Activity className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                      {catastroRunning ? "Procesando..." : "Iniciar enriquecimiento"}
+                    </Button>
+                    {catastroProgress && (
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-4 text-xs">
+                          <span className="text-muted-foreground">Lotes: <strong className="text-foreground">{catastroProgress.batches}</strong></span>
+                          <span className="text-muted-foreground">Procesados: <strong className="text-foreground">{catastroProgress.totalProcessed}</strong></span>
+                          <span className="text-primary">Enriquecidos: <strong>{catastroProgress.totalEnriched}</strong></span>
+                          {catastroProgress.totalErrors > 0 && (
+                            <span className="text-destructive">Errores: <strong>{catastroProgress.totalErrors}</strong></span>
+                          )}
+                          {catastroProgress.done && (
+                            <Badge className="bg-green-100 text-green-800 border-green-200 text-[10px] gap-1">
+                              <CheckCircle className="w-3 h-3" /> Completado
+                            </Badge>
+                          )}
+                        </div>
+                        {catastroRunning && <Progress value={undefined} className="h-1.5" />}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
