@@ -664,6 +664,8 @@ const PropertyDetail = () => {
                 precioOrientativo={property.price}
                 depositoPorcentaje={property.depositoPorcentaje}
                 comisionPorcentaje={property.comisionPorcentaje}
+                provincia={property.province}
+                comunidadAutonoma={property.province}
               />
             )}
 
