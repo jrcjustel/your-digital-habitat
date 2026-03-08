@@ -76,14 +76,15 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
         }
       }
 
-      // 3. Add Google Maps satellite static image
+      // 3. Add Google Maps satellite embed
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
-        const googleMapsUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(fullAddress)}&zoom=18&size=800x450&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
         items.push({
           id: "google-satellite",
-          src: googleMapsUrl,
+          src: "", // No static image
+          embedSrc: embedUrl,
           caption: "Vista satelite (Google Maps)",
           type: "satellite",
         });
