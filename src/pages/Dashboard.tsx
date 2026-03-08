@@ -66,7 +66,13 @@ interface Offer {
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile>({ display_name: "", phone: "", avatar_url: "", nda_signed: false, nda_signed_at: null });
+  const [profile, setProfile] = useState<Profile>({
+    display_name: "", phone: "", avatar_url: "", nda_signed: false, nda_signed_at: null,
+    persona_tipo: "fisica", empresa: null, cif_nif: null, comunidad_autonoma: null, ciudad: null,
+    investor_level: "principiante", presupuesto_min: 0, presupuesto_max: 0,
+    intereses: [], tipos_activo_preferidos: [], provincias_interes: [],
+    acepta_marketing: false, lead_score: 0,
+  });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
