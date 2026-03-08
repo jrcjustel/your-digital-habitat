@@ -18,6 +18,7 @@ import NdaGate from "@/components/NdaGate";
 import SaleTypeBanner from "@/components/SaleTypeBanner";
 import ValuationPanel from "@/components/ValuationPanel";
 import InvestmentCalculator from "@/components/InvestmentCalculator";
+import Disclaimer from "@/components/Disclaimer";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;

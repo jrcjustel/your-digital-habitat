@@ -18,6 +18,7 @@ import NdaGate from "@/components/NdaGate";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import BiddingPanel from "@/components/BiddingPanel";
 import RelatedAssets from "@/components/RelatedAssets";
+import Disclaimer from "@/components/Disclaimer";
 import WaitlistButton from "@/components/WaitlistButton";
 import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
