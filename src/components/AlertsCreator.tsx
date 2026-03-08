@@ -55,12 +55,33 @@ interface Alert {
   created_at: string;
 }
 
+// ─── Match counter helper ────────────────────────────────────
+function countMatchingAssets(filters: AlertFilters, assets: any[]): number {
+  if (!filters || Object.keys(filters).length === 0) return 0;
+  return assets.filter((asset) => {
+    if (filters.comunidad_autonoma && asset.comunidad_autonoma?.toLowerCase() !== filters.comunidad_autonoma.toLowerCase()) return false;
+    if (filters.provincia && asset.provincia?.toLowerCase() !== filters.provincia.toLowerCase()) return false;
+    if (filters.municipio && !asset.municipio?.toLowerCase().includes(filters.municipio.toLowerCase())) return false;
+    if (filters.tipo_venta) {
+      if (filters.tipo_venta === "cesion_credito" && !asset.cesion_credito) return false;
+      if (filters.tipo_venta === "cesion_remate" && !asset.cesion_remate) return false;
+      if (filters.tipo_venta === "postura_subasta" && !asset.postura_subasta) return false;
+      if (filters.tipo_venta === "compraventa" && (asset.cesion_credito || asset.cesion_remate || asset.postura_subasta)) return false;
+    }
+    if (filters.tipo_activo && asset.tipo_activo?.toLowerCase() !== filters.tipo_activo.toLowerCase()) return false;
+    if (filters.precio_min && filters.precio_min > 0 && (asset.precio_orientativo || 0) < filters.precio_min) return false;
+    if (filters.precio_max && filters.precio_max > 0 && (asset.precio_orientativo || 0) > filters.precio_max) return false;
+    return true;
+  }).length;
+}
+
 const AlertsCreator = () => {
   const { user } = useAuth();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [openAlerts, setOpenAlerts] = useState<Record<string, boolean>>({});
+  const [publishedAssets, setPublishedAssets] = useState<any[]>([]);
 
   // New alert form state
   const [newFilters, setNewFilters] = useState<AlertFilters>({});
@@ -68,8 +89,19 @@ const AlertsCreator = () => {
   const [creatingNew, setCreatingNew] = useState(false);
 
   useEffect(() => {
-    if (user) loadAlerts();
+    if (user) {
+      loadAlerts();
+      loadPublishedAssets();
+    }
   }, [user]);
+
+  const loadPublishedAssets = async () => {
+    const { data } = await supabase
+      .from("npl_assets")
+      .select("id,comunidad_autonoma,provincia,municipio,tipo_activo,precio_orientativo,cesion_credito,cesion_remate,postura_subasta")
+      .eq("publicado", true);
+    setPublishedAssets(data || []);
+  };
 
   const loadAlerts = async () => {
     const { data } = await supabase
