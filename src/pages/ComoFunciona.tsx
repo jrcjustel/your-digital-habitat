@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead, { createFAQSchema, createBreadcrumbSchema } from "@/components/SEOHead";
 import { useNavigate } from "react-router-dom";
 import {
   FileText,
@@ -190,6 +191,16 @@ const ComoFunciona = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Cómo Funciona IKESA — Guía Completa de Inversión Inmobiliaria Alternativa"
+        description="Aprende paso a paso cómo invertir en activos NPL, cesiones de remate, subastas BOE e inmuebles ocupados. Guía completa del proceso de inversión con IKESA."
+        canonical="/como-funciona"
+        keywords="cómo invertir inmuebles, guía inversión NPL, proceso cesión remate, cómo comprar subasta BOE, inversión inmobiliaria paso a paso"
+        jsonLd={createBreadcrumbSchema([
+          { name: "Inicio", url: "/" },
+          { name: "Cómo Funciona", url: "/como-funciona" },
+        ])}
+      />
       <Navbar />
 
       {/* ── Hero (Auctree-inspired) ── */}

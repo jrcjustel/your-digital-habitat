@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, Bed, Bath, Maximize, TrendingUp, ChevronDown, ChevronUp, LayoutGrid, List, Map as MapIcon, X, Heart } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 import PropertyMap from "@/components/PropertyMap";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -460,6 +461,16 @@ const PropertyListing = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Inmuebles en Venta — Viviendas, Locales, Oficinas y Terrenos | IKESA"
+        description="Encuentra inmuebles en venta en toda España: viviendas, locales comerciales, oficinas y terrenos. Inversión inmobiliaria con descuentos sobre valor de mercado."
+        canonical="/inmuebles"
+        keywords="inmuebles en venta España, viviendas baratas, locales comerciales, oficinas inversión, terrenos en venta, comprar piso descuento"
+        jsonLd={createBreadcrumbSchema([
+          { name: "Inicio", url: "/" },
+          { name: "Inmuebles", url: "/inmuebles" },
+        ])}
+      />
       <Navbar />
 
       {/* Breadcrumb */}

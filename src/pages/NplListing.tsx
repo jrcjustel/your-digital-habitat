@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import NplAssetCard from "@/components/NplAssetCard";
+import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 
 interface NplAsset {
   id: string;
@@ -118,6 +119,16 @@ const NplListing = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Activos NPL en Venta — Comprar Deuda Hipotecaria e Inmuebles Distressed"
+        description={`Explora ${total > 0 ? total.toLocaleString("es-ES") + " " : ""}activos NPL en España: cesiones de remate, inmuebles ocupados y deuda hipotecaria con descuentos de hasta el 60%. Filtra por provincia, tipo y precio.`}
+        canonical="/npl"
+        keywords="comprar NPL España, activos distressed, deuda hipotecaria, cesiones de remate, inmuebles ocupados en venta, non-performing loans"
+        jsonLd={createBreadcrumbSchema([
+          { name: "Inicio", url: "/" },
+          { name: "Activos NPL", url: "/npl" },
+        ])}
+      />
       <Navbar />
 
       <div className="bg-primary text-primary-foreground py-10">

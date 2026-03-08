@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { academyArticles, academyCategories, academyRoutes } from "@/data/academy-articles";
 import { BookOpen, Clock, ArrowRight, GraduationCap, Search, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import SEOHead, { createBreadcrumbSchema, createCourseSchema } from "@/components/SEOHead";
 
 import rutaOcupadosImg from "@/assets/ruta-ocupados.jpg";
 import rutaCesionesImg from "@/assets/ruta-cesiones-remate.jpg";
@@ -43,6 +44,24 @@ const Academia = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Academia IKESA — Formación Gratuita en Inversión Inmobiliaria Alternativa"
+        description="Aprende a invertir en inmuebles ocupados, cesiones de remate, subastas BOE y activos NPL con nuestras rutas formativas gratuitas. +40 artículos prácticos de expertos."
+        canonical="/academia"
+        keywords="formación inversión inmobiliaria, curso NPL gratis, aprender cesiones remate, academia subastas BOE, curso inmuebles ocupados"
+        jsonLd={[
+          createBreadcrumbSchema([
+            { name: "Inicio", url: "/" },
+            { name: "Academia", url: "/academia" },
+          ]),
+          ...academyRoutes.map(r => createCourseSchema({
+            name: r.title,
+            description: r.intro,
+            url: `/academia/ruta/${r.slug}`,
+            modules: r.modules.length,
+          })),
+        ]}
+      />
       <Navbar />
 
       {/* ── Hero ── */}
