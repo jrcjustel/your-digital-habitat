@@ -440,6 +440,8 @@ const NplDetail = () => {
                     <BiddingPanel
                       assetId={asset.id}
                       precioOrientativo={asset.precio_orientativo}
+                      depositoPorcentaje={asset.deposito_porcentaje}
+                      comisionPorcentaje={asset.comision_porcentaje}
                       userId={user?.id}
                       userName={userName}
                       userEmail={userEmail}

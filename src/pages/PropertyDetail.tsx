@@ -632,7 +632,13 @@ const PropertyDetail = () => {
                 <p className="text-sm text-muted-foreground">Regístrate y firma el NDA para enviar ofertas en productos NPL/CDR.</p>
               </div>
             ) : (
-              <OfferForm propertyId={property.id} propertyReference={property.reference} />
+              <OfferForm
+                propertyId={property.id}
+                propertyReference={property.reference}
+                precioOrientativo={property.price}
+                depositoPorcentaje={property.depositoPorcentaje}
+                comisionPorcentaje={property.comisionPorcentaje}
+              />
             )}
 
             {/* Reference card */}
