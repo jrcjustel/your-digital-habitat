@@ -15,6 +15,7 @@ import { toast } from "@/components/ui/sonner";
 import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight, Download, Activity, FileDown } from "lucide-react";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import AlertsCreator from "@/components/AlertsCreator";
+import NdaSigningFlow from "@/components/NdaSigningFlow";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -170,6 +171,26 @@ const Dashboard = () => {
     { icon: Gavel, label: "Cesiones de Remate", href: "/inversores/cesiones-remate", color: "bg-accent/10 text-accent" },
     { icon: Home, label: "Inmuebles Ocupados", href: "/inversores/ocupados", color: "bg-primary/10 text-primary" },
   ];
+
+  // If NDA not signed, show signing flow
+  if (!profile.nda_signed) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Completa tu registro</h1>
+              <p className="text-muted-foreground">{user.email}</p>
+            </div>
+            <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
+          </div>
+          <NdaSigningFlow user={user} onComplete={() => loadData()} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
