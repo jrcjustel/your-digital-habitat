@@ -277,11 +277,33 @@ const AiChatWidget = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertFilters, setAlertFilters] = useState({ provincia: "", tipo_activo: "", precio_max: "" });
+  const [proactiveBubble, setProactiveBubble] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Listen for proactive triggers from other components
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      const { message, openChat } = e.detail || {};
+      if (openChat && message) {
+        setProactiveBubble(message);
+        // Auto-open and send after a small delay
+        setTimeout(() => {
+          setIsOpen(true);
+          setProactiveBubble(null);
+          // Auto-send the proactive message
+          handleSend(message);
+        }, 500);
+      } else if (message) {
+        setProactiveBubble(message);
+      }
+    };
+    window.addEventListener("ikesa-proactive-chat" as any, handler as any);
+    return () => window.removeEventListener("ikesa-proactive-chat" as any, handler as any);
+  }, [messages, isLoading, activeConvId]);
 
   const loadConversations = useCallback(async () => {
     if (!user) return;
@@ -527,6 +549,27 @@ const AiChatWidget = () => {
 
   return (
     <>
+      {/* Proactive bubble */}
+      {proactiveBubble && !isOpen && (
+        <div className="fixed bottom-24 right-6 z-[9999] max-w-[280px] animate-in slide-in-from-bottom-2 fade-in">
+          <div className="bg-card border border-primary/30 rounded-2xl rounded-br-sm p-3 shadow-xl">
+            <p className="text-xs text-foreground leading-relaxed">{proactiveBubble}</p>
+            <div className="flex items-center gap-2 mt-2">
+              <Button size="sm" className="text-[10px] h-6 gap-1" onClick={() => {
+                setIsOpen(true);
+                setProactiveBubble(null);
+                handleSend(proactiveBubble);
+              }}>
+                <Sparkles className="w-3 h-3" /> Hablar con asesor
+              </Button>
+              <Button size="sm" variant="ghost" className="text-[10px] h-6" onClick={() => setProactiveBubble(null)}>
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Floating button */}
       <button
         onClick={() => setIsOpen(!isOpen)}

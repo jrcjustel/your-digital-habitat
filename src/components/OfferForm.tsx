@@ -83,6 +83,32 @@ const OfferForm = ({
 
       toast.success("¡Oferta enviada correctamente! Nos pondremos en contacto contigo.");
       setForm({ fullName: defaultName, email: defaultEmail, phone: "", offerAmount: "", representedName: "", empresa: "", cif: "" });
+
+      // Trigger auto-contact: notify assigned zone manager + AI response
+      try {
+        await supabase.functions.invoke("auto-contact", {
+          body: {
+            lead_name: form.fullName.trim(),
+            lead_email: form.email.trim(),
+            lead_phone: form.phone.trim() || null,
+            channel: "web_offer",
+            asset_id: propertyId,
+            asset_reference: propertyReference,
+            message: `Oferta de ${amount.toLocaleString("es-ES")} € sobre activo ${propertyReference}`,
+          },
+        });
+      } catch (e) {
+        console.error("Auto-contact error:", e);
+      }
+
+      // Trigger proactive AI chat
+      const event = new CustomEvent("ikesa-proactive-chat", {
+        detail: {
+          message: `Acabo de enviar una oferta de ${amount.toLocaleString("es-ES")} € por el activo ${propertyReference}. ¿Puedes darme información sobre los siguientes pasos del proceso y qué documentación necesitaré?`,
+          openChat: false,
+        },
+      });
+      window.dispatchEvent(event);
     } catch (err: any) {
       console.error("Submit error:", err);
       toast.error(err.message || "Error al enviar la oferta. Inténtalo de nuevo.");

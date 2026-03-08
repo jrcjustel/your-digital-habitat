@@ -62,6 +62,21 @@ const PropertyDetail = () => {
     }
   }, [user]);
 
+  // Proactive AI trigger after 30 seconds on the page
+  useEffect(() => {
+    if (!property) return;
+    const timer = setTimeout(() => {
+      const event = new CustomEvent("ikesa-proactive-chat", {
+        detail: {
+          message: `Estoy viendo el activo ${property.title || property.id} en ${property.location || property.province}. ¿Puedes darme un análisis rápido de esta oportunidad de inversión? Precio: ${property.price?.toLocaleString("es-ES")} €`,
+          openChat: false,
+        },
+      });
+      window.dispatchEvent(event);
+    }, 30000);
+    return () => clearTimeout(timer);
+  }, [property?.id]);
+
   const toggleFavorite = async () => {
     if (!user) {
       toast.error("Inicia sesión para guardar favoritos");
