@@ -632,6 +632,7 @@ const PropertyDetail = () => {
                     </TabsContent>
                   </Tabs>
                 </div>
+                <SaleTypeBanner saleType={property.saleType} />
               </>
             )}
 
