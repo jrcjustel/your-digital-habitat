@@ -7,11 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/sonner";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   FileSignature, Upload, ShieldCheck, Loader2, CheckCircle, CreditCard, User, Building2, MapPin, IdCard,
+  Download, AlertTriangle, XCircle, ScanLine,
 } from "lucide-react";
 import type { User as SupaUser } from "@supabase/supabase-js";
 import ikesaLogo from "@/assets/ikesa-logo-color.png";
+import jsPDF from "jspdf";
 
 interface NdaSigningFlowProps {
   user: SupaUser;
@@ -42,6 +45,20 @@ interface ClientData {
   protocolo: string;
 }
 
+interface DniValidation {
+  is_valid_front: boolean;
+  is_valid_back: boolean;
+  is_authentic: boolean;
+  is_in_vigor: boolean | null;
+  expiry_date: string | null;
+  dni_matches: boolean | null;
+  detected_number: string | null;
+  detected_name: string | null;
+  confidence: string;
+  issues: string[];
+  summary: string;
+}
+
 const INITIAL_DATA: ClientData = {
   nombre_completo: "",
   nacionalidad: "española",
@@ -66,6 +83,96 @@ const INITIAL_DATA: ClientData = {
   protocolo: "",
 };
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
+const generateNdaPdf = (clientData: ClientData, isPersonaJuridica: boolean) => {
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 20;
+  const maxWidth = pageWidth - margin * 2;
+  let y = 20;
+
+  const addText = (text: string, options?: { bold?: boolean; size?: number; center?: boolean; indent?: number }) => {
+    const size = options?.size || 10;
+    const style = options?.bold ? "bold" : "normal";
+    doc.setFontSize(size);
+    doc.setFont("helvetica", style);
+    const x = options?.center ? pageWidth / 2 : margin + (options?.indent || 0);
+    const align = options?.center ? "center" : "left";
+    const w = maxWidth - (options?.indent || 0);
+    const lines = doc.splitTextToSize(text, w);
+    if (y + lines.length * size * 0.4 > 275) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(lines, x, y, { align } as any);
+    y += lines.length * size * 0.4 + 2;
+  };
+
+  const addSpace = (h = 4) => { y += h; };
+
+  addText("ACUERDO DE CONFIDENCIALIDAD Y NO DIVULGACIÓN", { bold: true, size: 14, center: true });
+  addSpace(6);
+
+  addText(`De una parte: D. JOSÉ RAMÓN JUSTEL CARBAYO, mayor de edad, con NIF 10202726-H, con domicilio a estos efectos calle De la Magnolia, 37, local 9, 11500, el Puerto de Santa María, Cádiz, en nombre y representación de 144INNOVA24H, SL, sociedad con domicilio social en Avenida José León de Carranza, nº 2, 11011 Cádiz; inscrita en el Registro Mercantil de Cádiz, al tomo 1942, folio 36 y hoja CA-39.017 y provista de Número de Identificación Fiscal B-72140007; actúa en calidad de Administrador Único, en adelante "IKESA".`);
+  addSpace();
+
+  let secondParty = `De otra parte: D./Dª. ${clientData.nombre_completo || "___"}, de nacionalidad ${clientData.nacionalidad || "___"}, mayor de edad, con domicilio a efectos de notificaciones en ${clientData.domicilio_localidad || "___"}, en C/Avd ${clientData.domicilio_calle || "___"} y con DNI ${clientData.dni || "___"}`;
+  if (isPersonaJuridica) {
+    secondParty += `, en nombre y representación de la mercantil denominada ${clientData.empresa || "___"}, domiciliada en ${clientData.empresa_domicilio_localidad || "___"}, en Calle ${clientData.empresa_domicilio_calle || "___"}, con NIF ${clientData.empresa_nif || "___"}; inscrita en el Registro Mercantil de ${clientData.registro_mercantil || "___"}, al Tomo ${clientData.tomo || "___"}, Folio ${clientData.folio || "___"}, Sección ${clientData.seccion || "___"}, Hoja ${clientData.hoja || "___"}, en su condición de ${clientData.cargo || "___"}`;
+  }
+  secondParty += `, en adelante "RECEPTOR DE LA INFORMACIÓN" o "PARTE RECEPTORA".`;
+  addText(secondParty);
+  addSpace(4);
+
+  addText("EXPONEN", { bold: true, size: 12, center: true });
+  addSpace();
+  addText("I. Que ambas partes se reconocen capacidad jurídica suficiente para suscribir el presente documento.");
+  addText("II. Que ambas partes desean desarrollar una relación de colaboración tendente a analizar cierta información facilitada por clientes de IKESA.");
+  addText("III. Que para las PARTES es esencial y constituye necesario para cualquier tipo de gestión se asuman las obligaciones de secreto y confidencialidad respecto de la \"INFORMACIÓN\" a la que cada PARTE tenga acceso.");
+  addSpace(4);
+
+  addText("ACUERDAN", { bold: true, size: 12, center: true });
+  addSpace();
+
+  const clauses = [
+    { title: "PRIMERO. – Información confidencial", text: "Se entiende por Información Confidencial toda información facilitada por IKESA a la PARTE RECEPTORA, incluyendo información técnica, financiera, operacional, comercial, de personal, de gestión o de otro tipo, así como cualquier diseño, proceso, procedimiento, código, base de datos, invención, know-how y secretos comerciales." },
+    { title: "SEGUNDO. – Obligaciones de Confidencialidad", text: "Cada una de las PARTES deberá: limitar el acceso a la información; advertir de su naturaleza confidencial; adoptar medidas para su cumplimiento; proteger la información con diligencia razonable; utilizarla únicamente para la valoración del Proyecto; no revelarla a terceros." },
+    { title: "TERCERO. – Excepciones", text: "Las restricciones no serán de aplicación cuando la información fuera de dominio público, obtenida legalmente de terceros, deba ser facilitada por disposición legal, o sea revelada con autorización escrita previa." },
+    { title: "CUARTO. – Propiedad de la Información", text: "Toda la Información Confidencial revelada por IKESA será de su exclusiva propiedad." },
+    { title: "QUINTO. – Personas con acceso", text: "La PARTE RECEPTORA se obliga a restringir la comunicación de la Información a las personas que deban necesariamente conocerla." },
+    { title: "SEXTO. – Finalidad", text: "Toda la información será utilizada únicamente con la finalidad de analizar dicha información para presentar una oferta adecuada al tipo de producto." },
+    { title: "SÉPTIMO. – Duración", text: "Las obligaciones permanecerán en vigor durante un periodo de veinticuatro (24) meses a partir de la fecha del presente Acuerdo." },
+    { title: "OCTAVO. – Productos y Servicios competidores", text: "Este Acuerdo no afectará el derecho de las PARTES a desarrollar productos o servicios competidores." },
+    { title: "NOVENO. – Carácter de la relación", text: "Las obligaciones vinculan a las PARTES y a sus respectivos sucesores legales." },
+    { title: "DÉCIMO. – Protección de Datos", text: "En cumplimiento del RGPD y la LOPD, los datos serán tratados para el mantenimiento y ejecución del presente Acuerdo. Derechos: dpo@ikesa.es." },
+    { title: "UNDÉCIMO. – Indemnización", text: "La PARTE RECEPTORA deberá indemnizar a IKESA por todos los daños y perjuicios derivados del incumplimiento." },
+    { title: "DUODÉCIMO. – Fuero y jurisdicción", text: "Ambas PARTES se someten expresamente a los Juzgados y Tribunales de Cádiz." },
+  ];
+
+  clauses.forEach((c) => {
+    addText(c.title, { bold: true });
+    addText(c.text);
+    addSpace(2);
+  });
+
+  addSpace(4);
+  const today = new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  addText(`En prueba de conformidad, ambas PARTES suscriben el presente contrato en fecha ${today}.`, { center: true });
+
+  doc.save(`NDA_IKESA_${clientData.nombre_completo.replace(/\s+/g, "_") || "documento"}.pdf`);
+};
+
 const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
   const [step, setStep] = useState<"data" | "review" | "dni" | "sign">("data");
   const [clientData, setClientData] = useState<ClientData>(INITIAL_DATA);
@@ -77,6 +184,8 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
   const [dniFrontPreview, setDniFrontPreview] = useState<string | null>(null);
   const [dniBackPreview, setDniBackPreview] = useState<string | null>(null);
   const [signing, setSigning] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [dniValidation, setDniValidation] = useState<DniValidation | null>(null);
   const frontRef = useRef<HTMLInputElement>(null);
   const backRef = useRef<HTMLInputElement>(null);
 
@@ -90,6 +199,11 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
       toast.error("El archivo no puede superar 10 MB");
       return;
     }
+    // Only accept images
+    if (!file.type.startsWith("image/")) {
+      toast.error("Solo se aceptan imágenes (JPG, PNG). No se admiten PDFs.");
+      return;
+    }
     const url = URL.createObjectURL(file);
     if (side === "front") {
       setDniFront(file);
@@ -98,16 +212,58 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
       setDniBack(file);
       setDniBackPreview(url);
     }
+    // Reset validation when files change
+    setDniValidation(null);
+  };
+
+  const validateDni = async () => {
+    if (!dniFront || !dniBack) return;
+    setValidating(true);
+    setDniValidation(null);
+
+    try {
+      const [frontB64, backB64] = await Promise.all([
+        fileToBase64(dniFront),
+        fileToBase64(dniBack),
+      ]);
+
+      const { data, error } = await supabase.functions.invoke("validate-dni", {
+        body: {
+          front_base64: frontB64,
+          back_base64: backB64,
+          dni_number: clientData.dni,
+        },
+      });
+
+      if (error) throw error;
+      setDniValidation(data as DniValidation);
+
+      if (data.is_valid_front && data.is_valid_back && data.is_authentic) {
+        if (data.is_in_vigor === false) {
+          toast.error("El documento de identidad parece estar caducado.");
+        } else {
+          toast.success("Documento verificado correctamente.");
+        }
+      } else {
+        toast.error("El documento no ha superado la verificación. Revisa las indicaciones.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Error al verificar el documento. Inténtalo de nuevo.");
+    } finally {
+      setValidating(false);
+    }
   };
 
   const canProceedData = clientData.nombre_completo && clientData.dni && clientData.domicilio_localidad && clientData.domicilio_calle;
-  const canProceedDni = dniFront && dniBack;
+  const canProceedDni = dniFront && dniBack && dniValidation &&
+    dniValidation.is_valid_front && dniValidation.is_valid_back &&
+    dniValidation.is_authentic && dniValidation.is_in_vigor !== false;
   const canSign = accepted && signatureText.length >= 3;
 
   const handleSign = async () => {
     setSigning(true);
     try {
-      // 1. Upload DNI files
       const timestamp = Date.now();
       const frontPath = `${user.id}/dni_anverso_${timestamp}.${dniFront!.name.split(".").pop()}`;
       const backPath = `${user.id}/dni_reverso_${timestamp}.${dniBack!.name.split(".").pop()}`;
@@ -120,7 +276,6 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
       if (frontUpload.error) throw new Error("Error subiendo DNI anverso: " + frontUpload.error.message);
       if (backUpload.error) throw new Error("Error subiendo DNI reverso: " + backUpload.error.message);
 
-      // 2. Create document records for DNI
       const now = new Date().toISOString();
       await Promise.all([
         supabase.from("documents").insert({
@@ -132,6 +287,7 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
           category: "identificacion",
           uploaded_by: user.id,
           is_confidential: true,
+          description: dniValidation ? `Verificado por IA: ${dniValidation.summary}` : null,
         }),
         supabase.from("documents").insert({
           title: "DNI - Reverso",
@@ -145,17 +301,16 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
         }),
       ]);
 
-      // 3. Create NDA document record with the signed data
       const ndaContent = JSON.stringify({
         client_data: clientData,
         is_persona_juridica: isPersonaJuridica,
         signature: signatureText,
         signed_at: now,
+        dni_validation: dniValidation,
         ip: "client-side",
         user_agent: navigator.userAgent,
       });
 
-      // Store NDA as a JSON blob
       const ndaPath = `${user.id}/nda_firmado_${timestamp}.json`;
       const ndaBlob = new Blob([ndaContent], { type: "application/json" });
       const ndaUpload = await supabase.storage.from("documents").upload(ndaPath, ndaBlob);
@@ -173,7 +328,6 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
         description: `Firmado electrónicamente por ${clientData.nombre_completo} el ${new Date().toLocaleDateString("es-ES")}`,
       });
 
-      // 4. Update profile
       await supabase.from("profiles").update({
         nda_signed: true,
         nda_signed_at: now,
@@ -224,7 +378,6 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Persona type toggle */}
             <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary">
               <Label className="text-sm">Tipo de persona:</Label>
               <div className="flex gap-2">
@@ -338,7 +491,17 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileSignature className="w-5 h-5 text-accent" /> Acuerdo de Confidencialidad
               </CardTitle>
-              <img src={ikesaLogo} alt="IKESA" className="h-8" />
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => generateNdaPdf(clientData, isPersonaJuridica)}
+                >
+                  <Download className="w-4 h-4" /> Descargar PDF
+                </Button>
+                <img src={ikesaLogo} alt="IKESA" className="h-8" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -448,7 +611,7 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
         </Card>
       )}
 
-      {/* Step 3: DNI Upload */}
+      {/* Step 3: DNI Upload with AI validation */}
       {step === "dni" && (
         <Card>
           <CardHeader>
@@ -456,7 +619,7 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
               <IdCard className="w-5 h-5 text-accent" /> Documento de identidad
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Sube una copia de tu DNI/NIE por ambas caras. Es requisito obligatorio para completar el registro.
+              Sube una <strong>fotografía</strong> de tu DNI/NIE por ambas caras. Nuestro sistema verificará automáticamente que el documento es válido y está en vigor.
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -467,7 +630,7 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
                 <input
                   ref={frontRef}
                   type="file"
-                  accept="image/*,.pdf"
+                  accept="image/jpeg,image/png,image/webp"
                   className="hidden"
                   onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "front")}
                 />
@@ -477,7 +640,11 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                       <Button size="sm" variant="secondary" onClick={() => frontRef.current?.click()}>Cambiar</Button>
                     </div>
-                    <CheckCircle className="absolute top-2 right-2 w-5 h-5 text-green-500" />
+                    {dniValidation?.is_valid_front ? (
+                      <CheckCircle className="absolute top-2 right-2 w-5 h-5 text-green-500" />
+                    ) : dniValidation && !dniValidation.is_valid_front ? (
+                      <XCircle className="absolute top-2 right-2 w-5 h-5 text-destructive" />
+                    ) : null}
                   </div>
                 ) : (
                   <button
@@ -496,7 +663,7 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
                 <input
                   ref={backRef}
                   type="file"
-                  accept="image/*,.pdf"
+                  accept="image/jpeg,image/png,image/webp"
                   className="hidden"
                   onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "back")}
                 />
@@ -506,7 +673,11 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                       <Button size="sm" variant="secondary" onClick={() => backRef.current?.click()}>Cambiar</Button>
                     </div>
-                    <CheckCircle className="absolute top-2 right-2 w-5 h-5 text-green-500" />
+                    {dniValidation?.is_valid_back ? (
+                      <CheckCircle className="absolute top-2 right-2 w-5 h-5 text-green-500" />
+                    ) : dniValidation && !dniValidation.is_valid_back ? (
+                      <XCircle className="absolute top-2 right-2 w-5 h-5 text-destructive" />
+                    ) : null}
                   </div>
                 ) : (
                   <button
@@ -520,8 +691,88 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
               </div>
             </div>
 
+            {/* Validate button */}
+            {dniFront && dniBack && !dniValidation && (
+              <Button onClick={validateDni} disabled={validating} className="w-full gap-2" variant="secondary">
+                {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanLine className="w-4 h-4" />}
+                {validating ? "Verificando documento con IA..." : "Verificar documento de identidad"}
+              </Button>
+            )}
+
+            {/* Validation results */}
+            {dniValidation && (
+              <div className={`rounded-xl border p-4 space-y-3 ${
+                dniValidation.is_valid_front && dniValidation.is_valid_back && dniValidation.is_authentic && dniValidation.is_in_vigor !== false
+                  ? "border-green-500/30 bg-green-500/5"
+                  : "border-destructive/30 bg-destructive/5"
+              }`}>
+                <div className="flex items-center gap-2">
+                  {dniValidation.is_valid_front && dniValidation.is_valid_back && dniValidation.is_authentic && dniValidation.is_in_vigor !== false ? (
+                    <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
+                  )}
+                  <p className="text-sm font-semibold text-foreground">
+                    {dniValidation.is_valid_front && dniValidation.is_valid_back && dniValidation.is_authentic && dniValidation.is_in_vigor !== false
+                      ? "Documento verificado correctamente"
+                      : "El documento no ha superado la verificación"}
+                  </p>
+                  <Badge variant="outline" className="ml-auto text-xs">
+                    Confianza: {dniValidation.confidence}
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-muted-foreground">{dniValidation.summary}</p>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    {dniValidation.is_valid_front ? <CheckCircle className="w-3.5 h-3.5 text-green-600" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+                    <span>Anverso válido</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {dniValidation.is_valid_back ? <CheckCircle className="w-3.5 h-3.5 text-green-600" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+                    <span>Reverso válido</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {dniValidation.is_authentic ? <CheckCircle className="w-3.5 h-3.5 text-green-600" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+                    <span>Documento auténtico</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {dniValidation.is_in_vigor === true ? <CheckCircle className="w-3.5 h-3.5 text-green-600" /> :
+                     dniValidation.is_in_vigor === false ? <XCircle className="w-3.5 h-3.5 text-destructive" /> :
+                     <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />}
+                    <span>En vigor {dniValidation.expiry_date ? `(caduca: ${dniValidation.expiry_date})` : ""}</span>
+                  </div>
+                  {dniValidation.dni_matches !== null && (
+                    <div className="flex items-center gap-1.5 col-span-2">
+                      {dniValidation.dni_matches ? <CheckCircle className="w-3.5 h-3.5 text-green-600" /> : <XCircle className="w-3.5 h-3.5 text-destructive" />}
+                      <span>Nº DNI coincide con datos introducidos {dniValidation.detected_number ? `(${dniValidation.detected_number})` : ""}</span>
+                    </div>
+                  )}
+                </div>
+
+                {dniValidation.issues.length > 0 && (
+                  <div className="space-y-1 pt-2 border-t border-border">
+                    <p className="text-xs font-semibold text-destructive">Problemas detectados:</p>
+                    {dniValidation.issues.map((issue, i) => (
+                      <p key={i} className="text-xs text-muted-foreground flex items-start gap-1">
+                        <span className="text-destructive mt-0.5">•</span> {issue}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {/* Allow re-validation */}
+                {!(dniValidation.is_valid_front && dniValidation.is_valid_back && dniValidation.is_authentic && dniValidation.is_in_vigor !== false) && (
+                  <Button size="sm" variant="outline" onClick={() => setDniValidation(null)} className="gap-2">
+                    <ScanLine className="w-4 h-4" /> Subir nuevas imágenes y reintentar
+                  </Button>
+                )}
+              </div>
+            )}
+
             <p className="text-xs text-muted-foreground">
-              Formatos aceptados: JPG, PNG, PDF. Máximo 10 MB por archivo. Tus documentos se almacenan de forma segura y confidencial.
+              Formatos aceptados: JPG, PNG, WebP. Máximo 10 MB por archivo. Tus documentos se almacenan de forma segura y confidencial. La verificación se realiza mediante inteligencia artificial.
             </p>
 
             <div className="flex justify-between">
@@ -541,7 +792,6 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Summary */}
             <div className="bg-secondary rounded-lg p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Firmante:</span>
@@ -562,12 +812,17 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
                 <span className="font-medium text-foreground">{today}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">DNI subido:</span>
-                <span className="font-medium text-green-600 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Anverso y reverso</span>
+                <span className="text-muted-foreground">DNI verificado:</span>
+                <span className="font-medium text-green-600 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Verificado por IA</span>
               </div>
+              {dniValidation?.expiry_date && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Caducidad DNI:</span>
+                  <span className="font-medium text-foreground">{dniValidation.expiry_date}</span>
+                </div>
+              )}
             </div>
 
-            {/* Signature input */}
             <div className="space-y-2">
               <Label className="text-sm">Escribe tu nombre completo para firmar electrónicamente *</Label>
               <Input
@@ -584,7 +839,6 @@ const NdaSigningFlow = ({ user, onComplete }: NdaSigningFlowProps) => {
               )}
             </div>
 
-            {/* Accept */}
             <div className="flex items-start gap-3 p-4 rounded-lg border border-border">
               <Checkbox
                 id="accept-nda"
