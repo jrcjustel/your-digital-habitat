@@ -294,12 +294,12 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     );
     y += 14;
 
-    y = drawRow(doc, "Precio compra crédito", `${fmt(s.purchasePrice)} €`, y);
-    y = drawRow(doc, "Ingreso por cesión", `${fmt(s.assignmentIncome)} €`, y);
-    y = drawRow(doc, "Costes legales", `${fmt(s.legalCosts)} €`, y);
-    y = drawRow(doc, "Margen estimado", `${fmt(s.estimatedMargin)} €`, y);
-    y = drawRow(doc, "TIR operación", `${s.operationIRR}%`, y);
-    y = drawRow(doc, "Duración operación", `${s.durationMonths} meses`, y);
+    y = drawRow(doc, "Precio compra credito", `${fmt(s.purchasePrice)} EUR`, y);
+    y = drawRow(doc, "Ingreso por cesion", `${fmt(s.assignmentIncome)} EUR`, y);
+    y = drawRow(doc, "Costes legales", `${fmt(s.legalCosts)} EUR`, y);
+    y = drawRow(doc, "Margen estimado", `${fmt(s.estimatedMargin)} EUR`, y);
+    y = drawRow(doc, "TIR operacion", `${s.operationIRR}%`, y);
+    y = drawRow(doc, "Duracion operacion", `${s.durationMonths} meses`, y);
     y += 4;
   }
 
