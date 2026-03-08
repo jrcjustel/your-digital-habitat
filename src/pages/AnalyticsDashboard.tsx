@@ -53,6 +53,10 @@ const AnalyticsDashboard = () => {
             <InvestorDashboard />
           </TabsContent>
 
+          <TabsContent value="trends">
+            <AnalyticsTrends />
+          </TabsContent>
+
           <TabsContent value="market">
             <MarketIntelligence />
           </TabsContent>
