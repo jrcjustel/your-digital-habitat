@@ -311,7 +311,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
   doc.setTextColor(BRAND_NAVY[0], BRAND_NAVY[1], BRAND_NAVY[2]);
-  doc.text("Comparativa de Valores (€)", MARGIN + 2, y);
+  doc.text("Comparativa de Valores (EUR)", MARGIN + 2, y);
   y += 5;
 
   const compValues = [
