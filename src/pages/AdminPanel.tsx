@@ -174,6 +174,32 @@ const AdminPanel = () => {
     if (data) setBroadcasts(data as unknown as BroadcastRow[]);
   };
 
+  const loadActivityLog = async () => {
+    const { data } = await supabase
+      .from("activity_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data) setActivityLog(data);
+  };
+
+  const runMatching = async () => {
+    if (!matchingAssetId.trim()) {
+      toast.error("Introduce el ID del activo");
+      return;
+    }
+    setMatchingLoading(true);
+    setMatchingResult(null);
+    const { data, error } = await supabase.rpc("match_investors_to_asset", { p_asset_id: matchingAssetId.trim() });
+    if (error) {
+      toast.error("Error al ejecutar matching: " + error.message);
+    } else {
+      setMatchingResult(data as number);
+      toast.success(`Matching completado: ${data} inversores encontrados`);
+    }
+    setMatchingLoading(false);
+  };
+
   const updateOfferStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("offers").update({ status }).eq("id", id);
     if (error) toast.error("Error al actualizar oferta");
