@@ -602,6 +602,50 @@ const AdminPanel = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Bulk Catastro Enrichment */}
+              <Card className="md:col-span-2 border-accent/20">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <MapPin className="w-5 h-5" /> Enriquecimiento masivo con Catastro
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral
+                    y rellena dirección, municipio, provincia, superficie y año de construcción donde falten datos.
+                    Se procesan en lotes de 30 con pausa de 1s entre consultas.
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={runBulkCatastro}
+                      disabled={catastroRunning}
+                      className="gap-2"
+                    >
+                      {catastroRunning ? <Activity className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                      {catastroRunning ? "Procesando..." : "Iniciar enriquecimiento"}
+                    </Button>
+                    {catastroProgress && (
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-4 text-xs">
+                          <span className="text-muted-foreground">Lotes: <strong className="text-foreground">{catastroProgress.batches}</strong></span>
+                          <span className="text-muted-foreground">Procesados: <strong className="text-foreground">{catastroProgress.totalProcessed}</strong></span>
+                          <span className="text-primary">Enriquecidos: <strong>{catastroProgress.totalEnriched}</strong></span>
+                          {catastroProgress.totalErrors > 0 && (
+                            <span className="text-destructive">Errores: <strong>{catastroProgress.totalErrors}</strong></span>
+                          )}
+                          {catastroProgress.done && (
+                            <Badge className="bg-green-100 text-green-800 border-green-200 text-[10px] gap-1">
+                              <CheckCircle className="w-3 h-3" /> Completado
+                            </Badge>
+                          )}
+                        </div>
+                        {catastroRunning && <Progress value={undefined} className="h-1.5" />}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
