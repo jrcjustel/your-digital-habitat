@@ -20,6 +20,7 @@ import CookieConsent from "./components/CookieConsent";
 import NplDetail from "./pages/NplDetail";
 import ComoFunciona from "./pages/ComoFunciona";
 import AvisoLegal from "./pages/AvisoLegal";
+import AvisoLegalNpl from "./pages/AvisoLegalNpl";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
