@@ -74,7 +74,7 @@ const OfferForm = ({
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const minOffer = precioOrientativo > 0 ? Math.round(precioOrientativo * 0.95) : 0;
+  
 
   const handleSubmit = async (e: React.FormEvent, mode: "offer" | "contact") => {
     e.preventDefault();
@@ -94,10 +94,6 @@ const OfferForm = ({
       amount = parseFloat(form.offerAmount.replace(/[^\d.,]/g, "").replace(",", "."));
       if (isNaN(amount) || amount <= 0) {
         toast.error("Introduce un importe válido");
-        return;
-      }
-      if (minOffer > 0 && amount < minOffer) {
-        toast.error(`La oferta mínima es de ${minOffer.toLocaleString("es-ES")} €`);
         return;
       }
     }
@@ -333,11 +329,6 @@ const OfferForm = ({
               <div>
                 <Label className="text-sm font-semibold text-foreground">Importe de la oferta*</Label>
                 <Input name="offerAmount" value={form.offerAmount} onChange={handleChange} placeholder="Introduce tu oferta (€)" required maxLength={20} className="mt-1" />
-                {minOffer > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Mín. <span className="font-bold text-accent">{minOffer.toLocaleString("es-ES")} €</span>
-                  </p>
-                )}
               </div>
 
               <ConsentCheckboxes />
