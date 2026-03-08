@@ -72,25 +72,26 @@ const AcademiaRuta = () => {
           </div>
         )}
         <div className={`relative py-16 md:py-20 ${!routeImages[ruta.id] ? `bg-gradient-to-br ${ruta.color}` : ''}`}>
-        <div className="container mx-auto px-4 max-w-4xl">
-          <button
-            onClick={() => navigate("/academia")}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" /> Volver a la Academia
-          </button>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-4xl">{ruta.icon}</span>
-            <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${categoryColor}`}>
-              Prioridad {ruta.priority}
-            </span>
+          <div className="container mx-auto px-4 max-w-4xl">
+            <button
+              onClick={() => navigate("/academia")}
+              className={`flex items-center gap-1.5 text-sm ${routeImages[ruta.id] ? 'text-primary-foreground/70 hover:text-primary-foreground' : 'text-muted-foreground hover:text-accent'} transition-colors mb-6`}
+            >
+              <ArrowLeft className="w-4 h-4" /> Volver a la Academia
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-4xl">{ruta.icon}</span>
+              <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${routeImages[ruta.id] ? 'bg-white/20 text-white' : categoryColor}`}>
+                Prioridad {ruta.priority}
+              </span>
+            </div>
+            <h1 className={`text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-4 ${routeImages[ruta.id] ? 'text-primary-foreground' : 'text-foreground'}`}>
+              {ruta.title}
+            </h1>
+            <p className={`text-lg leading-relaxed max-w-3xl ${routeImages[ruta.id] ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+              {ruta.intro}
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-tight mb-4">
-            {ruta.title}
-          </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
-            {ruta.intro}
-          </p>
         </div>
       </section>
 
