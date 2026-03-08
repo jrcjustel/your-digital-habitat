@@ -131,11 +131,32 @@ const NplDetail = () => {
 
   useEffect(() => {
     if (user) {
-      supabase.from("profiles").select("nda_signed").eq("user_id", user.id).single().then(({ data }) => {
+      supabase.from("profiles").select("nda_signed, display_name").eq("user_id", user.id).single().then(({ data }) => {
         setNdaSigned(!!(data as any)?.nda_signed);
+        setUserName((data as any)?.display_name || "");
       });
+      // Get email from auth
+      setUserEmail(user.email || "");
+      // Check favorite
+      if (asset) {
+        supabase.from("favorites").select("id").eq("user_id", user.id).eq("property_id", asset.id).maybeSingle().then(({ data }) => {
+          setIsFav(!!data);
+        });
+      }
     }
-  }, [user]);
+  }, [user, asset?.id]);
+
+  const toggleFavorite = async () => {
+    if (!user || !asset) return;
+    if (isFav) {
+      await supabase.from("favorites").delete().eq("user_id", user.id).eq("property_id", asset.id);
+      setIsFav(false);
+    } else {
+      await supabase.from("favorites").insert({ user_id: user.id, property_id: asset.id });
+      setIsFav(true);
+      await supabase.from("activity_log").insert({ user_id: user.id, action: "favorite_added", entity_type: "npl_asset", entity_id: asset.id });
+    }
+  };
 
   if (loading) {
     return (
