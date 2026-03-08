@@ -289,7 +289,7 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
     doc.setFontSize(8);
     doc.setTextColor(60, 60, 60);
     doc.text(
-      `Compra crédito → Acuerdo con postor → Cesión de remate. Margen: ${fmt(s.estimatedMargin)} € | TIR: ${s.operationIRR}% | Duración: ${s.durationMonths} meses`,
+      `Compra credito > Acuerdo con postor > Cesion de remate. Margen: ${fmt(s.estimatedMargin)} EUR | TIR: ${s.operationIRR}% | Duracion: ${s.durationMonths} meses`,
       MARGIN + 4, y + 6
     );
     y += 14;
