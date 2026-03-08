@@ -93,7 +93,7 @@ const Dashboard = () => {
 
   const loadData = async () => {
     const [profileRes, favRes, alertRes, offersRes] = await Promise.all([
-      supabase.from("profiles").select("display_name, phone, avatar_url, nda_signed, nda_signed_at").eq("user_id", user!.id).single(),
+      supabase.from("profiles").select("display_name, phone, avatar_url, nda_signed, nda_signed_at, persona_tipo, empresa, cif_nif, comunidad_autonoma, ciudad, investor_level, presupuesto_min, presupuesto_max, intereses, tipos_activo_preferidos, provincias_interes, acepta_marketing, lead_score").eq("user_id", user!.id).single(),
       supabase.from("favorites").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("alerts").select("*").eq("user_id", user!.id).order("created_at", { ascending: false }),
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
@@ -109,6 +109,18 @@ const Dashboard = () => {
     const { error } = await supabase.from("profiles").update({
       display_name: profile.display_name,
       phone: profile.phone,
+      persona_tipo: profile.persona_tipo as any,
+      empresa: profile.empresa,
+      cif_nif: profile.cif_nif,
+      comunidad_autonoma: profile.comunidad_autonoma,
+      ciudad: profile.ciudad,
+      investor_level: profile.investor_level as any,
+      presupuesto_min: profile.presupuesto_min,
+      presupuesto_max: profile.presupuesto_max,
+      intereses: profile.intereses as any,
+      tipos_activo_preferidos: profile.tipos_activo_preferidos as any,
+      provincias_interes: profile.provincias_interes as any,
+      acepta_marketing: profile.acepta_marketing,
     }).eq("user_id", user!.id);
     setSaving(false);
     if (error) toast.error("Error al guardar"); else toast.success("Perfil actualizado");
