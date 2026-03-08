@@ -64,6 +64,31 @@ const CategoryCards = () => {
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3">
             Oportunidades inmobiliarias sin barreras de entrada
           </h2>
+        {/* Investment categories */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {investmentCategories.map((cat) => (
+            <Link
+              key={cat.title}
+              to={cat.href}
+              className="group relative rounded-2xl overflow-hidden aspect-[16/10] card-elevated"
+            >
+              <img
+                src={cat.image}
+                alt={cat.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 category-card-overlay" />
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+                <h3 className="font-heading text-lg md:text-xl font-bold text-primary-foreground mb-1">
+                  {cat.title}
+                </h3>
+                <p className="text-primary-foreground/75 text-xs md:text-sm">
+                  {cat.description}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
