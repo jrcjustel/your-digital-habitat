@@ -255,12 +255,23 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
           >
             ✕
           </button>
-          <img
-            src={currentItem.src}
-            alt={currentItem.caption}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {currentItem.embedSrc ? (
+            <iframe
+              src={currentItem.embedSrc}
+              title={currentItem.caption}
+              className="w-[90vw] h-[80vh] border-0 rounded-lg"
+              loading="lazy"
+              allowFullScreen
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={currentItem.src}
+              alt={currentItem.caption}
+              className="max-w-[90vw] max-h-[90vh] object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           {galleryItems.length > 1 && (
             <>
               <button
