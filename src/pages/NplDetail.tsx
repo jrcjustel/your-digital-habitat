@@ -576,25 +576,6 @@ const NplDetail = () => {
                       </div>
                     </AnalysisSection>
 
-                    {/* Ocupación section (for occupied properties) */}
-                    {opType === "ocupado" && (
-                      <AnalysisSection title="Situación de Ocupación" icon={AlertTriangle}>
-                        <div className="divide-y divide-border">
-                          <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional} highlight />
-                          <InfoRow label="Propiedad sin posesión" value={asset.propiedad_sin_posesion ? "SÍ" : "NO"} />
-                        </div>
-                        <div className="mt-4 bg-destructive/5 border border-destructive/20 rounded-xl p-4 space-y-2">
-                          <h4 className="text-xs font-bold text-destructive">Consideraciones importantes</h4>
-                          <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4">
-                            <li>El proceso de desahucio puede tardar entre 6-18 meses según la jurisdicción.</li>
-                            <li>Evalúe la posibilidad de negociación de salida voluntaria con compensación económica.</li>
-                            <li>Considere los costes legales adicionales en el cálculo de rentabilidad.</li>
-                            {asset.vpo && <li className="text-destructive font-semibold">⚠️ Inmueble VPO: puede tener restricciones de venta y precio máximo.</li>}
-                          </ul>
-                        </div>
-                      </AnalysisSection>
-                    )}
-
                     {/* Comisiones section */}
                     <AnalysisSection title="Condiciones comerciales" icon={Euro} defaultOpen={false}>
                       <div className="divide-y divide-border">
