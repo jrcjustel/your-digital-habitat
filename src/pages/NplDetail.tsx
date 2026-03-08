@@ -487,8 +487,16 @@ const NplDetail = () => {
                 {opType === "cesion_remate" ? (
                   <>
                     <CdrAnalysisPanel asset={asset} />
-
-                    {/* Catastro & Documents still shown below */}
+                    <AnalysisSection title="Información catastral" icon={MapPin} defaultOpen={false}>
+                      <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
+                    </AnalysisSection>
+                    <AnalysisSection title="Documentación" icon={FolderOpen} defaultOpen={false}>
+                      <DocumentsPanel nplAssetId={asset.id} compact showFilters />
+                    </AnalysisSection>
+                  </>
+                ) : opType === "ocupado" ? (
+                  <>
+                    <OcupadoAnalysisPanel asset={asset} />
                     <AnalysisSection title="Información catastral" icon={MapPin} defaultOpen={false}>
                       <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
                     </AnalysisSection>
