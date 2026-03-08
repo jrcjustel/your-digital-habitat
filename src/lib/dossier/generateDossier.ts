@@ -149,8 +149,8 @@ export const buildDossierDoc = async (data: DossierData): Promise<jsPDF> => {
   y = drawRow(doc, "Estado conservación", data.conservationState, y);
   y = drawRow(doc, "Estado ocupacional", data.occupancyStatus, y);
   y = drawRow(doc, "Fecha vencimiento alquiler", data.leaseExpiryDate || "-", y);
-  y = drawRow(doc, "Renta bruta mensual", data.grossMonthlyRent ? `${fmt(data.grossMonthlyRent)} €` : "-", y);
-  y = drawRow(doc, "Cargas preferentes", data.preferentialCharges ? `${fmt(data.preferentialCharges)} €` : "-", y);
+  y = drawRow(doc, "Renta bruta mensual", data.grossMonthlyRent ? `${fmt(data.grossMonthlyRent)} EUR` : "-", y);
+  y = drawRow(doc, "Cargas preferentes", data.preferentialCharges ? `${fmt(data.preferentialCharges)} EUR` : "-", y);
   y = drawRow(doc, "VPO", data.isVPO ? "Sí" : "No", y);
   y += 4;
 
