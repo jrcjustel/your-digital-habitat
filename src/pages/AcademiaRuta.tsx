@@ -4,6 +4,18 @@ import Footer from "@/components/Footer";
 import { academyRoutes, academyArticles, academyCategories } from "@/data/academy-articles";
 import { ArrowLeft, ChevronRight, BookOpen, Clock, CheckCircle2, ArrowRight, GraduationCap } from "lucide-react";
 
+import rutaOcupadosImg from "@/assets/ruta-ocupados.jpg";
+import rutaCesionesImg from "@/assets/ruta-cesiones-remate.jpg";
+import rutaSubastasImg from "@/assets/ruta-subastas-boe.jpg";
+import rutaNplImg from "@/assets/ruta-deuda-npl.jpg";
+
+const routeImages: Record<string, string> = {
+  "ocupados": rutaOcupadosImg,
+  "cesiones-remate": rutaCesionesImg,
+  "subastas-boe": rutaSubastasImg,
+  "deuda-npl": rutaNplImg,
+};
+
 const AcademiaRuta = () => {
   const { rutaSlug } = useParams();
   const navigate = useNavigate();
@@ -51,7 +63,15 @@ const AcademiaRuta = () => {
       </div>
 
       {/* Hero */}
-      <section className={`relative bg-gradient-to-br ${ruta.color} border-b border-border py-16 md:py-20`}>
+      <section className="relative border-b border-border overflow-hidden">
+        {/* Background image */}
+        {routeImages[ruta.id] && (
+          <div className="absolute inset-0">
+            <img src={routeImages[ruta.id]} alt={ruta.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/60" />
+          </div>
+        )}
+        <div className={`relative py-16 md:py-20 ${!routeImages[ruta.id] ? `bg-gradient-to-br ${ruta.color}` : ''}`}>
         <div className="container mx-auto px-4 max-w-4xl">
           <button
             onClick={() => navigate("/academia")}

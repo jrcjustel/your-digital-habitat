@@ -238,6 +238,7 @@ export const academyRoutes: AcademyRoute[] = [
         ],
       },
     ],
+    image: "/src/assets/ruta-deuda-npl.jpg",
     cta: { label: "Explorar oportunidades NPL con Ikesa", href: "/inmuebles?saleType=npl" },
   },
 ];
