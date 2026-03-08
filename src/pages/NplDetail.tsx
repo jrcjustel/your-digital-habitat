@@ -333,12 +333,30 @@ const NplDetail = () => {
               {/* Title */}
               <div className="px-5 md:px-6 pb-4">
                 <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground mt-2">
-                  {asset.tipo_activo ? `${asset.tipo_activo.charAt(0).toUpperCase() + asset.tipo_activo.slice(1)} — ` : ""}
-                  {asset.direccion || asset.municipio || "Sin dirección"}
+                  {(() => {
+                    const tipo = asset.tipo_activo ? asset.tipo_activo.charAt(0).toUpperCase() + asset.tipo_activo.slice(1) : "Inmueble";
+                    const loc = asset.municipio || asset.provincia || "";
+                    const sqm = asset.sqm > 0 ? `${asset.sqm} m²` : "";
+                    const disc = asset.valor_mercado > 0 && asset.precio_orientativo > 0
+                      ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100)
+                      : null;
+
+                    if (opType === "cesion_remate") {
+                      return `${tipo} en cesión de remate${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}`;
+                    }
+                    if (opType === "ocupado") {
+                      return `${tipo} sin posesión${loc ? ` en ${loc}` : ""}${disc && disc > 30 ? ` · ${disc}% bajo mercado` : sqm ? ` · ${sqm}` : ""}`;
+                    }
+                    if (opType === "npl") {
+                      return `Crédito con colateral ${tipo.toLowerCase()}${loc ? ` en ${loc}` : ""}${disc && disc > 30 ? ` · ${disc}% bajo mercado` : ""}`;
+                    }
+                    // subasta
+                    return `${tipo} en subasta${loc ? ` en ${loc}` : ""}${sqm ? ` · ${sqm}` : ""}`;
+                  })()}
                 </h1>
                 <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
                   <p className="text-sm text-muted-foreground">
-                    {asset.provincia || asset.comunidad_autonoma || ""}
+                    {[asset.direccion, asset.provincia || asset.comunidad_autonoma].filter(Boolean).join(" · ")}
                   </p>
                   {asset.estado !== "cerrado" && asset.estado !== "oferta_gestion" && (
                     <span className="text-xs text-accent font-semibold cursor-pointer hover:underline">¿Te interesa?</span>
