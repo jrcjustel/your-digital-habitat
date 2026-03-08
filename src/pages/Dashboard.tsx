@@ -452,12 +452,41 @@ const Dashboard = () => {
           </TabsContent>
           <TabsContent value="documents">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-heading text-lg font-bold text-foreground">Centro de documentación</h2>
-                  <p className="text-sm text-muted-foreground">Documentos compartidos y tu documentación personal. Sube DNI, escrituras, justificantes u otros archivos necesarios.</p>
-                </div>
+              <div>
+                <h2 className="font-heading text-lg font-bold text-foreground">Mis documentos</h2>
+                <p className="text-sm text-muted-foreground">NDA firmado, DNI, escrituras, justificantes de fondos y toda la documentación relativa a tu expediente de cliente.</p>
               </div>
+
+              {/* NDA status card */}
+              <Card className="border-accent/20">
+                <CardContent className="flex items-center gap-4 p-4">
+                  {profile.nda_signed ? (
+                    <>
+                      <div className="p-2.5 rounded-lg bg-primary/10">
+                        <ShieldCheck className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground">NDA firmado digitalmente</p>
+                        <p className="text-xs text-muted-foreground">
+                          Firmado el {profile.nda_signed_at ? new Date(profile.nda_signed_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" }) : "—"}
+                        </p>
+                      </div>
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">Vigente</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-2.5 rounded-lg bg-destructive/10">
+                        <ShieldX className="w-5 h-5 text-destructive" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground">NDA pendiente de firma</p>
+                        <p className="text-xs text-muted-foreground">Accede a un activo NPL o Cesión de Remate para firmar el NDA.</p>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
               <DocumentsPanel showFilters={true} allowUpload={true} />
             </div>
           </TabsContent>
