@@ -502,6 +502,33 @@ const Valorador = () => {
                   <p className="text-muted-foreground">Estimación basada en datos del mercado inmobiliario español</p>
                 </div>
 
+                {/* Property type + location summary */}
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+                  {formSnapshot?.tipo_inmueble && (
+                    <span className="inline-flex items-center gap-1.5 bg-accent/10 text-accent px-3 py-1.5 rounded-full text-sm font-medium">
+                      <Building className="w-3.5 h-3.5" />
+                      {tiposInmueble.find(t => t.value === formSnapshot.tipo_inmueble)?.label || formSnapshot.tipo_inmueble}
+                    </span>
+                  )}
+                  {catastroData?.uso_catastral && (
+                    <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+                      <FileText className="w-3.5 h-3.5" />
+                      Catastro: {catastroData.uso_catastral}
+                    </span>
+                  )}
+                  {formSnapshot?.superficie_m2 && (
+                    <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground px-3 py-1.5 rounded-full text-sm font-medium">
+                      {formSnapshot.superficie_m2} m²
+                    </span>
+                  )}
+                  {formSnapshot && (
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground text-sm">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {formSnapshot.municipio}, {formSnapshot.provincia}
+                    </span>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="text-center p-6 bg-secondary rounded-xl">
                     <p className="text-sm text-muted-foreground mb-1">Valor mínimo</p>
