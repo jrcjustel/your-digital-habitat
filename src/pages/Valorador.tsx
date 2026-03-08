@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText } from "lucide-react";
+import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText, Download } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { generateValuationPdf, loadCatastroFachadaImage } from "@/lib/generateValuationPdf";
 
 const formSchema = z.object({
   direccion: z.string().min(3, "Introduce una dirección válida").max(200),
@@ -92,6 +93,9 @@ const Valorador = () => {
   const [refCatastral, setRefCatastral] = useState("");
   const [lookingUp, setLookingUp] = useState(false);
   const [catastroFilled, setCatastroFilled] = useState(false);
+  const [catastroData, setCatastroData] = useState<any>(null);
+  const [formSnapshot, setFormSnapshot] = useState<FormData | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -147,16 +151,78 @@ const Valorador = () => {
     setLoading(true);
     setError(null);
     setValuation(null);
+    setCatastroData(null);
+    setFormSnapshot(data);
 
     try {
-      const { data: res, error: fnError } = await supabase.functions.invoke("valorar-inmueble", { body: data });
-      if (fnError) throw fnError;
-      if (!res?.success) throw new Error(res?.error || "Error en la valoración");
-      setValuation(res.valuation);
+      // Run valuation + catastro lookup in parallel if ref catastral is available
+      const valuationPromise = supabase.functions.invoke("valorar-inmueble", { body: data });
+      
+      let catastroPromise: Promise<any> | null = null;
+      if (refCatastral.trim()) {
+        catastroPromise = supabase.functions.invoke("catastro-lookup", {
+          body: { ref_catastral: refCatastral.trim() },
+        });
+      }
+
+      const [valuationResult, catastroResult] = await Promise.all([
+        valuationPromise,
+        catastroPromise || Promise.resolve(null),
+      ]);
+
+      if (valuationResult.error) throw valuationResult.error;
+      if (!valuationResult.data?.success) throw new Error(valuationResult.data?.error || "Error en la valoración");
+      setValuation(valuationResult.data.valuation);
+
+      // Save catastro data if available
+      if (catastroResult?.data?.success) {
+        setCatastroData(catastroResult.data.data);
+      }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!valuation || !formSnapshot) return;
+    setGeneratingPdf(true);
+    try {
+      // Try loading catastro facade image
+      let fachadaBase64: string | null = null;
+      if (catastroData?.ref_catastral) {
+        fachadaBase64 = await loadCatastroFachadaImage(catastroData.ref_catastral);
+      }
+
+      await generateValuationPdf({
+        direccion: formSnapshot.direccion!,
+        municipio: formSnapshot.municipio!,
+        provincia: formSnapshot.provincia!,
+        tipo_inmueble: formSnapshot.tipo_inmueble!,
+        superficie_m2: formSnapshot.superficie_m2!,
+        nombre: formSnapshot.nombre!,
+        email: formSnapshot.email!,
+        tiene_garaje: formSnapshot.tiene_garaje,
+        tiene_trastero: formSnapshot.tiene_trastero,
+        tiene_ascensor: formSnapshot.tiene_ascensor,
+        codigo_postal: formSnapshot.codigo_postal || undefined,
+        telefono: formSnapshot.telefono || undefined,
+        habitaciones: formSnapshot.habitaciones,
+        banos: formSnapshot.banos,
+        anio_construccion: formSnapshot.anio_construccion,
+        estado: formSnapshot.estado,
+        planta: formSnapshot.planta,
+        valuation,
+        catastro: catastroData || undefined,
+        catastroFachadaBase64: fachadaBase64 || undefined,
+      });
+      toast.success("PDF descargado correctamente");
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      toast.error("Error al generar el PDF");
+    } finally {
+      setGeneratingPdf(false);
     }
   };
 
@@ -478,12 +544,78 @@ const Valorador = () => {
               </CardContent>
             </Card>
 
+            {/* Catastro data summary if available */}
+            {catastroData && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <FileText className="w-4 h-4 text-accent" /> Datos Catastrales
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Ref. catastral</span>
+                      <span className="font-mono font-medium text-foreground">{catastroData.ref_catastral}</span>
+                    </div>
+                    {catastroData.uso_catastral && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Uso</span>
+                        <span className="font-medium text-foreground">{catastroData.uso_catastral}</span>
+                      </div>
+                    )}
+                    {catastroData.superficie_construida > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Superficie (Catastro)</span>
+                        <span className="font-medium text-foreground">{catastroData.superficie_construida} m²</span>
+                      </div>
+                    )}
+                    {catastroData.clase && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Clase</span>
+                        <span className="font-medium text-foreground">{catastroData.clase}</span>
+                      </div>
+                    )}
+                  </div>
+                  {catastroData.urls?.ficha_catastral && (
+                    <a
+                      href={catastroData.urls.ficha_catastral}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline mt-3"
+                    >
+                      <MapPin className="w-3 h-3" /> Ver ficha completa en Catastro
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             <div className="text-center space-y-4">
+              {/* PDF Download */}
+              <Button
+                size="lg"
+                variant="default"
+                className="w-full sm:w-auto gap-2"
+                onClick={handleDownloadPdf}
+                disabled={generatingPdf}
+              >
+                {generatingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generando PDF…
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Descargar Informe PDF
+                  </>
+                )}
+              </Button>
+
               <p className="text-muted-foreground text-sm">
                 ¿Quieres una tasación más precisa? Nuestros expertos pueden ayudarte.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" onClick={() => { setValuation(null); setCatastroFilled(false); }}>
+                <Button size="lg" variant="outline" onClick={() => { setValuation(null); setCatastroFilled(false); setCatastroData(null); }}>
                   Valorar otro inmueble
                 </Button>
                 <Button size="lg" variant="outline" asChild>
