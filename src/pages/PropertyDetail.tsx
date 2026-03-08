@@ -18,6 +18,7 @@ import NdaGate from "@/components/NdaGate";
 import SaleTypeBanner from "@/components/SaleTypeBanner";
 import ValuationPanel from "@/components/ValuationPanel";
 import InvestmentCalculator from "@/components/InvestmentCalculator";
+import Disclaimer from "@/components/Disclaimer";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
@@ -696,6 +697,10 @@ const PropertyDetail = () => {
             </div>
           </div>
         )}
+        {/* Disclaimer */}
+        <div className="max-w-5xl mx-auto px-4">
+          <Disclaimer type={property.saleType === "ocupado" ? "ocupados" : property.saleType === "npl" ? "npl" : property.saleType === "cesion-remate" ? "cesion-remate" : "compraventa"} />
+        </div>
       </div>
 
       <Footer />

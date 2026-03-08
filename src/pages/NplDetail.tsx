@@ -18,6 +18,7 @@ import NdaGate from "@/components/NdaGate";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import BiddingPanel from "@/components/BiddingPanel";
 import RelatedAssets from "@/components/RelatedAssets";
+import Disclaimer from "@/components/Disclaimer";
 import WaitlistButton from "@/components/WaitlistButton";
 import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
@@ -557,6 +558,14 @@ const NplDetail = () => {
           provincia={asset.provincia}
           comunidadAutonoma={asset.comunidad_autonoma}
         />
+        {/* Disclaimer */}
+        <div className="max-w-5xl mx-auto px-4">
+          <Disclaimer type={
+            asset.cesion_remate ? "cesion-remate" :
+            asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado" ? "ocupados" :
+            "npl"
+          } />
+        </div>
       </div>
 
       <Footer />
