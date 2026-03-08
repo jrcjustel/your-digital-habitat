@@ -78,24 +78,89 @@ const tarifasGestoria = [
 ];
 
 const tarifasMediacion = [
-  { categoria: "Área extrajudicial", items: [
-    { concepto: "Informes ocupacionales (1–5 uds.)", honorarios: "250 €/ud" },
-    { concepto: "Informes ocupacionales (+5 uds.)", honorarios: "200 €/ud" },
-    { concepto: "Mediación extrajudicial — Resolución CFK (3–15 días)", honorarios: "250 €/ud" },
-    { concepto: "Mediación extrajudicial (21 días)", honorarios: "200 €/ud" },
-    { concepto: "Negociación amistosa (0–3 meses)", honorarios: "1.500 € + 50% ahorro sobre 5% valor inmueble" },
-  ]},
-  { categoria: "Informes y preventivos", items: [
-    { concepto: "Informe jurídico precompra (24h) — 1 a 5 uds.", honorarios: "250 €/ud" },
-    { concepto: "Informe jurídico precompra (24h) — +5 uds.", honorarios: "200 €/ud" },
-    { concepto: "Due Diligence jurídica (48h) — 1 a 5 uds.", honorarios: "Desde 600 €" },
-    { concepto: "Pack: Inf. Jurídico + Inf. Ocupacional", honorarios: "400 €/ud" },
-  ]},
-  { categoria: "Procedimientos y gestión judicial", items: [
-    { concepto: "Asistencia judicial completa (incl. procurador)", honorarios: "2.950 €" },
-    { concepto: "Personación y gestión CDR (pago inicial + fin)", honorarios: "1.000 € + 1.800 €" },
-    { concepto: "Sucesión + homologación ocupante (incl. desistimiento)", honorarios: "750 €" },
-  ]},
+  {
+    categoria: "Informes Ocupacionales / Pre Due Diligence",
+    descripcion: "Análisis integral del estado y ocupación de inmuebles. Elaboramos informes completos sobre la situación ocupacional y física de los activos, ofreciendo información precisa y verificable para agilizar decisiones y prevenir riesgos en operaciones inmobiliarias.",
+    gestiones: [
+      "Informes previos a la compra de carteras",
+      "Informes de localización de ocupantes",
+      "Informes de mediación NPLs y REOS",
+      "Informes tomas de posesión y lanzamiento",
+    ],
+    items: [
+      { concepto: "Informes ocupacionales (1–5 uds.)", honorarios: "250 €/ud" },
+      { concepto: "Informes ocupacionales (+5 uds.)", honorarios: "200 €/ud" },
+      { concepto: "Informe jurídico precompra (24h) — 1 a 5 uds.", honorarios: "250 €/ud" },
+      { concepto: "Informe jurídico precompra (24h) — +5 uds.", honorarios: "200 €/ud" },
+      { concepto: "Due Diligence jurídica (48h) — 1 a 5 uds.", honorarios: "Desde 600 €" },
+      { concepto: "Pack: Inf. Jurídico + Inf. Ocupacional", honorarios: "400 €/ud" },
+    ],
+  },
+  {
+    categoria: "Mediación (Cash for Keys)",
+    descripcion: "Soluciones negociadas para la recuperación pacífica de inmuebles. Gestionamos la mediación y negociación con los ocupantes para alcanzar acuerdos amistosos que permitan recuperar la posesión de los inmuebles de forma ágil y eficaz.",
+    gestiones: [
+      "Mediación con los ocupantes",
+      "Solución amistosa y mutuamente beneficiosa",
+      "Mediaciones con cualquier tipología de ocupantes: deudores hipotecarios, inquilinos u ocupantes sin título",
+    ],
+    items: [
+      { concepto: "Mediación extrajudicial — Resolución CFK (3–15 días)", honorarios: "250 €/ud" },
+      { concepto: "Mediación extrajudicial (21 días)", honorarios: "200 €/ud" },
+      { concepto: "Negociación amistosa (0–3 meses)", honorarios: "1.500 € + 50% ahorro sobre 5% valor inmueble" },
+    ],
+  },
+  {
+    categoria: "Door Knocking / Prenegociación",
+    descripcion: "Evaluación inicial y acercamiento estratégico al deudor. Realizamos intervenciones directas con los deudores para evaluar la situación ocupacional y establecer acuerdos de mediación que permitan recuperar el valor máximo de la deuda de manera ágil y segura.",
+    gestiones: [
+      "Informe ocupacional en relación con la situación del deudor",
+      "Firma de carta de intenciones aceptando una mediación en relación con su deuda",
+    ],
+    items: [],
+  },
+  {
+    categoria: "Gestión de procedimientos judiciales",
+    descripcion: "Gestión integral de procedimientos judiciales. Aseguramos la continuidad de los procedimientos judiciales tras la compraventa de inmuebles ocupados o alquilados, garantizando la fluidez en las operaciones y minimizando riesgos legales.",
+    gestiones: [
+      "Ejecuciones Hipotecarias",
+      "Desahucios por precario",
+      "Desahucios por falta de pago",
+      "Efectividad de derechos reales inscritos",
+      "Propiedad Horizontal",
+      "Denuncias por ocupación",
+      "Reclamaciones de cantidad y daños",
+    ],
+    items: [
+      { concepto: "Asistencia judicial completa (incl. procurador)", honorarios: "2.950 €" },
+      { concepto: "Personación y gestión CDR (pago inicial + fin)", honorarios: "1.000 € + 1.800 €" },
+      { concepto: "Sucesión + homologación ocupante (incl. desistimiento)", honorarios: "750 €" },
+    ],
+  },
+  {
+    categoria: "Comercialización de Activos (Real Estate)",
+    descripcion: "Comercialización estratégica de activos ocupados y desocupados. Facilitamos soluciones integrales para la comercialización de activos, incluso en situación de ocupación, aprovechando una red consolidada de agentes e inversores que permite cerrar operaciones de forma rápida y segura.",
+    gestiones: [
+      "Intermediación en venta de activos",
+      "Contratos de arras y compraventa",
+      "Contratos de arrendamiento",
+    ],
+    items: [],
+  },
+  {
+    categoria: "Servicios de Gestoría (FyG)",
+    descripcion: "Soluciones integrales de gestoría para operaciones inmobiliarias. A través de FyG, empresa matriz y referente en el sector del Servicing inmobiliario en España, ofrecemos servicios de gestoría que agilizan procesos, garantizan cumplimiento normativo y aportan seguridad jurídica.",
+    gestiones: [
+      "Gestión de Adquisición de Carteras (NPLs y REOS)",
+      "Inscripción de documentos (Notariales, Judiciales y Admvos.) y Gestiones de Adecuación",
+      "Gestión Prejudicial",
+      "Fiscalidad Inmobiliaria",
+      "Gestión de Tributos Municipales y CCPP",
+      "Closing (Formalización y Asistencia a Firmas)",
+      "Gestión Hipotecaria para Entidades Financieras",
+    ],
+    items: [],
+  },
 ];
 
 const Servicios = () => {
