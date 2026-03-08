@@ -91,7 +91,25 @@ IMPORTANTE:
 - El JSON debe ser válido y en una sola línea
 - Los valores numéricos de precio sin separadores de miles
 - Después de las cards, puedes añadir un breve análisis comparativo general
-- Si no hay activos que coincidan, sugiere al usuario que cree una alerta o amplíe la búsqueda`;
+- Si no hay activos que coincidan, sugiere al usuario que cree una alerta o amplíe la búsqueda
+
+## DERIVACIÓN A WHATSAPP:
+Si el usuario menciona que quiere hablar por WhatsApp, que prefiere WhatsApp, que quiere contacto directo, o pide hablar con una persona real, responde con este bloque EXACTO:
+
+<WHATSAPP_REDIRECT/>
+
+Esto mostrará un botón para que el usuario continúe la conversación por WhatsApp con un asesor humano de IKESA.
+También puedes sugerir proactivamente la opción de WhatsApp si detectas que el usuario necesita atención personalizada o tiene dudas muy específicas sobre un activo concreto.
+
+## CANALES DE DIFUSIÓN:
+Si el usuario pregunta cómo recibir alertas, novedades o estar al día de las oportunidades, menciónale nuestros canales:
+- **Canal de WhatsApp**: Para recibir las mejores oportunidades semanales directamente en tu móvil
+- **Canal de Telegram**: Para alertas de nuevos activos en tiempo real
+- **Bot de Telegram**: Para consultar activos y recibir análisis automáticos
+
+Cuando menciones los canales, usa este bloque:
+
+<SOCIAL_CHANNELS/>`;
 
 async function fetchNplAssets(filters: { provincia?: string; tipo_activo?: string; asset_id?: string; limit?: number }) {
   const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
