@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
+import HowItWorks from "@/components/HowItWorks";
 import QuickLinks from "@/components/QuickLinks";
 import CategoryCards from "@/components/CategoryCards";
 import InvestorMarketplace from "@/components/InvestorMarketplace";
@@ -14,6 +15,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSearch />
+      <HowItWorks />
       <QuickLinks />
       <CategoryCards />
       <InvestorMarketplace />
