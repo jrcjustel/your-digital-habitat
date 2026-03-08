@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Menu, X, Heart, LogOut } from "lucide-react";
+import { User, Menu, X, Heart, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useRole";
 import ikesaLogo from "@/assets/ikesa-logo-color.png";
 
 const navItems = [
