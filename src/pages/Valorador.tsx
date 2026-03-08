@@ -176,9 +176,20 @@ const Valorador = () => {
       if (!valuationResult.data?.success) throw new Error(valuationResult.data?.error || "Error en la valoración");
       setValuation(valuationResult.data.valuation);
 
-      // Save catastro data if available
+      // Save catastro data and load images if available
       if (catastroResult?.data?.success) {
-        setCatastroData(catastroResult.data.data);
+        const cd = catastroResult.data.data;
+        setCatastroData(cd);
+        
+        // Build catastro image URLs
+        if (cd.ref_catastral) {
+          setCatastroFachadaUrl(
+            `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${cd.ref_catastral}`
+          );
+        }
+        if (cd.urls?.cartografia) {
+          setCatastroCartoUrl(cd.urls.cartografia);
+        }
       }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
