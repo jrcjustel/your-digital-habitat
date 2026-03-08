@@ -5,8 +5,9 @@ import MarketIntelligence from "@/components/MarketIntelligence";
 import AssetComparator from "@/components/AssetComparator";
 import AlertsManager from "@/components/AlertsManager";
 import LegalForms from "@/components/LegalForms";
+import AnalyticsTrends from "@/components/AnalyticsTrends";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, TrendingUp, GitCompare, Bell, Scale } from "lucide-react";
+import { BarChart3, TrendingUp, GitCompare, Bell, Scale, Activity } from "lucide-react";
 
 const AnalyticsDashboard = () => {
   return (
@@ -27,9 +28,12 @@ const AnalyticsDashboard = () => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-3xl mx-auto">
+          <TabsList className="grid w-full grid-cols-6 max-w-4xl mx-auto">
             <TabsTrigger value="dashboard" className="gap-2 text-xs sm:text-sm">
               <BarChart3 className="w-4 h-4" /> Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="trends" className="gap-2 text-xs sm:text-sm">
+              <Activity className="w-4 h-4" /> Tendencias
             </TabsTrigger>
             <TabsTrigger value="market" className="gap-2 text-xs sm:text-sm">
               <TrendingUp className="w-4 h-4" /> Mercado
@@ -47,6 +51,10 @@ const AnalyticsDashboard = () => {
 
           <TabsContent value="dashboard">
             <InvestorDashboard />
+          </TabsContent>
+
+          <TabsContent value="trends">
+            <AnalyticsTrends />
           </TabsContent>
 
           <TabsContent value="market">
