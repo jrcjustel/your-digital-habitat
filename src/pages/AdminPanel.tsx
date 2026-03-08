@@ -73,7 +73,75 @@ interface BroadcastRow {
   sent_at: string | null;
 }
 
-const CHART_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--destructive))", "#6366f1", "#f59e0b"];
+const ContactLogTab = () => {
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [clLoading, setClLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("contact_log")
+        .select("*, gestores(nombre, email)")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (data) setContacts(data);
+      setClLoading(false);
+    };
+    load();
+  }, []);
+
+  if (clLoading) return <div className="flex justify-center py-12"><Activity className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-4">
+        <Badge variant="secondary">{contacts.length} contactos</Badge>
+      </div>
+      {contacts.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <p>No hay contactos registrados aún</p>
+        </div>
+      ) : (
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-secondary/50">
+                <th className="text-left p-3 font-medium text-muted-foreground">Fecha</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Canal</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Lead</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Activo</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Gestor</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Estado</th>
+                <th className="text-left p-3 font-medium text-muted-foreground">Notificado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map((c: any) => (
+                <tr key={c.id} className="border-b border-border/50 hover:bg-secondary/30">
+                  <td className="p-3 text-xs text-muted-foreground whitespace-nowrap">
+                    {new Date(c.created_at).toLocaleDateString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  </td>
+                  <td className="p-3"><Badge variant="outline" className="text-[10px]">{c.channel}</Badge></td>
+                  <td className="p-3">
+                    <p className="text-xs font-medium text-foreground">{c.lead_name || "—"}</p>
+                    <p className="text-[10px] text-muted-foreground">{c.lead_email || c.lead_phone || "—"}</p>
+                  </td>
+                  <td className="p-3 text-xs text-muted-foreground font-mono">{c.asset_reference || c.asset_id?.slice(0, 8) || "—"}</td>
+                  <td className="p-3 text-xs text-foreground">{(c.gestores as any)?.nombre || "Sin asignar"}</td>
+                  <td className="p-3"><Badge variant={c.status === "new" ? "default" : "secondary"} className="text-[10px]">{c.status}</Badge></td>
+                  <td className="p-3">
+                    {c.gestor_notified ? <CheckCircle className="w-4 h-4 text-primary" /> : <XCircle className="w-4 h-4 text-muted-foreground/40" />}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const AdminPanel = () => {
   const [kpis, setKpis] = useState<KPIs | null>(null);
