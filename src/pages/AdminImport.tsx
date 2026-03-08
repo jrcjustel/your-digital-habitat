@@ -275,15 +275,6 @@ const AdminImport = () => {
     }
   };
 
-  // Group DB fields for the select
-  const groupedFields = useMemo(() => {
-    const groups: Record<string, typeof DB_FIELDS> = {};
-    for (const f of DB_FIELDS) {
-      if (!groups[f.group]) groups[f.group] = [];
-      groups[f.group].push(f);
-    }
-    return groups;
-  }, []);
 
   const usedDbFields = new Set(Object.values(columnMapping));
 
