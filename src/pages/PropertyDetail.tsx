@@ -665,7 +665,7 @@ const PropertyDetail = () => {
                 depositoPorcentaje={property.depositoPorcentaje}
                 comisionPorcentaje={property.comisionPorcentaje}
                 provincia={property.province}
-                comunidadAutonoma={property.comunidadAutonoma}
+                comunidadAutonoma={property.province}
               />
             )}
 
