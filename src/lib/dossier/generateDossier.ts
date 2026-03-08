@@ -408,7 +408,7 @@ function buildAutoDescription(data: DossierData): string {
     data.occupancyStatus ? `Estado ocupacional: ${data.occupancyStatus}. ` : "",
     data.features?.length ? `Características destacadas: ${data.features.join(", ")}. ` : "",
     data.potentialPurchasePrice && data.marketValue
-      ? `El precio potencial de compra (${fmt(data.potentialPurchasePrice)} €) supone un descuento del ${data.discount || Math.round(((data.marketValue - data.potentialPurchasePrice) / data.marketValue) * 100)}% sobre el valor de mercado estimado (${fmt(data.marketValue)} €).`
+      ? `El precio potencial de compra (${fmt(data.potentialPurchasePrice)} EUR) supone un descuento del ${data.discount || Math.round(((data.marketValue - data.potentialPurchasePrice) / data.marketValue) * 100)}% sobre el valor de mercado estimado (${fmt(data.marketValue)} EUR).`
       : "",
   ];
   return parts.join("");

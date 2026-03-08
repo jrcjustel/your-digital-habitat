@@ -96,7 +96,7 @@ export const drawBarChart = (
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
     doc.setTextColor(...BRAND_NAVY);
-    doc.text(`${fmt(item.value)} €`, MARGIN + 40 + maxWidth, y + 5.5);
+    doc.text(`${fmt(item.value)} EUR`, MARGIN + 40 + maxWidth, y + 5.5);
 
     y += barHeight + gap;
   });
