@@ -90,6 +90,10 @@ const AdminPanel = () => {
   const [broadcastText, setBroadcastText] = useState("");
   const [broadcastChannel, setBroadcastChannel] = useState<"whatsapp" | "telegram" | "both">("both");
   const [broadcastSending, setBroadcastSending] = useState(false);
+  const [catastroRunning, setCatastroRunning] = useState(false);
+  const [catastroProgress, setCatastroProgress] = useState<{
+    totalProcessed: number; totalEnriched: number; totalErrors: number; done: boolean; batches: number;
+  } | null>(null);
 
   useEffect(() => {
     loadAll();
