@@ -266,6 +266,42 @@ const AdminPanel = () => {
     loadBroadcasts();
   };
 
+  const runBulkCatastro = async () => {
+    setCatastroRunning(true);
+    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalErrors: 0, done: false, batches: 0 });
+    let offset = 0;
+    const batchSize = 30;
+    let totalProcessed = 0;
+    let totalEnriched = 0;
+    let totalErrors = 0;
+    let batches = 0;
+
+    try {
+      while (true) {
+        const { data, error } = await supabase.functions.invoke("bulk-catastro-enrich", {
+          body: { batch_size: batchSize, offset },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Error desconocido");
+
+        batches++;
+        totalProcessed += data.total_in_batch || 0;
+        totalEnriched += data.enriched || 0;
+        totalErrors += data.errors || 0;
+        setCatastroProgress({ totalProcessed, totalEnriched, totalErrors, done: data.done, batches });
+
+        if (data.done || !data.next_offset) break;
+        offset = data.next_offset;
+      }
+
+      toast.success(`Enriquecimiento completado: ${totalEnriched} activos actualizados`);
+    } catch (e: any) {
+      toast.error("Error en enriquecimiento masivo: " + (e.message || "Error"));
+    } finally {
+      setCatastroRunning(false);
+    }
+  };
+
   const updateOfferStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("offers").update({ status }).eq("id", id);
     if (error) toast.error("Error al actualizar oferta");
