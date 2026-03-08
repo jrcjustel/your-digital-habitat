@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
 import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Clock, CheckCircle, XCircle, ShieldCheck, ShieldX, FolderOpen, Search, CreditCard, Gavel, Home, ArrowRight, Download, Activity, FileDown } from "lucide-react";
 import DocumentsPanel from "@/components/DocumentsPanel";
+import AlertsCreator from "@/components/AlertsCreator";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -492,34 +493,7 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="alerts">
-            {alerts.length === 0 ? (
-              <Card><CardContent className="py-12 text-center">
-                <Bell className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-                <p className="text-muted-foreground">No tienes alertas configuradas.</p>
-                <p className="text-sm text-muted-foreground mt-1">Busca inmuebles y guarda tu búsqueda como alerta.</p>
-              </CardContent></Card>
-            ) : (
-              <div className="grid gap-4">
-                {alerts.map((alert) => (
-                  <Card key={alert.id}>
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div>
-                        <h3 className="font-semibold text-foreground">{alert.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Creada el {new Date(alert.created_at).toLocaleDateString("es-ES")}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Switch checked={alert.is_active} onCheckedChange={(checked) => toggleAlert(alert.id, checked)} />
-                        <Button variant="ghost" size="icon" onClick={() => deleteAlert(alert.id)}>
-                          <Trash2 className="w-4 h-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <AlertsCreator />
           </TabsContent>
 
           <TabsContent value="profile">
