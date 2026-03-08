@@ -181,14 +181,12 @@ const Valorador = () => {
         const cd = catastroResult.data.data;
         setCatastroData(cd);
         
-        // Build catastro image URLs
-        if (cd.ref_catastral) {
-          setCatastroFachadaUrl(
-            `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${cd.ref_catastral}`
-          );
+        // Use server-proxied fachada image (base64) and Google Maps embed
+        if (cd.fachada_base64) {
+          setCatastroFachadaUrl(cd.fachada_base64);
         }
-        if (cd.urls?.cartografia) {
-          setCatastroCartoUrl(cd.urls.cartografia);
+        if (cd.google_maps_embed) {
+          setCatastroCartoUrl(cd.google_maps_embed);
         }
       }
     } catch (e: any) {
