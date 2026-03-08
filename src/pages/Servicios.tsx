@@ -250,27 +250,29 @@ const Servicios = () => {
             </TabsList>
 
             <TabsContent value="gestoria">
-              <div className="space-y-6">
+              <Accordion type="single" collapsible className="space-y-4">
                 {tarifasGestoria.map((grupo) => (
-                  <div key={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
-                    <div className="bg-primary/5 px-5 py-3 border-b border-border">
-                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide">
+                  <AccordionItem key={grupo.categoria} value={grupo.categoria} className="bg-card rounded-xl border border-border overflow-hidden">
+                    <AccordionTrigger className="px-5 py-4 hover:no-underline bg-primary/5">
+                      <h3 className="font-heading font-bold text-foreground text-sm uppercase tracking-wide text-left">
                         {grupo.categoria}
                       </h3>
-                    </div>
-                    <div className="divide-y divide-border">
-                      {grupo.items.map((item) => (
-                        <div key={item.concepto} className="flex items-center justify-between px-5 py-3">
-                          <span className="text-sm text-foreground">{item.concepto}</span>
-                          <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
-                            {item.honorarios}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-5 pb-5 pt-3">
+                      <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                        {grupo.items.map((item) => (
+                          <div key={item.concepto} className="flex items-center justify-between px-4 py-2.5 bg-secondary/30">
+                            <span className="text-sm text-foreground">{item.concepto}</span>
+                            <span className="text-sm font-semibold text-accent whitespace-nowrap ml-4">
+                              {item.honorarios}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </TabsContent>
 
             <TabsContent value="mediacion">
