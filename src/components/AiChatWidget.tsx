@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,17 +63,21 @@ function verdictColor(veredicto: string) {
 }
 
 // Parse asset cards and actions from message content
-function parseAssetContent(content: string): { segments: Array<{ type: "text" | "card" | "actions"; data?: AssetCard; text?: string }> } {
-  const segments: Array<{ type: "text" | "card" | "actions"; data?: AssetCard; text?: string }> = [];
+function parseAssetContent(content: string): { segments: Array<{ type: "text" | "card" | "actions" | "whatsapp" | "social_channels"; data?: AssetCard; text?: string }> } {
+  const segments: Array<{ type: "text" | "card" | "actions" | "whatsapp" | "social_channels"; data?: AssetCard; text?: string }> = [];
   let remaining = content;
 
   while (remaining.length > 0) {
     const cardStart = remaining.indexOf("<ASSET_CARD>");
     const actionsIdx = remaining.indexOf("<ASSET_ACTIONS/>");
+    const whatsappIdx = remaining.indexOf("<WHATSAPP_REDIRECT/>");
+    const socialIdx = remaining.indexOf("<SOCIAL_CHANNELS/>");
 
     const nextSpecial = Math.min(
       cardStart === -1 ? Infinity : cardStart,
-      actionsIdx === -1 ? Infinity : actionsIdx
+      actionsIdx === -1 ? Infinity : actionsIdx,
+      whatsappIdx === -1 ? Infinity : whatsappIdx,
+      socialIdx === -1 ? Infinity : socialIdx
     );
 
     if (nextSpecial === Infinity) {
@@ -81,7 +85,6 @@ function parseAssetContent(content: string): { segments: Array<{ type: "text" | 
       break;
     }
 
-    // Text before the next special
     const before = remaining.slice(0, nextSpecial);
     if (before.trim()) segments.push({ type: "text", text: before });
 
@@ -99,9 +102,15 @@ function parseAssetContent(content: string): { segments: Array<{ type: "text" | 
         segments.push({ type: "text", text: jsonStr });
       }
       remaining = remaining.slice(cardEnd + "</ASSET_CARD>".length);
-    } else {
+    } else if (nextSpecial === actionsIdx) {
       segments.push({ type: "actions" });
       remaining = remaining.slice(actionsIdx + "<ASSET_ACTIONS/>".length);
+    } else if (nextSpecial === whatsappIdx) {
+      segments.push({ type: "whatsapp" });
+      remaining = remaining.slice(whatsappIdx + "<WHATSAPP_REDIRECT/>".length);
+    } else if (nextSpecial === socialIdx) {
+      segments.push({ type: "social_channels" });
+      remaining = remaining.slice(socialIdx + "<SOCIAL_CHANNELS/>".length);
     }
   }
 
