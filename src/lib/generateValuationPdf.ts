@@ -411,7 +411,7 @@ export const generateValuationPdf = async (data: ValuationPdfData) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(80, 80, 80);
-  doc.text(`📍 ${data.direccion}`, margin, y);
+  doc.text(`> ${data.direccion}`, margin, y);
   y += 4;
   doc.text(`${data.municipio}, ${data.provincia}${data.codigo_postal ? ` (${data.codigo_postal})` : ""}`, margin, y);
   y += 5;
