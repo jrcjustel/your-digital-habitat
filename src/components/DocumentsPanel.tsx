@@ -34,6 +34,7 @@ interface DocumentsPanelProps {
   showFilters?: boolean;
   compact?: boolean;
   allowUpload?: boolean;
+  userOnly?: boolean;
 }
 
 const categoryLabels: Record<string, { label: string; icon: typeof FileText }> = {
@@ -62,7 +63,7 @@ const getFileIcon = (mimeType: string | null) => {
   return File;
 };
 
-const DocumentsPanel = ({ nplAssetId, propertyId, showFilters = true, compact = false, allowUpload = false }: DocumentsPanelProps) => {
+const DocumentsPanel = ({ nplAssetId, propertyId, showFilters = true, compact = false, allowUpload = false, userOnly = false }: DocumentsPanelProps) => {
   const { user } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,6 +84,9 @@ const DocumentsPanel = ({ nplAssetId, propertyId, showFilters = true, compact = 
   const loadDocuments = async () => {
     let query = supabase.from("documents").select("*").order("category").order("created_at", { ascending: false });
 
+    if (userOnly && user) {
+      query = query.eq("uploaded_by", user.id);
+    }
     if (nplAssetId) {
       query = query.eq("npl_asset_id", nplAssetId);
     }

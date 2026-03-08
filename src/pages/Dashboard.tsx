@@ -487,7 +487,7 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <DocumentsPanel showFilters={true} allowUpload={true} />
+              <DocumentsPanel showFilters={true} allowUpload={true} userOnly={true} />
             </div>
           </TabsContent>
 
