@@ -828,19 +828,17 @@ const Valorador = () => {
                     </table>
                   </div>
 
-                  {/* Mapa de testigos */}
+                  {/* Mapa interactivo de testigos con Leaflet */}
                   {formSnapshot && (
                     <div className="mt-4">
-                      <p className="text-xs text-muted-foreground mb-2">Situación de los testigos</p>
-                      <div className="rounded-lg overflow-hidden border bg-muted h-64">
-                        <iframe
-                          src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(`${formSnapshot.direccion}, ${formSnapshot.municipio}, ${formSnapshot.provincia}`)}&zoom=16`}
-                          title="Mapa de testigos"
-                          className="w-full h-full border-0"
-                          loading="lazy"
-                          allowFullScreen
-                        />
-                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">Ubicación de los testigos respecto al inmueble analizado</p>
+                      <TestigosMap
+                        address={formSnapshot.direccion}
+                        municipio={formSnapshot.municipio}
+                        provincia={formSnapshot.provincia}
+                        testigosVenta={valuation.testigos_compraventa}
+                        testigosAlquiler={valuation.testigos_alquiler}
+                      />
                     </div>
                   )}
                 </CardContent>
