@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import L from "leaflet";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; updated_at: string };
