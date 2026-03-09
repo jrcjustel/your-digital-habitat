@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Send, Bot, Sparkles, Trash2, Database, TrendingUp, MapPin, Building2, Plus, MessageSquare, Clock, X, Minus, Bell, Search, Map, SlidersHorizontal, ExternalLink, ArrowRight, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import L from "leaflet";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type Conversation = { id: string; title: string; updated_at: string };
@@ -265,6 +266,102 @@ const AssetActionsBar = ({ onAction }: { onAction: (action: string) => void }) =
   </div>
 );
 
+// Geocoding cache for Spanish cities
+const CITY_COORDS: Record<string, [number, number]> = {
+  "madrid": [40.4168, -3.7038], "barcelona": [41.3874, 2.1686], "valencia": [39.4699, -0.3763],
+  "sevilla": [37.3891, -5.9845], "málaga": [36.7213, -4.4214], "malaga": [36.7213, -4.4214],
+  "zaragoza": [41.6488, -0.8891], "murcia": [37.9922, -1.1307], "bilbao": [43.2630, -2.9350],
+  "alicante": [38.3452, -0.4810], "córdoba": [37.8882, -4.7794], "cordoba": [37.8882, -4.7794],
+  "granada": [37.1773, -3.5986], "oviedo": [43.3614, -5.8494], "las palmas": [28.1235, -15.4363],
+  "vigo": [42.2406, -8.7207], "gijón": [43.5322, -5.6611], "valladolid": [41.6523, -4.7245],
+  "palma": [39.5696, 2.6502], "a coruña": [43.3623, -8.4115], "coruña": [43.3623, -8.4115],
+  "san sebastián": [43.3183, -1.9812], "vitoria": [42.8469, -2.6716], "santander": [43.4623, -3.8100],
+  "pamplona": [42.8125, -1.6458], "toledo": [39.8628, -4.0273], "cádiz": [36.5271, -6.2886],
+  "huelva": [37.2614, -6.9447], "almería": [36.8340, -2.4637], "jaén": [37.7796, -3.7849],
+  "logroño": [42.4627, -2.4445], "castellón": [39.9864, -0.0513], "badajoz": [38.8794, -6.9707],
+  "cáceres": [39.4752, -6.3724], "león": [42.5987, -5.5671], "pontevedra": [42.4310, -8.6441],
+  "tarragona": [41.1189, 1.2445], "lleida": [41.6176, 0.6200], "girona": [41.9794, 2.8214],
+  "guadalajara": [40.6337, -3.1674], "salamanca": [40.9701, -5.6635], "burgos": [42.3440, -3.6969],
+  "albacete": [38.9942, -1.8585], "ciudad real": [38.9848, -3.9274], "lugo": [43.0121, -7.5558],
+  "ourense": [42.3358, -7.8639], "huesca": [42.1401, -0.4089], "teruel": [40.3456, -1.1065],
+  "segovia": [40.9429, -4.1088], "soria": [41.7636, -2.4649], "ávila": [40.6565, -4.6812],
+  "zamora": [41.5035, -5.7447], "palencia": [42.0096, -4.5288], "cuenca": [40.0704, -2.1374],
+  "asturias": [43.3614, -5.8494], "cantabria": [43.4623, -3.8100], "tenerife": [28.4636, -16.2518],
+};
+
+function getCoordsForLocation(ubicacion: string): [number, number] | null {
+  const loc = ubicacion.toLowerCase();
+  for (const [city, coords] of Object.entries(CITY_COORDS)) {
+    if (loc.includes(city)) return coords;
+  }
+  return null;
+}
+
+// Inline map for chat assets
+const InlineChatMap = ({ assets, onClose }: { assets: AssetCard[]; onClose: () => void }) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    const map = L.map(mapRef.current, { zoomControl: false }).setView([40.0, -3.5], 5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '© OSM',
+    }).addTo(map);
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+    mapInstanceRef.current = map;
+
+    const bounds: L.LatLngExpression[] = [];
+    assets.forEach((a) => {
+      const coords = getCoordsForLocation(a.ubicacion);
+      if (!coords) return;
+      bounds.push(coords);
+      const score = parseInt(a.scoring) || 0;
+      const color = score >= 7 ? "#22c55e" : score >= 5 ? "#f59e0b" : "#ef4444";
+      const marker = L.circleMarker(coords, {
+        radius: 8, fillColor: color, color: "#fff", weight: 2, fillOpacity: 0.9,
+      }).addTo(map);
+      marker.bindPopup(`
+        <div style="font-size:11px;min-width:140px">
+          <strong>${a.tipo}</strong><br/>
+          ${a.ubicacion}<br/>
+          <span style="color:${color};font-weight:bold">${score}/10</span> · ${formatCurrency(a.precio)}<br/>
+          <span style="text-decoration:line-through;color:#999">${formatCurrency(a.valor_mercado)}</span>
+          <span style="color:#22c55e;font-weight:bold"> -${a.descuento}</span>
+        </div>
+      `);
+    });
+
+    if (bounds.length > 1) {
+      map.fitBounds(L.latLngBounds(bounds as L.LatLngExpression[]), { padding: [20, 20] });
+    } else if (bounds.length === 1) {
+      map.setView(bounds[0] as L.LatLngExpression, 10);
+    }
+
+    setTimeout(() => map.invalidateSize(), 100);
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, [assets]);
+
+  return (
+    <div className="my-2 rounded-xl border border-border overflow-hidden bg-card">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-secondary/50 border-b border-border">
+        <span className="text-[10px] font-semibold text-foreground flex items-center gap-1">
+          <MapPin className="w-3 h-3 text-primary" /> {assets.length} activos en el mapa
+        </span>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <div ref={mapRef} style={{ height: 220 }} />
+    </div>
+  );
+};
+
 const AiChatWidget = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -277,6 +374,7 @@ const AiChatWidget = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertFilters, setAlertFilters] = useState({ provincia: "", tipo_activo: "", precio_max: "" });
+  const [showInlineMap, setShowInlineMap] = useState(false);
   const [proactiveBubble, setProactiveBubble] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -509,9 +607,7 @@ const AiChatWidget = () => {
         }
         break;
       case "map":
-        navigate("/inmuebles");
-        setIsOpen(false);
-        toast.info("Usa el mapa interactivo para explorar por ubicación");
+        setShowInlineMap(true);
         break;
       case "filter":
         handleSend("Ayúdame a refinar la búsqueda. Quiero filtrar por precio, tipo de activo, provincia o tipo de operación (cesión de remate, crédito, subasta). ¿Qué criterios quieres aplicar?");
@@ -546,6 +642,19 @@ const AiChatWidget = () => {
       );
     });
   };
+
+  // Collect all assets from messages for the inline map
+  const collectedAssets = useMemo(() => {
+    const assets: AssetCard[] = [];
+    for (const m of messages) {
+      if (m.role !== "assistant") continue;
+      const { segments } = parseAssetContent(m.content);
+      for (const seg of segments) {
+        if (seg.type === "card" && seg.data) assets.push(seg.data);
+      }
+    }
+    return assets;
+  }, [messages]);
 
   return (
     <>
@@ -701,6 +810,16 @@ const AiChatWidget = () => {
                       <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
                       <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
+                  </div>
+                )}
+                {/* Inline map */}
+                {showInlineMap && collectedAssets.length > 0 && (
+                  <InlineChatMap assets={collectedAssets} onClose={() => setShowInlineMap(false)} />
+                )}
+                {showInlineMap && collectedAssets.length === 0 && (
+                  <div className="my-2 p-3 rounded-xl bg-secondary/50 border border-border text-center">
+                    <p className="text-[11px] text-muted-foreground">No hay activos para mostrar en el mapa. Pide al asesor que te muestre activos primero.</p>
+                    <button onClick={() => setShowInlineMap(false)} className="text-[10px] text-primary mt-1 hover:underline">Cerrar</button>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
