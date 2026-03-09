@@ -84,7 +84,12 @@ const ImageGallery = ({ items, loading = false, emptyMessage = "Sin imágenes di
       <div className="relative rounded-2xl overflow-hidden group">
         {/* Main image or embed */}
         <div className="aspect-[16/9] bg-muted">
-          {currentItem.embedSrc ? (
+          {currentItem.type === "loading" ? (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-secondary to-muted">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground font-medium">{currentItem.caption}</p>
+            </div>
+          ) : currentItem.embedSrc ? (
             <iframe
               src={currentItem.embedSrc}
               title={currentItem.caption}

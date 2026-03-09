@@ -99,8 +99,10 @@ const PropertyDetail = () => {
   if (property) {
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
 
-    // 1. Fachada (first priority)
-    if (fachadaBase64) {
+    // 1. Fachada (first priority) or loading placeholder
+    if (fachadaLoading) {
+      galleryItems.push({ id: "catastro-fachada-loading", src: "", caption: "Obteniendo fachada del Catastro...", type: "loading" as any });
+    } else if (fachadaBase64) {
       galleryItems.push({ id: "catastro-fachada", src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
     }
 
