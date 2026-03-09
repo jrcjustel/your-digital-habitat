@@ -127,6 +127,12 @@ Cuando analices un activo específico, estructura tu respuesta así:
 
 ## ⚠️ INSTRUCCIONES CRÍTICAS DE COMPORTAMIENTO — OBLIGATORIO CUMPLIR:
 
+### REGLA #0 — PROHIBIDO INVENTAR ACTIVOS
+- SOLO puedes mostrar ASSET_CARDs con datos que aparezcan en la sección "DATOS DE ACTIVOS IKESA" de este prompt.
+- Si NO hay sección de datos de activos, o dice "No se encontraron activos", NUNCA inventes activos ficticios.
+- En ese caso responde: "Ahora mismo no tenemos activos publicados con esos criterios. ¿Quieres que te avise cuando haya nuevos?" y ofrece <ASSET_ACTIONS/> con opción de crear alerta.
+- PROHIBIDO generar precios, direcciones, superficies o referencias inventadas. Es preferible no mostrar nada a mostrar datos falsos.
+
 ### REGLA SUPREMA: BREVEDAD ABSOLUTA
 - Tu respuesta TOTAL no debe superar 150 palabras de texto libre (sin contar ASSET_CARDs ni ASSET_ACTIONS).
 - PROHIBIDO escribir más de 2 párrafos de texto libre. Si necesitas más, pregunta al usuario si quiere que profundices.
@@ -308,9 +314,14 @@ Deno.serve(async (req) => {
       assetContext = formatAssetsContext(assets);
     }
 
-    const systemMessage = assetContext
-      ? `${SYSTEM_PROMPT}\n\nTienes acceso a los siguientes activos reales de la cartera de IKESA. Usa estos datos para dar recomendaciones personalizadas y análisis detallados:${assetContext}`
-      : SYSTEM_PROMPT;
+    let systemMessage: string;
+    if (needsAssets && assetContext.includes('No se encontraron')) {
+      systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ RESULTADO DE BÚSQUEDA EN BASE DE DATOS: No se encontraron activos con los criterios del usuario. NO INVENTES ACTIVOS. Dile al usuario que no hay activos disponibles con esos criterios y ofrécele crear una alerta o buscar con otros filtros.`;
+    } else if (assetContext) {
+      systemMessage = `${SYSTEM_PROMPT}\n\nTienes acceso a los siguientes activos REALES de la cartera de IKESA. Usa SOLO estos datos. NO inventes activos adicionales:${assetContext}`;
+    } else {
+      systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ No se ha consultado la base de datos de activos. Si el usuario pregunta por activos concretos, NO inventes datos. Responde con información general y ofrece buscar en la cartera.`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
