@@ -722,6 +722,7 @@ const AdminPanel = () => {
                           <span className="text-muted-foreground">Lotes: <strong className="text-foreground">{catastroProgress.batches}</strong></span>
                           <span className="text-muted-foreground">Procesados: <strong className="text-foreground">{catastroProgress.totalProcessed}</strong></span>
                           <span className="text-primary">Enriquecidos: <strong>{catastroProgress.totalEnriched}</strong></span>
+                          <span className="text-accent">Fotos: <strong>{catastroProgress.totalImages}</strong></span>
                           {catastroProgress.totalErrors > 0 && (
                             <span className="text-destructive">Errores: <strong>{catastroProgress.totalErrors}</strong></span>
                           )}
