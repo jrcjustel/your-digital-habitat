@@ -83,6 +83,35 @@ const estados = [
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
+/** Map catastro uso to form tipo_inmueble */
+const mapUsoCatastralToTipo = (usoCatastral?: string, tipoFromCatastro?: string): string => {
+  if (tipoFromCatastro) return tipoFromCatastro;
+  if (!usoCatastral) return "";
+  const u = usoCatastral.toUpperCase();
+  if (u.includes("VIVIENDA") || u === "V") return "piso";
+  if (u.includes("RESIDENCIAL")) return "piso";
+  if (u.includes("LOCAL") || u === "C" || u.includes("COMERCIAL")) return "local";
+  if (u.includes("OFICINA") || u === "O") return "oficina";
+  if (u.includes("INDUSTRIAL") || u === "I" || u.includes("NAVE")) return "nave";
+  if (u.includes("ALMACEN") || u === "A" || u.includes("TRASTERO")) return "trastero";
+  if (u.includes("GARAJE") || u === "G" || u.includes("APARCAMIENTO")) return "garaje";
+  if (u.includes("SUELO") || u === "S" || u.includes("TERRENO")) return "terreno";
+  return "";
+};
+
+/** Simplify catastro address for Google Maps (strip Esc, Planta, Puerta) */
+const simplifyAddressForMaps = (direccion: string): string => {
+  return direccion
+    .replace(/,?\s*Esc\.?\s*\S*/gi, "")
+    .replace(/,?\s*Planta\s*\S*/gi, "")
+    .replace(/,?\s*Puerta\s*\S*/gi, "")
+    .replace(/,?\s*Piso\s*\S*/gi, "")
+    .replace(/,\s*$/, "")
+    .trim();
+};
+
+const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
+
 type InputMode = "direccion" | "catastral";
 
 const Valorador = () => {
