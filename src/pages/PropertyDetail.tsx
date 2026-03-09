@@ -36,10 +36,12 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const property = properties.find((p) => p.id === id);
   const [currentImage, setCurrentImage] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [ndaSigned, setNdaSigned] = useState(false);
   const [ndaLoading, setNdaLoading] = useState(true);
+  const [fachadaBase64, setFachadaBase64] = useState<string | null>(null);
 
   const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
