@@ -303,13 +303,13 @@ const Valorador = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Valorar mi Inmueble Gratis — Tasación Online con IA | IKESA"
+        title="Inmobilator — Tasación Online con IA | IKESA"
         description="Obtén una valoración gratuita e instantánea de tu inmueble con inteligencia artificial. Estimación de mercado basada en datos reales de transacciones en España."
-        canonical="/valorar"
-        keywords="valorar inmueble gratis, tasación online, cuánto vale mi casa, valoración vivienda, precio metro cuadrado, tasación IA"
+        canonical="/inmobilator"
+        keywords="valorar inmueble gratis, tasación online, cuánto vale mi casa, valoración vivienda, precio metro cuadrado, tasación IA, inmobilator"
         jsonLd={createBreadcrumbSchema([
           { name: "Inicio", url: "/" },
-          { name: "Valorar Inmueble", url: "/valorar" },
+          { name: "Inmobilator", url: "/inmobilator" },
         ])}
       />
       <Navbar />
