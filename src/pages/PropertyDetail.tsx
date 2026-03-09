@@ -36,7 +36,6 @@ const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const property = properties.find((p) => p.id === id);
-  const [currentImage, setCurrentImage] = useState(0);
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [ndaSigned, setNdaSigned] = useState(false);
