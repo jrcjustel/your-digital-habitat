@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map, ExternalLink } from "lucide-react";
 
 interface AssetImage {
   id: string;
@@ -14,7 +14,8 @@ interface AssetImage {
 interface GalleryItem {
   id: string;
   src: string;
-  embedSrc?: string; // For iframe-based items (Google Maps)
+  embedSrc?: string;
+  linkUrl?: string;
   caption: string;
   type: "uploaded" | "fachada" | "satellite" | "streetview";
 }
@@ -80,10 +81,12 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
         const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
         items.push({
           id: "google-streetview",
           src: streetViewUrl,
+          linkUrl: mapsUrl,
           caption: "Street View (Google Maps)",
           type: "streetview",
         });
@@ -171,11 +174,24 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
             <img
               src={currentItem.src}
               alt={currentItem.caption}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover ${currentItem.linkUrl ? "cursor-pointer" : ""}`}
+              onClick={() => {
+                if (currentItem.linkUrl) window.open(currentItem.linkUrl, "_blank", "noopener");
+              }}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/placeholder.svg";
               }}
             />
+          )}
+          {currentItem.linkUrl && (
+            <a
+              href={currentItem.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-14 right-3 bg-card/80 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+            >
+              <ExternalLink className="w-3 h-3" /> Abrir en Google Maps
+            </a>
           )}
         </div>
 

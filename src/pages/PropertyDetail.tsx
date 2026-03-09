@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator, Map as MapIcon, Expand } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator, Map as MapIcon, Expand, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -93,7 +93,7 @@ const PropertyDetail = () => {
   }, [property?.catastralRef]);
 
   // Build gallery items: static images + fachada + satellite embed
-  type GItem = { src: string; embedSrc?: string; caption: string; type: "static" | "fachada" | "streetview" | "satellite" };
+  type GItem = { src: string; embedSrc?: string; linkUrl?: string; caption: string; type: "static" | "fachada" | "streetview" | "satellite" };
   const galleryItems: GItem[] = [];
   if (property) {
     property.images.forEach((img, i) => {
@@ -105,8 +105,9 @@ const PropertyDetail = () => {
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
     if (addressParts.length > 0) {
       const fullAddress = addressParts.join(", ");
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
       const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
-      galleryItems.push({ src: streetViewUrl, caption: "Street View (Google Maps)", type: "streetview" });
+      galleryItems.push({ src: streetViewUrl, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
       const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
       galleryItems.push({ src: "", embedSrc: embedUrl, caption: "Vista satélite (Google Maps)", type: "satellite" });
     }
@@ -289,7 +290,24 @@ const PropertyDetail = () => {
                     allowFullScreen
                   />
                 ) : (
-                  <img src={currentGalleryItem?.src} alt={currentGalleryItem?.caption || property.title} className="w-full h-full object-cover" />
+                  <img
+                    src={currentGalleryItem?.src}
+                    alt={currentGalleryItem?.caption || property.title}
+                    className={`w-full h-full object-cover ${currentGalleryItem?.linkUrl ? "cursor-pointer" : ""}`}
+                    onClick={() => {
+                      if (currentGalleryItem?.linkUrl) window.open(currentGalleryItem.linkUrl, "_blank", "noopener");
+                    }}
+                  />
+                )}
+                {currentGalleryItem?.linkUrl && (
+                  <a
+                    href={currentGalleryItem.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-14 right-3 bg-card/80 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+                  >
+                    <ExternalLink className="w-3 h-3" /> Abrir en Google Maps
+                  </a>
                 )}
               </div>
 
