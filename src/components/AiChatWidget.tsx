@@ -277,6 +277,7 @@ const AiChatWidget = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertFilters, setAlertFilters] = useState({ provincia: "", tipo_activo: "", precio_max: "" });
+  const [showInlineMap, setShowInlineMap] = useState(false);
   const [proactiveBubble, setProactiveBubble] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
