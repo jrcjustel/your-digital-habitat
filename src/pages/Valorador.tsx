@@ -228,13 +228,16 @@ const Valorador = () => {
           } : prev);
         }
         
-        // Use server-proxied fachada image (base64) and Google Maps embed
+        // Use server-proxied fachada image (base64)
         if (cd.fachada_base64) {
           setCatastroFachadaUrl(cd.fachada_base64);
         }
-        if (cd.google_maps_embed) {
-          setCatastroCartoUrl(cd.google_maps_embed);
-        }
+
+        // Build simplified address for Google Maps
+        const simpleDireccion = simplifyAddressForMaps(cd.direccion || data.direccion);
+        const mapAddress = [simpleDireccion, cd.municipio || data.municipio, cd.provincia || data.provincia].filter(Boolean).join(", ");
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(mapAddress)}&maptype=satellite&zoom=18`;
+        setCatastroCartoUrl(embedUrl);
       }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
