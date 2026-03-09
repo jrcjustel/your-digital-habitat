@@ -187,7 +187,11 @@ const ImageGallery = ({ items, loading = false, emptyMessage = "Sin imágenes di
                 i === current ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
               }`}
             >
-              {item.embedSrc ? (
+              {item.type === "loading" ? (
+                <div className="w-full h-full bg-accent/10 flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                </div>
+              ) : item.embedSrc ? (
                 <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                   <Map className="w-5 h-5 text-primary" />
                 </div>
