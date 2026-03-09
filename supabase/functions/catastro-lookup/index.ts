@@ -188,23 +188,33 @@ Deno.serve(async (req) => {
 
     // Fetch fachada image server-side to avoid CORS
     let fachada_base64: string | null = null;
-    try {
-      const fachadaUrl = `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${rc}`;
-      const fachadaRes = await fetch(fachadaUrl);
-      if (fachadaRes.ok) {
-        const contentType = fachadaRes.headers.get('content-type') || 'image/jpeg';
-        if (contentType.startsWith('image/')) {
-          const buffer = await fachadaRes.arrayBuffer();
-          if (buffer.byteLength > 1000) {
-            const bytes = new Uint8Array(buffer);
-            let binary = '';
-            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-            fachada_base64 = `data:${contentType};base64,${btoa(binary)}`;
+    // Try multiple fachada URL formats
+    const rc14 = rc.substring(0, 14);
+    const fachadaUrls = [
+      `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${rc}`,
+      `https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC?ReferenciaCatastral=${rc14}`,
+    ];
+    for (const fachadaUrl of fachadaUrls) {
+      if (fachada_base64) break;
+      try {
+        console.log("Trying fachada URL:", fachadaUrl);
+        const fachadaRes = await fetch(fachadaUrl);
+        if (fachadaRes.ok) {
+          const contentType = fachadaRes.headers.get('content-type') || 'image/jpeg';
+          if (contentType.startsWith('image/')) {
+            const buffer = await fachadaRes.arrayBuffer();
+            console.log("Fachada response size:", buffer.byteLength, "content-type:", contentType);
+            if (buffer.byteLength > 100) {
+              const bytes = new Uint8Array(buffer);
+              let binary = '';
+              for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+              fachada_base64 = `data:${contentType};base64,${btoa(binary)}`;
+            }
           }
         }
+      } catch (e) {
+        console.error("Error fetching fachada from", fachadaUrl, e);
       }
-    } catch (e) {
-      console.error("Error fetching fachada:", e);
     }
 
     // Build Google Maps embed URL from address for satellite view

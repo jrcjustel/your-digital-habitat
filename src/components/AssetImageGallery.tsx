@@ -29,26 +29,7 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
     const fetchAll = async () => {
       const items: GalleryItem[] = [];
 
-      // 1. Fetch uploaded images from storage
-      const { data: dbImages } = await supabase
-        .from("asset_images")
-        .select("*")
-        .eq("asset_id", assetId)
-        .order("sort_order", { ascending: true });
-
-      if (dbImages && dbImages.length > 0) {
-        for (const img of dbImages as unknown as AssetImage[]) {
-          const { data: urlData } = supabase.storage.from("asset-images").getPublicUrl(img.file_path);
-          items.push({
-            id: img.id,
-            src: urlData.publicUrl,
-            caption: img.caption || img.file_name,
-            type: "uploaded",
-          });
-        }
-      }
-
-      // 2. Fetch catastro fachada via edge function
+      // 1. Fetch catastro fachada FIRST (priority image)
       if (refCatastral && refCatastral.length >= 14) {
         try {
           const { data: catastroResult } = await supabase.functions.invoke("catastro-lookup", {
@@ -67,7 +48,7 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
         }
       }
 
-      // 3. Google Street View + Satellite
+      // 2. Google Street View (second priority)
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
@@ -79,6 +60,30 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
           caption: "Street View (Google Maps)",
           type: "streetview",
         });
+      }
+
+      // 3. Fetch uploaded images from storage
+      const { data: dbImages } = await supabase
+        .from("asset_images")
+        .select("*")
+        .eq("asset_id", assetId)
+        .order("sort_order", { ascending: true });
+
+      if (dbImages && dbImages.length > 0) {
+        for (const img of dbImages as unknown as AssetImage[]) {
+          const { data: urlData } = supabase.storage.from("asset-images").getPublicUrl(img.file_path);
+          items.push({
+            id: img.id,
+            src: urlData.publicUrl,
+            caption: img.caption || img.file_name,
+            type: "uploaded",
+          });
+        }
+      }
+
+      // 4. Google Satellite (last)
+      if (addressParts.length > 0) {
+        const fullAddress = addressParts.join(", ");
         items.push({
           id: "google-satellite",
           src: "",
