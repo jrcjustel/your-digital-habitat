@@ -114,7 +114,7 @@ const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
 
 type InputMode = "direccion" | "catastral";
 
-const Valorador = () => {
+const Inmobilator = () => {
   const [loading, setLoading] = useState(false);
   const [valuation, setValuation] = useState<Valuation | null>(null);
   const [error, setError] = useState<string | null>(null);
