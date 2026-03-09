@@ -25,7 +25,7 @@ import AvisoLegalNpl from "./pages/AvisoLegalNpl";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
-import Valorador from "./pages/Valorador";
+import Inmobilator from "./pages/Inmobilator";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import Servicios from "./pages/Servicios";
 import Contacto from "./pages/Contacto";
