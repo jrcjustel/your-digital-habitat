@@ -97,10 +97,10 @@ const ColumnCard = ({
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.5, delay }}
-    className="bg-card border border-border rounded-3xl overflow-hidden flex flex-col h-full hover:shadow-xl transition-shadow duration-500"
+    className="bg-card border border-border rounded-3xl overflow-hidden flex flex-col md:flex-row hover:shadow-xl transition-shadow duration-500"
   >
     {/* Column header */}
-    <div className={`px-6 py-6 ${color} relative overflow-hidden`}>
+    <div className={`px-6 py-6 ${color} relative overflow-hidden md:w-64 md:shrink-0 md:flex md:flex-col md:justify-center`}>
       {badge && (
         <span className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
           {badge}
