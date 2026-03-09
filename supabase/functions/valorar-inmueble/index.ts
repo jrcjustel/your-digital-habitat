@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    // Reference price ranges by province (EUR/m2, residential, 2025-2026 market data)
+    // Reference price ranges by province (EUR/m2, residential, 2025-2026)
     const preciosReferencia: Record<string, { min: number; max: number }> = {
       'madrid': { min: 2800, max: 5500 }, 'barcelona': { min: 2600, max: 5000 },
       'málaga': { min: 1800, max: 3500 }, 'malaga': { min: 1800, max: 3500 },
@@ -59,7 +59,6 @@ Deno.serve(async (req) => {
     const refPrices = Object.entries(preciosReferencia).find(([k]) => provKey.includes(k));
     const refRange = refPrices ? refPrices[1] : { min: 600, max: 1500 };
 
-    // Adjust reference for non-residential types
     const tipoAjuste: Record<string, number> = {
       'garaje': 0.25, 'trastero': 0.20, 'local': 0.85, 'oficina': 0.90,
       'nave': 0.40, 'suelo': 0.50, 'terreno': 0.50, 'industrial': 0.40,
@@ -68,69 +67,143 @@ Deno.serve(async (req) => {
     const refMin = Math.round(refRange.min * ajuste);
     const refMax = Math.round(refRange.max * ajuste);
 
-    const prompt = `Eres un tasador inmobiliario profesional en España. Genera un INFORME DATAVENUE completo para el siguiente inmueble.
+    const prompt = `Eres un tasador inmobiliario profesional en Espana. Genera un INFORME COMPLETO estilo idealista/data + DataVenues para el siguiente inmueble.
 
-REGLAS CRITICAS:
-- DEBES usar los PRECIOS DE REFERENCIA por m2 que te proporciono como guia principal.
-- El precio/m2 de tu valoracion DEBE estar dentro o cerca del rango de referencia proporcionado.
-- NO inflaciones los precios. Es mejor infraestimar ligeramente que sobreestimar.
-- Si la zona es rural o de baja demanda, usa la parte baja del rango.
-- Si es zona urbana centrica o prime, puedes usar la parte alta.
-- Para inmuebles antiguos (>40 anos) sin reforma, aplica un descuento del 10-25%.
-- Para plantas bajas sin ascensor, descuento del 5-10%. Para plantas altas sin ascensor, descuento del 10-20%.
-- Los COMPARABLES deben ser REALISTAS para la zona, con precios/m2 COHERENTES con el rango de referencia.
-- El alquiler estimado debe ser coherente con el precio (rentabilidad bruta 4-7% anual tipica).
+REGLAS CRITICAS DE PRECIOS:
+- DEBES usar los PRECIOS DE REFERENCIA por m2: ${refMin}-${refMax} EUR/m2 para ${provincia || municipio || 'Espana'} (${tipo_inmueble}).
+- El precio/m2 DEBE estar dentro o cerca de ese rango. NO inflaciones.
+- Zona rural/baja demanda = parte baja. Zona urbana centrica = parte alta.
+- Inmuebles >40 anos sin reforma: descuento 10-25%.
+- Planta baja sin ascensor: -5-10%. Planta alta sin ascensor: -10-20%.
+- Alquiler coherente con precio (rentabilidad bruta 4-7% anual).
 
-PRECIOS DE REFERENCIA para ${provincia || municipio || 'Espana'} (${tipo_inmueble}): ${refMin}-${refMax} EUR/m2
-
-Datos del inmueble:
+DATOS DEL INMUEBLE:
 - Direccion: ${direccion}
 - Municipio: ${municipio || 'No especificado'}
 - Provincia: ${provincia || 'No especificada'}
-- Codigo postal: ${codigo_postal || 'No especificado'}
+- CP: ${codigo_postal || 'No especificado'}
 - Tipo: ${tipo_inmueble}
 - Superficie: ${superficie_m2} m2
-- Habitaciones: ${habitaciones || 'No especificado'}
-- Banos: ${banos || 'No especificado'}
-- Ano construccion: ${anio_construccion || 'No especificado'}
-- Estado: ${estado || 'No especificado'}
-- Planta: ${planta !== null && planta !== undefined ? planta : 'No especificado'}
+- Habitaciones: ${habitaciones || 'N/D'}
+- Banos: ${banos || 'N/D'}
+- Ano construccion: ${anio_construccion || 'N/D'}
+- Estado: ${estado || 'N/D'}
+- Planta: ${planta !== null && planta !== undefined ? planta : 'N/D'}
 - Garaje: ${tiene_garaje ? 'Si' : 'No'}
 - Trastero: ${tiene_trastero ? 'Si' : 'No'}
 - Ascensor: ${tiene_ascensor ? 'Si' : 'No'}
 
-Responde SOLO con JSON valido (sin markdown, sin backticks):
+Responde SOLO con JSON valido (sin backticks, sin markdown). ESTRUCTURA EXACTA:
+
 {
-  "valor_min": <numero en euros>,
-  "valor_max": <numero en euros>,
-  "valor_medio": <numero en euros>,
-  "precio_m2": <numero en euros por m2>,
+  "valor_min": <numero EUR - precio minimo estimado (bid price)>,
+  "valor_max": <numero EUR - precio maximo estimado (asking price)>,
+  "valor_medio": <numero EUR - precio estimado de cierre>,
+  "precio_m2": <numero EUR/m2>,
   "confianza": "<alta|media|baja>",
-  "factores_positivos": ["factor1", "factor2"],
+  "factores_positivos": ["factor1", "factor2", "factor3"],
   "factores_negativos": ["factor1", "factor2"],
-  "comentario": "Breve comentario profesional sobre la valoracion",
-  "alquiler_estimado": <numero en euros/mes>,
-  "tiempo_venta_min": <meses minimo estimado>,
-  "tiempo_venta_max": <meses maximo estimado>,
-  "negociacion_min": <porcentaje minimo de negociacion esperada, ej: 5>,
-  "negociacion_max": <porcentaje maximo de negociacion esperada, ej: 10>,
-  "renta_media_zona": <renta media familiar anual en euros, estimada para la zona>,
-  "precio_m2_zona_min": <precio m2 minimo en la zona>,
-  "precio_m2_zona_max": <precio m2 maximo en la zona>,
-  "precio_m2_zona_mediana": <precio m2 mediana en la zona>,
-  "evolucion_12m": <variacion porcentual de precios en ultimos 12 meses, ej: 3.5 o -1.2>,
-  "insight": "Recomendacion profesional IKESA de 1-2 frases, directa y con precio de salida sugerido",
-  "comparables": [
+  "comentario": "Comentario profesional breve",
+
+  "alquiler_estimado": <EUR/mes>,
+  "alquiler_m2": <EUR/m2/mes>,
+  "tiempo_venta_min": <meses>,
+  "tiempo_venta_max": <meses>,
+  "negociacion_min": <porcentaje, ej: 5>,
+  "negociacion_max": <porcentaje, ej: 10>,
+
+  "precio_m2_zona_min": <EUR/m2 minimo zona>,
+  "precio_m2_zona_max": <EUR/m2 maximo zona>,
+  "precio_m2_zona_mediana": <EUR/m2 mediana zona>,
+  "evolucion_12m": <variacion % interanual>,
+
+  "evolucion_trimestral": [
+    {"trimestre": "1T 2024", "precio": <EUR>},
+    {"trimestre": "2T 2024", "precio": <EUR>},
+    {"trimestre": "3T 2024", "precio": <EUR>},
+    {"trimestre": "4T 2024", "precio": <EUR>},
+    {"trimestre": "1T 2025", "precio": <EUR>},
+    {"trimestre": "2T 2025", "precio": <EUR>},
+    {"trimestre": "3T 2025", "precio": <EUR>},
+    {"trimestre": "4T 2025", "precio": <EUR>}
+  ],
+
+  "precio_garaje_zona": <EUR medio garaje en la zona o null>,
+  "precio_trastero_zona": <EUR medio trastero en la zona o null>,
+
+  "testigos_compraventa": [
     {
-      "descripcion": "Piso 3 hab en Calle X",
-      "precio_m2": <numero>,
-      "dias_mercado": <numero>,
+      "direccion": "Calle inventada pero realista para la zona, numero",
+      "descripcion": "Piso de segunda mano con X hab y Y bano",
+      "precio": <EUR total>,
+      "precio_m2": <EUR/m2>,
+      "superficie": <m2>,
+      "dem": <dias en mercado>,
+      "distancia_km": <distancia en km, entre 0.1 y 1.5>,
       "diferencias": "+1 hab, -10m2, reformado"
     }
-  ]
+  ],
+
+  "testigos_alquiler": [
+    {
+      "direccion": "Calle inventada pero realista para la zona, numero",
+      "descripcion": "Piso con X hab",
+      "precio_mensual": <EUR/mes>,
+      "precio_m2_mes": <EUR/m2/mes>,
+      "superficie": <m2>,
+      "dem": <dias en mercado>,
+      "distancia_km": <distancia en km>,
+      "diferencias": "+1 hab, amueblado"
+    }
+  ],
+
+  "datos_zona": {
+    "poblacion": <numero habitantes municipio estimado>,
+    "renta_media": <EUR/ano renta media familiar>,
+    "tasa_actividad": <porcentaje>,
+    "poblacion_extranjera_pct": <porcentaje>,
+    "hogares_1persona_pct": <porcentaje>,
+    "hogares_familia_pct": <porcentaje>,
+    "edad_media_edificacion": <anos>,
+    "inmuebles_residenciales": <numero estimado en la zona>
+  },
+
+  "tipologia_zona": {
+    "por_superficie": [
+      {"rango": "<50 m2", "porcentaje": <numero>},
+      {"rango": "50-80 m2", "porcentaje": <numero>},
+      {"rango": "80-120 m2", "porcentaje": <numero>},
+      {"rango": ">120 m2", "porcentaje": <numero>}
+    ],
+    "por_antiguedad": [
+      {"rango": "Antes 1960", "porcentaje": <numero>},
+      {"rango": "1960-1980", "porcentaje": <numero>},
+      {"rango": "1980-2000", "porcentaje": <numero>},
+      {"rango": "2000-2010", "porcentaje": <numero>},
+      {"rango": "Despues 2010", "porcentaje": <numero>}
+    ]
+  },
+
+  "puntos_interes": {
+    "transporte": <numero estaciones/paradas cercanas>,
+    "comercio": <numero comercios cercanos>,
+    "educacion": <numero centros educativos>,
+    "sanidad": <numero centros sanitarios>,
+    "zonas_verdes": <numero parques/jardines>
+  },
+
+  "insight": "Recomendacion directa IKESA con precio de salida sugerido, 1-2 frases"
 }
 
-IMPORTANTE: Genera EXACTAMENTE 6 comparables realistas para la zona. Los precios/m2 de los comparables deben variar entre un -15% y +15% respecto al precio/m2 que estimes para el inmueble valorado.`;
+REGLAS PARA TESTIGOS:
+- Genera EXACTAMENTE 6 testigos de compraventa y 4 de alquiler.
+- Superficie de testigos: +-30% respecto al inmueble analizado (como idealista).
+- Los testigos deben estar en el MISMO barrio/zona, con distancia 0.1-1.5 km.
+- Las direcciones deben ser calles realistas que puedan existir en ese municipio.
+- Los precios/m2 deben variar +-15% respecto al precio/m2 estimado.
+- DEM (dias en mercado) debe ser realista: entre 15 y 200 dias.
+- Los datos de zona deben ser estimaciones realistas para ese municipio/provincia.
+- La evolucion trimestral debe mostrar una tendencia coherente con evolucion_12m.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -141,7 +214,7 @@ IMPORTANTE: Genera EXACTAMENTE 6 comparables realistas para la zona. Los precios
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'Eres un tasador inmobiliario profesional espanol. Respondes siempre en JSON valido, sin backticks ni markdown.' },
+          { role: 'system', content: 'Eres un tasador inmobiliario profesional espanol. Respondes siempre en JSON valido, sin backticks ni markdown. Todos los datos que generas son estimaciones realistas basadas en datos del mercado espanol.' },
           { role: 'user', content: prompt },
         ],
         temperature: 0.3,
@@ -156,7 +229,6 @@ IMPORTANTE: Genera EXACTAMENTE 6 comparables realistas para la zona. Los precios
     const aiData = await aiResponse.json();
     const content = aiData.choices?.[0]?.message?.content || '';
 
-    // Parse JSON from response (handle markdown code blocks)
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {
