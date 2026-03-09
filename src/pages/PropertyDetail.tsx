@@ -93,26 +93,23 @@ const PropertyDetail = () => {
   }, [property?.catastralRef]);
 
   // Build gallery items: static images + fachada + satellite embed
-  type GItem = { src: string; embedSrc?: string; linkUrl?: string; caption: string; type: "static" | "fachada" | "streetview" | "satellite" };
-  const galleryItems: GItem[] = [];
+  const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
+  const galleryItems: GalleryItem[] = [];
   if (property) {
     property.images.forEach((img, i) => {
-      galleryItems.push({ src: img, caption: `Imagen ${i + 1}`, type: "static" });
+      galleryItems.push({ id: `img-${i}`, src: img, caption: `Imagen ${i + 1}`, type: "static" });
     });
     if (fachadaBase64) {
-      galleryItems.push({ src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
+      galleryItems.push({ id: "catastro-fachada", src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
     }
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
     if (addressParts.length > 0) {
       const fullAddress = addressParts.join(", ");
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
-      const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
-      galleryItems.push({ src: streetViewUrl, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
-      const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
-      galleryItems.push({ src: "", embedSrc: embedUrl, caption: "Vista satélite (Google Maps)", type: "satellite" });
+      galleryItems.push({ id: "google-streetview", src: `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=${GOOGLE_MAPS_KEY}`, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
+      galleryItems.push({ id: "google-satellite", src: "", embedSrc: `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`, caption: "Vista satélite (Google Maps)", type: "satellite" });
     }
   }
-  const currentGalleryItem = galleryItems[currentImage] || galleryItems[0];
 
   const toggleFavorite = async () => {
     if (!user) {
