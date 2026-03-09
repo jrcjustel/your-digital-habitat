@@ -38,6 +38,13 @@ const TypeBadge = ({ item }: { item: GalleryItem }) => {
       </span>
     );
   }
+  if (item.type === "loading") {
+    return (
+      <span className="absolute top-3 left-3 bg-accent/90 text-accent-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+        <Loader2 className="w-3 h-3 animate-spin" /> Cargando...
+      </span>
+    );
+  }
   return null;
 };
 
