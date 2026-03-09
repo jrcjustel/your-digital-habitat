@@ -290,7 +290,24 @@ const PropertyDetail = () => {
                     allowFullScreen
                   />
                 ) : (
-                  <img src={currentGalleryItem?.src} alt={currentGalleryItem?.caption || property.title} className="w-full h-full object-cover" />
+                  <img
+                    src={currentGalleryItem?.src}
+                    alt={currentGalleryItem?.caption || property.title}
+                    className={`w-full h-full object-cover ${currentGalleryItem?.linkUrl ? "cursor-pointer" : ""}`}
+                    onClick={() => {
+                      if (currentGalleryItem?.linkUrl) window.open(currentGalleryItem.linkUrl, "_blank", "noopener");
+                    }}
+                  />
+                )}
+                {currentGalleryItem?.linkUrl && (
+                  <a
+                    href={currentGalleryItem.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-14 right-3 bg-card/80 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+                  >
+                    <ExternalLink className="w-3 h-3" /> Abrir en Google Maps
+                  </a>
                 )}
               </div>
 
