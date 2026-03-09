@@ -299,6 +299,11 @@ const PropertyDetail = () => {
                   <Building2 className="w-3 h-3" /> Catastro
                 </span>
               )}
+              {currentGalleryItem?.type === "streetview" && (
+                <span className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Street View
+                </span>
+              )}
               {currentGalleryItem?.type === "satellite" && (
                 <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
                   <MapPin className="w-3 h-3" /> Satélite
