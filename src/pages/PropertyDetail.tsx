@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator, Map as MapIcon, Expand } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator, Map as MapIcon, Expand, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
