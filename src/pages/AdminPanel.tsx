@@ -341,11 +341,12 @@ const AdminPanel = () => {
 
   const runBulkCatastro = async () => {
     setCatastroRunning(true);
-    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalErrors: 0, done: false, batches: 0 });
+    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalImages: 0, totalErrors: 0, done: false, batches: 0 });
     let offset = 0;
     const batchSize = 30;
     let totalProcessed = 0;
     let totalEnriched = 0;
+    let totalImages = 0;
     let totalErrors = 0;
     let batches = 0;
 
@@ -360,14 +361,15 @@ const AdminPanel = () => {
         batches++;
         totalProcessed += data.total_in_batch || 0;
         totalEnriched += data.enriched || 0;
+        totalImages += data.images_added || 0;
         totalErrors += data.errors || 0;
-        setCatastroProgress({ totalProcessed, totalEnriched, totalErrors, done: data.done, batches });
+        setCatastroProgress({ totalProcessed, totalEnriched, totalImages, totalErrors, done: data.done, batches });
 
         if (data.done || !data.next_offset) break;
         offset = data.next_offset;
       }
 
-      toast.success(`Enriquecimiento completado: ${totalEnriched} activos actualizados`);
+      toast.success(`Enriquecimiento completado: ${totalEnriched} datos + ${totalImages} fotos fachada`);
     } catch (e: any) {
       toast.error("Error en enriquecimiento masivo: " + (e.message || "Error"));
     } finally {
