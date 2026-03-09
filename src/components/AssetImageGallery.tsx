@@ -16,7 +16,7 @@ interface GalleryItem {
   src: string;
   embedSrc?: string; // For iframe-based items (Google Maps)
   caption: string;
-  type: "uploaded" | "fachada" | "satellite";
+  type: "uploaded" | "fachada" | "satellite" | "streetview";
 }
 
 interface AssetImageGalleryProps {
