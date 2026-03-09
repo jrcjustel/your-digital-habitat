@@ -798,4 +798,4 @@ const Inmobilatator = () => {
   );
 };
 
-export defaulInmobilatador;
+export default Inmobilator;
