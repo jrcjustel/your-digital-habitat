@@ -38,6 +38,13 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+type Comparable = {
+  descripcion: string;
+  precio_m2: number;
+  dias_mercado: number;
+  diferencias: string;
+};
+
 type Valuation = {
   valor_min: number;
   valor_max: number;
@@ -47,6 +54,18 @@ type Valuation = {
   factores_positivos: string[];
   factores_negativos: string[];
   comentario: string;
+  alquiler_estimado?: number;
+  tiempo_venta_min?: number;
+  tiempo_venta_max?: number;
+  negociacion_min?: number;
+  negociacion_max?: number;
+  renta_media_zona?: number;
+  precio_m2_zona_min?: number;
+  precio_m2_zona_max?: number;
+  precio_m2_zona_mediana?: number;
+  evolucion_12m?: number;
+  insight?: string;
+  comparables?: Comparable[];
 };
 
 const provincias = [
