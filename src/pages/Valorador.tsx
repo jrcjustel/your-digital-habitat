@@ -909,7 +909,7 @@ const Valorador = () => {
                 ) : (
                   <>
                     <Download className="w-4 h-4" />
-                    Descargar Informe PDF
+                    Descargar Informe DataVenue (PDF)
                   </>
                 )}
               </Button>
