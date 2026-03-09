@@ -114,7 +114,7 @@ const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
 
 type InputMode = "direccion" | "catastral";
 
-const Inmobilator = () => {
+const Valorador = () => {
   const [loading, setLoading] = useState(false);
   const [valuation, setValuation] = useState<Valuation | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -303,13 +303,13 @@ const Inmobilator = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Inmobilator — Tasación Online con IA | IKESA"
+        title="Valorar mi Inmueble Gratis — Tasación Online con IA | IKESA"
         description="Obtén una valoración gratuita e instantánea de tu inmueble con inteligencia artificial. Estimación de mercado basada en datos reales de transacciones en España."
-        canonical="/inmobilator"
-        keywords="valorar inmueble gratis, tasación online, cuánto vale mi casa, valoración vivienda, precio metro cuadrado, tasación IA, inmobilator"
+        canonical="/valorar"
+        keywords="valorar inmueble gratis, tasación online, cuánto vale mi casa, valoración vivienda, precio metro cuadrado, tasación IA"
         jsonLd={createBreadcrumbSchema([
           { name: "Inicio", url: "/" },
-          { name: "Inmobilator", url: "/inmobilator" },
+          { name: "Valorar Inmueble", url: "/valorar" },
         ])}
       />
       <Navbar />
@@ -798,4 +798,4 @@ const Inmobilator = () => {
   );
 };
 
-export default Inmobilator;
+export default Valorador;

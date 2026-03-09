@@ -25,7 +25,7 @@ import AvisoLegalNpl from "./pages/AvisoLegalNpl";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import PoliticaCookies from "./pages/PoliticaCookies";
 import CanalDenuncias from "./pages/CanalDenuncias";
-import Inmobilator from "./pages/Inmobilator";
+import Valorador from "./pages/Valorador";
 import AdminValuationLeads from "./pages/AdminValuationLeads";
 import Servicios from "./pages/Servicios";
 import Contacto from "./pages/Contacto";
@@ -76,7 +76,7 @@ const App = () => (
             <Route path="/privacidad" element={<PoliticaPrivacidad />} />
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
-            <Route path="/inmobilator" element={<Inmobilator />} />
+            <Route path="/valorar" element={<Valorador />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

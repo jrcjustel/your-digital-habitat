@@ -10,7 +10,7 @@ const navItems = [
   { label: "Academia", href: "/academia" },
   { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Servicios", href: "/servicios" },
-  { label: "Inmobilator", href: "/inmobilator" },
+  { label: "Valorar inmueble", href: "/valorar" },
 ];
 
 const Navbar = () => {
