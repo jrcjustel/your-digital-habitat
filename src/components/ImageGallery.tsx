@@ -7,7 +7,7 @@ export interface GalleryItem {
   embedSrc?: string;
   linkUrl?: string;
   caption: string;
-  type: "uploaded" | "static" | "fachada" | "satellite" | "streetview";
+  type: "uploaded" | "static" | "fachada" | "satellite" | "streetview" | "loading";
 }
 
 interface ImageGalleryProps {
