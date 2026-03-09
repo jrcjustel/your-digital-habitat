@@ -14,7 +14,8 @@ interface AssetImage {
 interface GalleryItem {
   id: string;
   src: string;
-  embedSrc?: string; // For iframe-based items (Google Maps)
+  embedSrc?: string;
+  linkUrl?: string;
   caption: string;
   type: "uploaded" | "fachada" | "satellite" | "streetview";
 }
