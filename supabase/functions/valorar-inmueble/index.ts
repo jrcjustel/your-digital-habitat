@@ -22,7 +22,64 @@ Deno.serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const prompt = `Eres un tasador inmobiliario profesional en España. Estima el valor de mercado del siguiente inmueble basándote en datos reales del mercado español actual (2025-2026). Responde SOLO con un JSON válido, sin markdown ni texto adicional.
+    // Reference price ranges by province (€/m², residential, 2025-2026 market data)
+    const preciosReferencia: Record<string, { min: number; max: number }> = {
+      'madrid': { min: 2800, max: 5500 }, 'barcelona': { min: 2600, max: 5000 },
+      'málaga': { min: 1800, max: 3500 }, 'malaga': { min: 1800, max: 3500 },
+      'valencia': { min: 1200, max: 2400 }, 'sevilla': { min: 1100, max: 2200 },
+      'alicante': { min: 1000, max: 2200 }, 'cádiz': { min: 1000, max: 2000 }, 'cadiz': { min: 1000, max: 2000 },
+      'baleares': { min: 2500, max: 5500 }, 'vizcaya': { min: 2000, max: 3800 },
+      'guipúzcoa': { min: 2200, max: 4000 }, 'guipuzcoa': { min: 2200, max: 4000 },
+      'granada': { min: 900, max: 1800 }, 'murcia': { min: 800, max: 1600 },
+      'zaragoza': { min: 1000, max: 2000 }, 'valladolid': { min: 800, max: 1600 },
+      'las palmas': { min: 1200, max: 2800 }, 'santa cruz de tenerife': { min: 1100, max: 2500 },
+      'asturias': { min: 900, max: 1800 }, 'cantabria': { min: 900, max: 1800 },
+      'navarra': { min: 1100, max: 2200 }, 'la rioja': { min: 700, max: 1400 },
+      'toledo': { min: 600, max: 1200 }, 'guadalajara': { min: 600, max: 1300 },
+      'ciudad real': { min: 400, max: 900 }, 'albacete': { min: 500, max: 1000 },
+      'cuenca': { min: 400, max: 800 }, 'badajoz': { min: 500, max: 1000 },
+      'cáceres': { min: 500, max: 1000 }, 'caceres': { min: 500, max: 1000 },
+      'huelva': { min: 600, max: 1200 }, 'jaén': { min: 500, max: 1000 }, 'jaen': { min: 500, max: 1000 },
+      'córdoba': { min: 700, max: 1400 }, 'cordoba': { min: 700, max: 1400 },
+      'almería': { min: 700, max: 1500 }, 'almeria': { min: 700, max: 1500 },
+      'león': { min: 500, max: 1100 }, 'leon': { min: 500, max: 1100 },
+      'burgos': { min: 700, max: 1400 }, 'salamanca': { min: 800, max: 1500 },
+      'segovia': { min: 600, max: 1200 }, 'ávila': { min: 400, max: 900 }, 'avila': { min: 400, max: 900 },
+      'zamora': { min: 400, max: 800 }, 'palencia': { min: 500, max: 1000 },
+      'soria': { min: 400, max: 900 }, 'teruel': { min: 400, max: 800 },
+      'huesca': { min: 600, max: 1200 }, 'lleida': { min: 600, max: 1200 },
+      'girona': { min: 1200, max: 2500 }, 'tarragona': { min: 900, max: 1800 },
+      'castellón': { min: 700, max: 1500 }, 'castellon': { min: 700, max: 1500 },
+      'pontevedra': { min: 900, max: 1800 }, 'a coruña': { min: 900, max: 1800 }, 'coruña': { min: 900, max: 1800 },
+      'lugo': { min: 500, max: 1000 }, 'ourense': { min: 500, max: 1000 },
+      'álava': { min: 1500, max: 3000 }, 'alava': { min: 1500, max: 3000 },
+    };
+
+    const provKey = (provincia || municipio || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const refPrices = Object.entries(preciosReferencia).find(([k]) => provKey.includes(k));
+    const refRange = refPrices ? refPrices[1] : { min: 600, max: 1500 };
+
+    // Adjust reference for non-residential types
+    const tipoAjuste: Record<string, number> = {
+      'garaje': 0.25, 'trastero': 0.20, 'local': 0.85, 'oficina': 0.90,
+      'nave': 0.40, 'suelo': 0.50, 'terreno': 0.50, 'industrial': 0.40,
+    };
+    const ajuste = tipoAjuste[(tipo_inmueble || '').toLowerCase()] || 1.0;
+    const refMin = Math.round(refRange.min * ajuste);
+    const refMax = Math.round(refRange.max * ajuste);
+
+    const prompt = `Eres un tasador inmobiliario profesional en España. Estima el valor de mercado del siguiente inmueble.
+
+REGLAS CRÍTICAS:
+- DEBES usar los PRECIOS DE REFERENCIA por m² que te proporciono como guía principal.
+- El precio/m² de tu valoración DEBE estar dentro o cerca del rango de referencia proporcionado.
+- NO inflaciones los precios. Es mejor infraestimar ligeramente que sobreestimar.
+- Si la zona es rural o de baja demanda, usa la parte baja del rango.
+- Si es zona urbana céntrica o prime, puedes usar la parte alta.
+- Para inmuebles antiguos (>40 años) sin reforma, aplica un descuento del 10-25%.
+- Para plantas bajas sin ascensor, descuento del 5-10%. Para plantas altas sin ascensor, descuento del 10-20%.
+
+PRECIOS DE REFERENCIA para ${provincia || municipio || 'España'} (${tipo_inmueble}): ${refMin}-${refMax} €/m²
 
 Datos del inmueble:
 - Dirección: ${direccion}
@@ -40,7 +97,7 @@ Datos del inmueble:
 - Trastero: ${tiene_trastero ? 'Sí' : 'No'}
 - Ascensor: ${tiene_ascensor ? 'Sí' : 'No'}
 
-Responde con este formato JSON exacto:
+Responde SOLO con JSON válido (sin markdown):
 {
   "valor_min": <número en euros>,
   "valor_max": <número en euros>,
