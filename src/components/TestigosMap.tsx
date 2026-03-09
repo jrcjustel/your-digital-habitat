@@ -90,7 +90,7 @@ const TestigosMap = ({ address, municipio, provincia, testigosVenta = [], testig
         );
         const data = await res.json();
         if (data.length > 0) {
-          setCenter([parseFloat(data[0].lat), parseFloat(data[0].lng)]);
+          setCenter([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
         } else {
           // Fallback: try just municipio + provincia
           const res2 = await fetch(
