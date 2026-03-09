@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 /* ── DATA ── */
 
@@ -165,6 +166,12 @@ const ExpandableSection = ({
               <span className="text-xs font-bold text-foreground whitespace-nowrap tabular-nums bg-accent/10 px-2 py-0.5 rounded-md">{item.p}</span>
             </div>
           ))}
+          <Link
+            to={`/contacto?servicio=${encodeURIComponent(title)}`}
+            className="mt-3 mb-1 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-accent hover:text-accent/80 transition-colors"
+          >
+            <Mail className="w-3 h-3" /> Solicitar este servicio <ArrowRight className="w-3 h-3" />
+          </Link>
         </motion.div>
       )}
     </div>

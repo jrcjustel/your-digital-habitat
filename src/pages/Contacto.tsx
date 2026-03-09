@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -21,6 +22,7 @@ const contactSchema = z.object({
 });
 
 const Contacto = () => {
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     nombre: "",
@@ -29,6 +31,25 @@ const Contacto = () => {
     mensaje: "",
     servicio: "general",
   });
+
+  useEffect(() => {
+    const srv = searchParams.get("servicio");
+    if (srv) {
+      // Map known service names to select values, fallback to presupuesto
+      const map: Record<string, string> = {
+        "Escrituras": "gestoria", "Catastro": "gestoria", "VPO / VPP": "gestoria",
+        "Certificados": "gestoria", "Deudas IBI y CCPP": "gestoria", "Fiscalidad": "gestoria", "Plusvalía": "gestoria",
+        "Informes Ocupacionales": "mediacion", "Mediación (Cash for Keys)": "mediacion",
+        "Door Knocking": "mediacion", "Procedimientos Judiciales": "mediacion",
+        "Comercialización Real Estate": "mediacion",
+      };
+      setForm(f => ({
+        ...f,
+        servicio: map[srv] || "presupuesto",
+        mensaje: f.mensaje || `Me interesa el servicio: ${srv}`,
+      }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
