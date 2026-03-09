@@ -76,16 +76,25 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
         }
       }
 
-      // 3. Add Google Maps satellite embed
+      // 3. Add Google Street View
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
+        const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
+        items.push({
+          id: "google-streetview",
+          src: streetViewUrl,
+          caption: "Street View (Google Maps)",
+          type: "streetview",
+        });
+
+        // 4. Add Google Maps satellite embed
         const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
         items.push({
           id: "google-satellite",
-          src: "", // No static image
+          src: "",
           embedSrc: embedUrl,
-          caption: "Vista satelite (Google Maps)",
+          caption: "Vista satélite (Google Maps)",
           type: "satellite",
         });
       }
