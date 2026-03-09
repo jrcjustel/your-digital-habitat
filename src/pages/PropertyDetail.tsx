@@ -41,6 +41,7 @@ const PropertyDetail = () => {
   const [ndaSigned, setNdaSigned] = useState(false);
   const [ndaLoading, setNdaLoading] = useState(true);
   const [fachadaBase64, setFachadaBase64] = useState<string | null>(null);
+  const [fachadaLoading, setFachadaLoading] = useState(false);
 
   const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
