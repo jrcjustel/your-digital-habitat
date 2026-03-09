@@ -17,6 +17,7 @@ import NplListing from "./pages/NplListing";
 import AiChatWidget from "./components/AiChatWidget";
 import SocialChannelsFloat from "./components/SocialChannelsFloat";
 import CookieConsent from "./components/CookieConsent";
+import ScrollToTop from "./components/ScrollToTop";
 import NplDetail from "./pages/NplDetail";
 import ComoFunciona from "./pages/ComoFunciona";
 import AvisoLegal from "./pages/AvisoLegal";
