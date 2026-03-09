@@ -168,9 +168,11 @@ const ExpandableSection = ({
           ))}
           <Link
             to={`/contacto?servicio=${encodeURIComponent(title)}`}
-            className="mt-3 mb-1 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-accent hover:text-accent/80 transition-colors"
+            className="group mt-3 mb-1 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-accent bg-accent/5 hover:bg-accent hover:text-white rounded-lg py-2 px-3 transition-all duration-300 hover:shadow-md hover:shadow-accent/20 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <Mail className="w-3 h-3" /> Solicitar este servicio <ArrowRight className="w-3 h-3" />
+            <Mail className="w-3 h-3 transition-transform duration-300 group-hover:-rotate-12" />
+            Solicitar este servicio
+            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </motion.div>
       )}
