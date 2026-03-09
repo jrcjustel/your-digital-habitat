@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map, ExternalLink } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map, ExternalLink, Loader2 } from "lucide-react";
 
 export interface GalleryItem {
   id: string;
@@ -7,7 +7,7 @@ export interface GalleryItem {
   embedSrc?: string;
   linkUrl?: string;
   caption: string;
-  type: "uploaded" | "static" | "fachada" | "satellite" | "streetview";
+  type: "uploaded" | "static" | "fachada" | "satellite" | "streetview" | "loading";
 }
 
 interface ImageGalleryProps {
@@ -38,6 +38,13 @@ const TypeBadge = ({ item }: { item: GalleryItem }) => {
       </span>
     );
   }
+  if (item.type === "loading") {
+    return (
+      <span className="absolute top-3 left-3 bg-accent/90 text-accent-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+        <Loader2 className="w-3 h-3 animate-spin" /> Cargando...
+      </span>
+    );
+  }
   return null;
 };
 
@@ -50,6 +57,9 @@ const ThumbnailBadge = ({ type }: { type: GalleryItem["type"] }) => {
   }
   if (type === "satellite") {
     return <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satélite</span>;
+  }
+  if (type === "loading") {
+    return <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Cargando</span>;
   }
   return null;
 };
@@ -84,7 +94,12 @@ const ImageGallery = ({ items, loading = false, emptyMessage = "Sin imágenes di
       <div className="relative rounded-2xl overflow-hidden group">
         {/* Main image or embed */}
         <div className="aspect-[16/9] bg-muted">
-          {currentItem.embedSrc ? (
+          {currentItem.type === "loading" ? (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-secondary to-muted">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground font-medium">{currentItem.caption}</p>
+            </div>
+          ) : currentItem.embedSrc ? (
             <iframe
               src={currentItem.embedSrc}
               title={currentItem.caption}
@@ -172,7 +187,11 @@ const ImageGallery = ({ items, loading = false, emptyMessage = "Sin imágenes di
                 i === current ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"
               }`}
             >
-              {item.embedSrc ? (
+              {item.type === "loading" ? (
+                <div className="w-full h-full bg-accent/10 flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                </div>
+              ) : item.embedSrc ? (
                 <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                   <Map className="w-5 h-5 text-primary" />
                 </div>

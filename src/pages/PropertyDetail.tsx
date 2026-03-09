@@ -41,6 +41,7 @@ const PropertyDetail = () => {
   const [ndaSigned, setNdaSigned] = useState(false);
   const [ndaLoading, setNdaLoading] = useState(true);
   const [fachadaBase64, setFachadaBase64] = useState<string | null>(null);
+  const [fachadaLoading, setFachadaLoading] = useState(false);
 
   const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
@@ -82,13 +83,14 @@ const PropertyDetail = () => {
   // Fetch Catastro fachada
   useEffect(() => {
     if (!property?.catastralRef || property.catastralRef.length < 14) return;
+    setFachadaLoading(true);
     sb.functions.invoke("catastro-lookup", {
       body: { ref_catastral: property.catastralRef },
     }).then(({ data }) => {
       if (data?.success && data.data?.fachada_base64) {
         setFachadaBase64(data.data.fachada_base64);
       }
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setFachadaLoading(false));
   }, [property?.catastralRef]);
 
   // Build gallery items: fachada → street view → static images → satellite
@@ -97,8 +99,10 @@ const PropertyDetail = () => {
   if (property) {
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
 
-    // 1. Fachada (first priority)
-    if (fachadaBase64) {
+    // 1. Fachada (first priority) or loading placeholder
+    if (fachadaLoading) {
+      galleryItems.push({ id: "catastro-fachada-loading", src: "", caption: "Obteniendo fachada del Catastro...", type: "loading" as any });
+    } else if (fachadaBase64) {
       galleryItems.push({ id: "catastro-fachada", src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
     }
 
