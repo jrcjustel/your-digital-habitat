@@ -510,9 +510,7 @@ const AiChatWidget = () => {
         }
         break;
       case "map":
-        navigate("/inmuebles");
-        setIsOpen(false);
-        toast.info("Usa el mapa interactivo para explorar por ubicación");
+        setShowInlineMap(true);
         break;
       case "filter":
         handleSend("Ayúdame a refinar la búsqueda. Quiero filtrar por precio, tipo de activo, provincia o tipo de operación (cesión de remate, crédito, subasta). ¿Qué criterios quieres aplicar?");
