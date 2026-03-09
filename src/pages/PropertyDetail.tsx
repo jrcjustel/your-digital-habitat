@@ -110,6 +110,7 @@ const PropertyDetail = () => {
   }
   const currentGalleryItem = galleryItems[currentImage] || galleryItems[0];
 
+  const toggleFavorite = async () => {
     if (!user) {
       toast.error("Inicia sesión para guardar favoritos");
       return;
