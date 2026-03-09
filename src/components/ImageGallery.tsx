@@ -58,6 +58,9 @@ const ThumbnailBadge = ({ type }: { type: GalleryItem["type"] }) => {
   if (type === "satellite") {
     return <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satélite</span>;
   }
+  if (type === "loading") {
+    return <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Cargando</span>;
+  }
   return null;
 };
 
