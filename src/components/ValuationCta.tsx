@@ -22,7 +22,7 @@ const ValuationCta = () => {
                 Estimación profesional del valor de mercado en segundos. Sin compromiso.
               </p>
               <Link
-                to="/valorar"
+                to="/inmobilator"
                 className="inline-flex items-center gap-2 bg-accent-foreground text-accent font-bold px-6 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity group"
               >
                 <Home className="w-4 h-4" />
