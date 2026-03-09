@@ -238,6 +238,13 @@ const Valorador = () => {
         const mapAddress = [simpleDireccion, cd.municipio || data.municipio, cd.provincia || data.provincia].filter(Boolean).join(", ");
         const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(mapAddress)}&maptype=satellite&zoom=18`;
         setCatastroCartoUrl(embedUrl);
+      } else {
+        // No catastro data — still build maps embed from form address
+        const mapAddress = [data.direccion, data.municipio, data.provincia].filter(Boolean).join(", ");
+        if (mapAddress) {
+          const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(mapAddress)}&maptype=satellite&zoom=18`;
+          setCatastroCartoUrl(embedUrl);
+        }
       }
     } catch (e: any) {
       setError(e.message || "Error inesperado. Inténtalo de nuevo.");
