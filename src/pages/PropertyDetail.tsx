@@ -83,13 +83,14 @@ const PropertyDetail = () => {
   // Fetch Catastro fachada
   useEffect(() => {
     if (!property?.catastralRef || property.catastralRef.length < 14) return;
+    setFachadaLoading(true);
     sb.functions.invoke("catastro-lookup", {
       body: { ref_catastral: property.catastralRef },
     }).then(({ data }) => {
       if (data?.success && data.data?.fachada_base64) {
         setFachadaBase64(data.data.fachada_base64);
       }
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setFachadaLoading(false));
   }, [property?.catastralRef]);
 
   // Build gallery items: fachada → street view → static images → satellite
