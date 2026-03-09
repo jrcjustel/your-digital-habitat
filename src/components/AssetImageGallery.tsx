@@ -251,8 +251,11 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
               {item.type === "fachada" && (
                 <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Catastro</span>
               )}
+              {item.type === "streetview" && (
+                <span className="absolute bottom-0 left-0 right-0 bg-secondary/80 text-[8px] text-secondary-foreground text-center py-0.5">Street View</span>
+              )}
               {item.type === "satellite" && (
-                <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satelite</span>
+                <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satélite</span>
               )}
             </button>
           ))}
