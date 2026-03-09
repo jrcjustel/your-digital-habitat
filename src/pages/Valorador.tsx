@@ -83,6 +83,35 @@ const estados = [
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
+/** Map catastro uso to form tipo_inmueble */
+const mapUsoCatastralToTipo = (usoCatastral?: string, tipoFromCatastro?: string): string => {
+  if (tipoFromCatastro) return tipoFromCatastro;
+  if (!usoCatastral) return "";
+  const u = usoCatastral.toUpperCase();
+  if (u.includes("VIVIENDA") || u === "V") return "piso";
+  if (u.includes("RESIDENCIAL")) return "piso";
+  if (u.includes("LOCAL") || u === "C" || u.includes("COMERCIAL")) return "local";
+  if (u.includes("OFICINA") || u === "O") return "oficina";
+  if (u.includes("INDUSTRIAL") || u === "I" || u.includes("NAVE")) return "nave";
+  if (u.includes("ALMACEN") || u === "A" || u.includes("TRASTERO")) return "trastero";
+  if (u.includes("GARAJE") || u === "G" || u.includes("APARCAMIENTO")) return "garaje";
+  if (u.includes("SUELO") || u === "S" || u.includes("TERRENO")) return "terreno";
+  return "";
+};
+
+/** Simplify catastro address for Google Maps (strip Esc, Planta, Puerta) */
+const simplifyAddressForMaps = (direccion: string): string => {
+  return direccion
+    .replace(/,?\s*Esc\.?\s*\S*/gi, "")
+    .replace(/,?\s*Planta\s*\S*/gi, "")
+    .replace(/,?\s*Puerta\s*\S*/gi, "")
+    .replace(/,?\s*Piso\s*\S*/gi, "")
+    .replace(/,\s*$/, "")
+    .trim();
+};
+
+const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
+
 type InputMode = "direccion" | "catastral";
 
 const Valorador = () => {
@@ -126,7 +155,6 @@ const Valorador = () => {
       if (d.direccion) setValue("direccion", d.direccion);
       if (d.municipio) setValue("municipio", d.municipio);
       if (d.provincia) {
-        // Try to match province name
         const match = provincias.find(
           (p) => p.toLowerCase() === d.provincia.toLowerCase() ||
             d.provincia.toLowerCase().includes(p.toLowerCase()) ||
@@ -135,7 +163,9 @@ const Valorador = () => {
         if (match) setValue("provincia", match);
       }
       if (d.codigo_postal) setValue("codigo_postal", d.codigo_postal);
-      if (d.tipo_inmueble) setValue("tipo_inmueble", d.tipo_inmueble);
+      // Map catastro uso to tipo_inmueble
+      const mappedTipo = mapUsoCatastralToTipo(d.uso_catastral, d.tipo_inmueble);
+      if (mappedTipo) setValue("tipo_inmueble", mappedTipo);
       if (d.superficie_m2 && d.superficie_m2 > 0) setValue("superficie_m2", d.superficie_m2);
       if (d.anio_construccion) setValue("anio_construccion", d.anio_construccion);
       if (d.planta !== null && d.planta !== undefined) setValue("planta", d.planta);
@@ -198,12 +228,22 @@ const Valorador = () => {
           } : prev);
         }
         
-        // Use server-proxied fachada image (base64) and Google Maps embed
+        // Use server-proxied fachada image (base64)
         if (cd.fachada_base64) {
           setCatastroFachadaUrl(cd.fachada_base64);
         }
-        if (cd.google_maps_embed) {
-          setCatastroCartoUrl(cd.google_maps_embed);
+
+        // Build simplified address for Google Maps
+        const simpleDireccion = simplifyAddressForMaps(cd.direccion || data.direccion);
+        const mapAddress = [simpleDireccion, cd.municipio || data.municipio, cd.provincia || data.provincia].filter(Boolean).join(", ");
+        const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(mapAddress)}&maptype=satellite&zoom=18`;
+        setCatastroCartoUrl(embedUrl);
+      } else {
+        // No catastro data — still build maps embed from form address
+        const mapAddress = [data.direccion, data.municipio, data.provincia].filter(Boolean).join(", ");
+        if (mapAddress) {
+          const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(mapAddress)}&maptype=satellite&zoom=18`;
+          setCatastroCartoUrl(embedUrl);
         }
       }
     } catch (e: any) {
@@ -608,39 +648,56 @@ const Valorador = () => {
                   </h3>
 
                   {/* Catastro photos & Google Maps */}
-                  {(catastroFachadaUrl || catastroCartoUrl) && (
-                    <div className="mb-6">
-                      <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                        <Image className="w-3.5 h-3.5" /> Imágenes del inmueble
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {catastroFachadaUrl && (
-                          <div className="rounded-lg overflow-hidden border bg-muted">
-                            <img
-                              src={catastroFachadaUrl}
-                              alt="Fachada del inmueble - Catastro"
-                              className="w-full h-48 object-cover"
-                              onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
-                            />
-                            <p className="text-xs text-muted-foreground text-center py-1.5">Fachada (Catastro)</p>
-                          </div>
-                        )}
-                        {catastroCartoUrl && (
-                          <div className="rounded-lg overflow-hidden border bg-muted">
-                            <iframe
-                              src={catastroCartoUrl}
-                              title="Vista satélite - Google Maps"
-                              className="w-full h-48 border-0"
-                              loading="lazy"
-                              referrerPolicy="no-referrer-when-downgrade"
-                              allowFullScreen
-                            />
-                            <p className="text-xs text-muted-foreground text-center py-1.5">Vista satélite (Google Maps)</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                   {/* Images: Fachada or Street View fallback + Satellite */}
+                   <div className="mb-6">
+                     <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                       <Image className="w-3.5 h-3.5" /> Imágenes del inmueble
+                     </p>
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {catastroFachadaUrl ? (
+                         <div className="rounded-lg overflow-hidden border bg-muted">
+                           <img
+                             src={catastroFachadaUrl}
+                             alt="Fachada del inmueble - Catastro"
+                             className="w-full h-48 object-cover"
+                             onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                           />
+                           <p className="text-xs text-muted-foreground text-center py-1.5">Fachada (Catastro)</p>
+                         </div>
+                       ) : (
+                         (() => {
+                           const simpleDireccion = simplifyAddressForMaps(catastroData?.direccion || formSnapshot?.direccion || "");
+                           const svAddress = [simpleDireccion, formSnapshot?.municipio, formSnapshot?.provincia].filter(Boolean).join(", ");
+                           if (!svAddress) return null;
+                           const svUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(svAddress)}&key=${GOOGLE_MAPS_KEY}`;
+                           return (
+                             <div className="rounded-lg overflow-hidden border bg-muted">
+                               <img
+                                 src={svUrl}
+                                 alt="Street View"
+                                 className="w-full h-48 object-cover"
+                                 onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                               />
+                               <p className="text-xs text-muted-foreground text-center py-1.5">Street View (Google Maps)</p>
+                             </div>
+                           );
+                         })()
+                       )}
+                       {catastroCartoUrl && (
+                         <div className="rounded-lg overflow-hidden border bg-muted">
+                           <iframe
+                             src={catastroCartoUrl}
+                             title="Vista satélite - Google Maps"
+                             className="w-full h-48 border-0"
+                             loading="lazy"
+                             referrerPolicy="no-referrer-when-downgrade"
+                             allowFullScreen
+                           />
+                           <p className="text-xs text-muted-foreground text-center py-1.5">Ubicación (Google Maps)</p>
+                         </div>
+                       )}
+                     </div>
+                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="flex justify-between">
