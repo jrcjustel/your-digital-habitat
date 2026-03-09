@@ -38,11 +38,55 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-type Comparable = {
+type TestigoCompraventa = {
+  direccion: string;
   descripcion: string;
+  precio: number;
   precio_m2: number;
-  dias_mercado: number;
+  superficie: number;
+  dem: number;
+  distancia_km: number;
   diferencias: string;
+};
+
+type TestigoAlquiler = {
+  direccion: string;
+  descripcion: string;
+  precio_mensual: number;
+  precio_m2_mes: number;
+  superficie: number;
+  dem: number;
+  distancia_km: number;
+  diferencias: string;
+};
+
+type EvolucionTrimestral = {
+  trimestre: string;
+  precio: number;
+};
+
+type DatosZona = {
+  poblacion?: number;
+  renta_media?: number;
+  tasa_actividad?: number;
+  poblacion_extranjera_pct?: number;
+  hogares_1persona_pct?: number;
+  hogares_familia_pct?: number;
+  edad_media_edificacion?: number;
+  inmuebles_residenciales?: number;
+};
+
+type TipologiaZona = {
+  por_superficie?: { rango: string; porcentaje: number }[];
+  por_antiguedad?: { rango: string; porcentaje: number }[];
+};
+
+type PuntosInteres = {
+  transporte?: number;
+  comercio?: number;
+  educacion?: number;
+  sanidad?: number;
+  zonas_verdes?: number;
 };
 
 type Valuation = {
@@ -55,17 +99,27 @@ type Valuation = {
   factores_negativos: string[];
   comentario: string;
   alquiler_estimado?: number;
+  alquiler_m2?: number;
   tiempo_venta_min?: number;
   tiempo_venta_max?: number;
   negociacion_min?: number;
   negociacion_max?: number;
-  renta_media_zona?: number;
   precio_m2_zona_min?: number;
   precio_m2_zona_max?: number;
   precio_m2_zona_mediana?: number;
   evolucion_12m?: number;
+  evolucion_trimestral?: EvolucionTrimestral[];
+  precio_garaje_zona?: number;
+  precio_trastero_zona?: number;
+  testigos_compraventa?: TestigoCompraventa[];
+  testigos_alquiler?: TestigoAlquiler[];
+  datos_zona?: DatosZona;
+  tipologia_zona?: TipologiaZona;
+  puntos_interes?: PuntosInteres;
   insight?: string;
-  comparables?: Comparable[];
+  // Legacy compat
+  comparables?: { descripcion: string; precio_m2: number; dias_mercado: number; diferencias: string }[];
+  renta_media_zona?: number;
 };
 
 const provincias = [
