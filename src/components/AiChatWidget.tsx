@@ -812,6 +812,16 @@ const AiChatWidget = () => {
                     </div>
                   </div>
                 )}
+                {/* Inline map */}
+                {showInlineMap && collectedAssets.length > 0 && (
+                  <InlineChatMap assets={collectedAssets} onClose={() => setShowInlineMap(false)} />
+                )}
+                {showInlineMap && collectedAssets.length === 0 && (
+                  <div className="my-2 p-3 rounded-xl bg-secondary/50 border border-border text-center">
+                    <p className="text-[11px] text-muted-foreground">No hay activos para mostrar en el mapa. Pide al asesor que te muestre activos primero.</p>
+                    <button onClick={() => setShowInlineMap(false)} className="text-[10px] text-primary mt-1 hover:underline">Cerrar</button>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
