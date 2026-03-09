@@ -643,6 +643,19 @@ const AiChatWidget = () => {
     });
   };
 
+  // Collect all assets from messages for the inline map
+  const collectedAssets = useMemo(() => {
+    const assets: AssetCard[] = [];
+    for (const m of messages) {
+      if (m.role !== "assistant") continue;
+      const { segments } = parseAssetContent(m.content);
+      for (const seg of segments) {
+        if (seg.type === "card" && seg.data) assets.push(seg.data);
+      }
+    }
+    return assets;
+  }, [messages]);
+
   return (
     <>
       {/* Proactive bubble */}
