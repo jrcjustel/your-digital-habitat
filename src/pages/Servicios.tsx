@@ -242,7 +242,7 @@ const Servicios = () => {
       {/* Three columns */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6">
 
             {/* COLUMN 1: INCLUIDO */}
             <ColumnCard
