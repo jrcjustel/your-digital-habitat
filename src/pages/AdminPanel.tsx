@@ -703,9 +703,9 @@ const AdminPanel = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral
-                    y rellena dirección, municipio, provincia, superficie y año de construcción donde falten datos.
-                    Se procesan en lotes de 30 con pausa de 1s entre consultas.
+                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral.
+                    Rellena datos faltantes (dirección, municipio, superficie...) y descarga las fotos de fachada al storage
+                    para que aparezcan en la galería de imágenes. Se procesan en lotes de 30 con pausa de 1s.
                   </p>
                   <div className="flex items-center gap-3">
                     <Button
