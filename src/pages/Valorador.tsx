@@ -658,6 +658,124 @@ const Valorador = () => {
               </CardContent>
             </Card>
 
+            {/* DataVenue KPIs */}
+            {(valuation.alquiler_estimado || valuation.tiempo_venta_min || valuation.negociacion_min) && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <BarChart3 className="w-4 h-4 text-accent" /> Métricas DataVenue
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {valuation.alquiler_estimado && (
+                      <div className="text-center p-4 bg-secondary rounded-xl">
+                        <p className="text-xs text-muted-foreground mb-1">Alquiler estimado</p>
+                        <p className="text-lg font-bold text-foreground">{fmt(valuation.alquiler_estimado)}<span className="text-xs font-normal">/mes</span></p>
+                        {valuation.valor_medio && (
+                          <p className="text-xs text-accent mt-1">{((valuation.alquiler_estimado * 12 / valuation.valor_medio) * 100).toFixed(1)}% rentab.</p>
+                        )}
+                      </div>
+                    )}
+                    {valuation.tiempo_venta_min != null && valuation.tiempo_venta_max != null && (
+                      <div className="text-center p-4 bg-secondary rounded-xl">
+                        <Clock className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-xs text-muted-foreground mb-1">Tiempo de venta</p>
+                        <p className="text-lg font-bold text-foreground">{valuation.tiempo_venta_min}-{valuation.tiempo_venta_max} <span className="text-xs font-normal">meses</span></p>
+                      </div>
+                    )}
+                    {valuation.negociacion_min != null && valuation.negociacion_max != null && (
+                      <div className="text-center p-4 bg-secondary rounded-xl">
+                        <TrendingDown className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-xs text-muted-foreground mb-1">Negociación</p>
+                        <p className="text-lg font-bold text-foreground">-{valuation.negociacion_min}-{valuation.negociacion_max}%</p>
+                      </div>
+                    )}
+                    {valuation.evolucion_12m != null && (
+                      <div className="text-center p-4 bg-secondary rounded-xl">
+                        <TrendingUp className="w-4 h-4 text-accent mx-auto mb-1" />
+                        <p className="text-xs text-muted-foreground mb-1">Evolución 12m</p>
+                        <p className={`text-lg font-bold ${valuation.evolucion_12m >= 0 ? "text-accent" : "text-destructive"}`}>
+                          {valuation.evolucion_12m >= 0 ? "+" : ""}{valuation.evolucion_12m}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Zone price range bar */}
+                  {valuation.precio_m2_zona_min && valuation.precio_m2_zona_max && (
+                    <div className="mt-5">
+                      <p className="text-xs text-muted-foreground mb-2">Posición en el rango de precios de la zona</p>
+                      <div className="relative h-6 bg-secondary rounded-full overflow-hidden">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full h-2 bg-muted rounded-full mx-3">
+                            {(() => {
+                              const min = valuation.precio_m2_zona_min!;
+                              const max = valuation.precio_m2_zona_max!;
+                              const pos = Math.min(Math.max(((valuation.precio_m2 - min) / (max - min)) * 100, 2), 98);
+                              return (
+                                <div className="relative h-full">
+                                  <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent border-2 border-background shadow" style={{ left: `${pos}%` }} />
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1 px-3">
+                        <span>{fmt(valuation.precio_m2_zona_min)}/m²</span>
+                        {valuation.precio_m2_zona_mediana && <span className="text-foreground font-medium">Med: {fmt(valuation.precio_m2_zona_mediana)}/m²</span>}
+                        <span>{fmt(valuation.precio_m2_zona_max)}/m²</span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Comparables */}
+            {valuation.comparables && valuation.comparables.length > 0 && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <Search className="w-4 h-4 text-accent" /> Comparables ({valuation.comparables.length} testigos)
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 text-muted-foreground font-medium">Inmueble</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium">Precio/m²</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium">Días</th>
+                          <th className="text-left py-2 pl-4 text-muted-foreground font-medium">Diferencias</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {valuation.comparables.map((comp, i) => (
+                          <tr key={i} className="border-b border-border/50 last:border-0">
+                            <td className="py-2 text-foreground">{comp.descripcion}</td>
+                            <td className="py-2 text-right font-bold text-foreground">{fmt(comp.precio_m2)}</td>
+                            <td className="py-2 text-right text-muted-foreground">{comp.dias_mercado}</td>
+                            <td className="py-2 pl-4 text-xs text-muted-foreground">{comp.diferencias}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* IKESA Insight */}
+            {valuation.insight && (
+              <Card className="border-accent/30 bg-accent/5">
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-3">
+                    <Zap className="w-4 h-4 text-accent" /> Insight IKESA
+                  </h3>
+                  <p className="text-foreground font-medium italic">"{valuation.insight}"</p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Catastro photos + data */}
             {catastroData && (
               <Card>
