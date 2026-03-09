@@ -98,7 +98,7 @@ const TestigosMap = ({ address, municipio, provincia, testigosVenta = [], testig
           );
           const data2 = await res2.json();
           if (data2.length > 0) {
-            setCenter([parseFloat(data2[0].lat), parseFloat(data2[0].lng)]);
+            setCenter([parseFloat(data2[0].lat), parseFloat(data2[0].lon)]);
           } else {
             setGeoError(true);
           }
