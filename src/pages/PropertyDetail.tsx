@@ -91,21 +91,32 @@ const PropertyDetail = () => {
     }).catch(() => {});
   }, [property?.catastralRef]);
 
-  // Build gallery items: static images + fachada + satellite embed
+  // Build gallery items: fachada → street view → static images → satellite
   const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
   const galleryItems: GalleryItem[] = [];
   if (property) {
-    property.images.forEach((img, i) => {
-      galleryItems.push({ id: `img-${i}`, src: img, caption: `Imagen ${i + 1}`, type: "static" });
-    });
+    const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
+
+    // 1. Fachada (first priority)
     if (fachadaBase64) {
       galleryItems.push({ id: "catastro-fachada", src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
     }
-    const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
+
+    // 2. Street View (second priority)
     if (addressParts.length > 0) {
       const fullAddress = addressParts.join(", ");
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
       galleryItems.push({ id: "google-streetview", src: `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=${GOOGLE_MAPS_KEY}`, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
+    }
+
+    // 3. Static/uploaded images
+    property.images.forEach((img, i) => {
+      galleryItems.push({ id: `img-${i}`, src: img, caption: `Imagen ${i + 1}`, type: "static" });
+    });
+
+    // 4. Satellite (last)
+    if (addressParts.length > 0) {
+      const fullAddress = addressParts.join(", ");
       galleryItems.push({ id: "google-satellite", src: "", embedSrc: `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`, caption: "Vista satélite (Google Maps)", type: "satellite" });
     }
   }
