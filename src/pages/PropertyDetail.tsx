@@ -80,7 +80,36 @@ const PropertyDetail = () => {
     return () => clearTimeout(timer);
   }, [property?.id]);
 
-  const toggleFavorite = async () => {
+  // Fetch Catastro fachada
+  useEffect(() => {
+    if (!property?.catastralRef || property.catastralRef.length < 14) return;
+    sb.functions.invoke("catastro-lookup", {
+      body: { ref_catastral: property.catastralRef },
+    }).then(({ data }) => {
+      if (data?.success && data.data?.fachada_base64) {
+        setFachadaBase64(data.data.fachada_base64);
+      }
+    }).catch(() => {});
+  }, [property?.catastralRef]);
+
+  // Build gallery items: static images + fachada + satellite embed
+  type GItem = { src: string; embedSrc?: string; caption: string; type: "static" | "fachada" | "satellite" };
+  const galleryItems: GItem[] = [];
+  if (property) {
+    property.images.forEach((img, i) => {
+      galleryItems.push({ src: img, caption: `Imagen ${i + 1}`, type: "static" });
+    });
+    if (fachadaBase64) {
+      galleryItems.push({ src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
+    }
+    const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
+    if (addressParts.length > 0) {
+      const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(addressParts.join(", "))}&maptype=satellite&zoom=18`;
+      galleryItems.push({ src: "", embedSrc: embedUrl, caption: "Vista satélite (Google Maps)", type: "satellite" });
+    }
+  }
+  const currentGalleryItem = galleryItems[currentImage] || galleryItems[0];
+
     if (!user) {
       toast.error("Inicia sesión para guardar favoritos");
       return;
