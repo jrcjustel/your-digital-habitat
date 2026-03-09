@@ -126,7 +126,6 @@ const Valorador = () => {
       if (d.direccion) setValue("direccion", d.direccion);
       if (d.municipio) setValue("municipio", d.municipio);
       if (d.provincia) {
-        // Try to match province name
         const match = provincias.find(
           (p) => p.toLowerCase() === d.provincia.toLowerCase() ||
             d.provincia.toLowerCase().includes(p.toLowerCase()) ||
@@ -135,7 +134,9 @@ const Valorador = () => {
         if (match) setValue("provincia", match);
       }
       if (d.codigo_postal) setValue("codigo_postal", d.codigo_postal);
-      if (d.tipo_inmueble) setValue("tipo_inmueble", d.tipo_inmueble);
+      // Map catastro uso to tipo_inmueble
+      const mappedTipo = mapUsoCatastralToTipo(d.uso_catastral, d.tipo_inmueble);
+      if (mappedTipo) setValue("tipo_inmueble", mappedTipo);
       if (d.superficie_m2 && d.superficie_m2 > 0) setValue("superficie_m2", d.superficie_m2);
       if (d.anio_construccion) setValue("anio_construccion", d.anio_construccion);
       if (d.planta !== null && d.planta !== undefined) setValue("planta", d.planta);
