@@ -198,7 +198,7 @@ const Servicios = () => {
           <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent blur-[120px] translate-x-1/3 -translate-y-1/3" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent blur-[100px] -translate-x-1/3 translate-y-1/3" />
         </div>
-        <div className="container mx-auto px-4 py-20 md:py-28 relative z-10">
+        <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
           <div className="max-w-3xl">
             <motion.p
               initial={{ opacity: 0, y: 10 }}
