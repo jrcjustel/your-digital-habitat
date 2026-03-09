@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator, Map as MapIcon, Expand, ExternalLink } from "lucide-react";
+import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -20,6 +20,7 @@ import SaleTypeBanner from "@/components/SaleTypeBanner";
 import ValuationPanel from "@/components/ValuationPanel";
 import InvestmentCalculator from "@/components/InvestmentCalculator";
 import Disclaimer from "@/components/Disclaimer";
+import ImageGallery, { type GalleryItem } from "@/components/ImageGallery";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
@@ -35,8 +36,6 @@ const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const property = properties.find((p) => p.id === id);
-  const [currentImage, setCurrentImage] = useState(0);
-  const [fullscreen, setFullscreen] = useState(false);
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [ndaSigned, setNdaSigned] = useState(false);
@@ -93,26 +92,23 @@ const PropertyDetail = () => {
   }, [property?.catastralRef]);
 
   // Build gallery items: static images + fachada + satellite embed
-  type GItem = { src: string; embedSrc?: string; linkUrl?: string; caption: string; type: "static" | "fachada" | "streetview" | "satellite" };
-  const galleryItems: GItem[] = [];
+  const GOOGLE_MAPS_KEY = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8";
+  const galleryItems: GalleryItem[] = [];
   if (property) {
     property.images.forEach((img, i) => {
-      galleryItems.push({ src: img, caption: `Imagen ${i + 1}`, type: "static" });
+      galleryItems.push({ id: `img-${i}`, src: img, caption: `Imagen ${i + 1}`, type: "static" });
     });
     if (fachadaBase64) {
-      galleryItems.push({ src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
+      galleryItems.push({ id: "catastro-fachada", src: fachadaBase64, caption: "Fachada (Catastro)", type: "fachada" });
     }
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
     if (addressParts.length > 0) {
       const fullAddress = addressParts.join(", ");
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
-      const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
-      galleryItems.push({ src: streetViewUrl, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
-      const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
-      galleryItems.push({ src: "", embedSrc: embedUrl, caption: "Vista satélite (Google Maps)", type: "satellite" });
+      galleryItems.push({ id: "google-streetview", src: `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=${GOOGLE_MAPS_KEY}`, linkUrl: mapsUrl, caption: "Street View (Google Maps)", type: "streetview" });
+      galleryItems.push({ id: "google-satellite", src: "", embedSrc: `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`, caption: "Vista satélite (Google Maps)", type: "satellite" });
     }
   }
-  const currentGalleryItem = galleryItems[currentImage] || galleryItems[0];
 
   const toggleFavorite = async () => {
     if (!user) {
@@ -278,131 +274,7 @@ const PropertyDetail = () => {
             </div>
 
             {/* Image gallery */}
-            <div className="relative rounded-2xl overflow-hidden group">
-              <div className="aspect-[16/9] bg-muted">
-                {currentGalleryItem?.embedSrc ? (
-                  <iframe
-                    src={currentGalleryItem.embedSrc}
-                    title={currentGalleryItem.caption}
-                    className="w-full h-full border-0"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  />
-                ) : (
-                  <img
-                    src={currentGalleryItem?.src}
-                    alt={currentGalleryItem?.caption || property.title}
-                    className={`w-full h-full object-cover ${currentGalleryItem?.linkUrl ? "cursor-pointer" : ""}`}
-                    onClick={() => {
-                      if (currentGalleryItem?.linkUrl) window.open(currentGalleryItem.linkUrl, "_blank", "noopener");
-                    }}
-                  />
-                )}
-                {currentGalleryItem?.linkUrl && (
-                  <a
-                    href={currentGalleryItem.linkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-14 right-3 bg-card/80 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
-                  >
-                    <ExternalLink className="w-3 h-3" /> Abrir en Google Maps
-                  </a>
-                )}
-              </div>
-
-              {/* Type badge */}
-              {currentGalleryItem?.type === "fachada" && (
-                <span className="absolute top-3 left-3 bg-accent/90 text-accent-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Building2 className="w-3 h-3" /> Catastro
-                </span>
-              )}
-              {currentGalleryItem?.type === "streetview" && (
-                <span className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Street View
-                </span>
-              )}
-              {currentGalleryItem?.type === "satellite" && (
-                <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> Satélite
-                </span>
-              )}
-
-              {/* Navigation arrows */}
-              {galleryItems.length > 1 && (
-                <>
-                  <button onClick={() => setCurrentImage((prev) => (prev > 0 ? prev - 1 : galleryItems.length - 1))} className="absolute left-3 top-1/2 -translate-y-1/2 bg-card/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card">
-                    <ChevronLeft className="w-5 h-5 text-foreground" />
-                  </button>
-                  <button onClick={() => setCurrentImage((prev) => (prev < galleryItems.length - 1 ? prev + 1 : 0))} className="absolute right-3 top-1/2 -translate-y-1/2 bg-card/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card">
-                    <ChevronRight className="w-5 h-5 text-foreground" />
-                  </button>
-                </>
-              )}
-
-              {/* Counter + fullscreen */}
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                <span className="bg-card/80 backdrop-blur-sm text-foreground text-xs font-medium px-3 py-1.5 rounded-full">
-                  {currentImage + 1} / {galleryItems.length}
-                </span>
-                <button onClick={() => setFullscreen(true)} className="bg-card/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card">
-                  <Expand className="w-4 h-4 text-foreground" />
-                </button>
-              </div>
-            </div>
-
-            {/* Thumbnails */}
-            {galleryItems.length > 1 && (
-              <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
-                {galleryItems.map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentImage(i)}
-                    className={`relative flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-colors ${i === currentImage ? "border-accent" : "border-transparent opacity-60 hover:opacity-100"}`}
-                  >
-                    {item.embedSrc ? (
-                      <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                        <MapIcon className="w-5 h-5 text-primary" />
-                      </div>
-                    ) : (
-                      <img src={item.src} alt={item.caption} className="w-full h-full object-cover" />
-                    )}
-                    {item.type === "fachada" && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Catastro</span>
-                    )}
-                    {item.type === "streetview" && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-secondary/80 text-[8px] text-secondary-foreground text-center py-0.5">Street View</span>
-                    )}
-                    {item.type === "satellite" && (
-                      <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satélite</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Fullscreen modal */}
-            {fullscreen && (
-              <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex items-center justify-center" onClick={() => setFullscreen(false)}>
-                <button className="absolute top-4 right-4 text-foreground bg-card/80 p-2 rounded-full z-10" onClick={() => setFullscreen(false)}>✕</button>
-                {currentGalleryItem?.embedSrc ? (
-                  <iframe src={currentGalleryItem.embedSrc} title={currentGalleryItem.caption} className="w-[90vw] h-[80vh] border-0 rounded-lg" loading="lazy" allowFullScreen onClick={(e: any) => e.stopPropagation()} />
-                ) : (
-                  <img src={currentGalleryItem?.src} alt={currentGalleryItem?.caption} className="max-w-[90vw] max-h-[90vh] object-contain" onClick={(e) => e.stopPropagation()} />
-                )}
-                {galleryItems.length > 1 && (
-                  <>
-                    <button onClick={(e) => { e.stopPropagation(); setCurrentImage((prev) => (prev > 0 ? prev - 1 : galleryItems.length - 1)); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-card/80 p-3 rounded-full">
-                      <ChevronLeft className="w-6 h-6 text-foreground" />
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); setCurrentImage((prev) => (prev < galleryItems.length - 1 ? prev + 1 : 0)); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-card/80 p-3 rounded-full">
-                      <ChevronRight className="w-6 h-6 text-foreground" />
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-
+            <ImageGallery items={galleryItems} />
             {/* Analysis section + Tabs - gated for NPL/CDR */}
             {isRestricted ? (
               <>
