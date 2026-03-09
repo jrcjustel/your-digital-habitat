@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Home, TrendingUp, TrendingDown, MapPin, Loader2, CheckCircle, AlertTriangle, Search, FileText, Download, Building, Image, Clock, BarChart3, Zap, Table } from "lucide-react";
+import TestigosMap from "@/components/TestigosMap";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
