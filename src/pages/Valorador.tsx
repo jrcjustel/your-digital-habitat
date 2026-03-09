@@ -785,35 +785,255 @@ const Valorador = () => {
               </Card>
             )}
 
-            {/* Comparables */}
-            {valuation.comparables && valuation.comparables.length > 0 && (
+            {/* Testigos Compraventa */}
+            {valuation.testigos_compraventa && valuation.testigos_compraventa.length > 0 && (
               <Card>
                 <CardContent className="pt-6 pb-6">
-                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
-                    <Search className="w-4 h-4 text-accent" /> Comparables ({valuation.comparables.length} testigos)
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-2">
+                    <Search className="w-4 h-4 text-accent" /> Testigos de Compra-Venta ({valuation.testigos_compraventa.length})
                   </h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Inmuebles seleccionados en el barrio con superficie ±30% respecto al inmueble analizado.
+                  </p>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border">
-                          <th className="text-left py-2 text-muted-foreground font-medium">Inmueble</th>
-                          <th className="text-right py-2 text-muted-foreground font-medium">Precio/m²</th>
-                          <th className="text-right py-2 text-muted-foreground font-medium">Días</th>
-                          <th className="text-left py-2 pl-4 text-muted-foreground font-medium">Diferencias</th>
+                          <th className="text-left py-2 text-muted-foreground font-medium text-xs">Inmueble</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">Precio</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">€/m²</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">m²</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">DEM</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">Dist.</th>
+                          <th className="text-left py-2 pl-3 text-muted-foreground font-medium text-xs">Diferencias</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {valuation.comparables.map((comp, i) => (
+                        {valuation.testigos_compraventa.map((t, i) => (
                           <tr key={i} className="border-b border-border/50 last:border-0">
-                            <td className="py-2 text-foreground">{comp.descripcion}</td>
-                            <td className="py-2 text-right font-bold text-foreground">{fmt(comp.precio_m2)}</td>
-                            <td className="py-2 text-right text-muted-foreground">{comp.dias_mercado}</td>
-                            <td className="py-2 pl-4 text-xs text-muted-foreground">{comp.diferencias}</td>
+                            <td className="py-2">
+                              <p className="text-foreground text-xs font-medium">{t.direccion}</p>
+                              <p className="text-muted-foreground text-[11px]">{t.descripcion}</p>
+                            </td>
+                            <td className="py-2 text-right font-bold text-foreground text-xs">{fmt(t.precio)}</td>
+                            <td className="py-2 text-right text-foreground text-xs">{fmt(t.precio_m2)}</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.superficie}</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.dem}d</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.distancia_km}km</td>
+                            <td className="py-2 pl-3 text-[11px] text-muted-foreground">{t.diferencias}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Mapa de testigos */}
+                  {formSnapshot && (
+                    <div className="mt-4">
+                      <p className="text-xs text-muted-foreground mb-2">Situación de los testigos</p>
+                      <div className="rounded-lg overflow-hidden border bg-muted h-64">
+                        <iframe
+                          src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_KEY}&q=${encodeURIComponent(`${formSnapshot.direccion}, ${formSnapshot.municipio}, ${formSnapshot.provincia}`)}&zoom=16`}
+                          title="Mapa de testigos"
+                          className="w-full h-full border-0"
+                          loading="lazy"
+                          allowFullScreen
+                        />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Testigos Alquiler */}
+            {valuation.testigos_alquiler && valuation.testigos_alquiler.length > 0 && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-2">
+                    <Home className="w-4 h-4 text-accent" /> Testigos de Alquiler ({valuation.testigos_alquiler.length})
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 text-muted-foreground font-medium text-xs">Inmueble</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">€/mes</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">€/m²/mes</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">m²</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">DEM</th>
+                          <th className="text-right py-2 text-muted-foreground font-medium text-xs">Dist.</th>
+                          <th className="text-left py-2 pl-3 text-muted-foreground font-medium text-xs">Diferencias</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {valuation.testigos_alquiler.map((t, i) => (
+                          <tr key={i} className="border-b border-border/50 last:border-0">
+                            <td className="py-2">
+                              <p className="text-foreground text-xs font-medium">{t.direccion}</p>
+                              <p className="text-muted-foreground text-[11px]">{t.descripcion}</p>
+                            </td>
+                            <td className="py-2 text-right font-bold text-foreground text-xs">{fmt(t.precio_mensual)}</td>
+                            <td className="py-2 text-right text-foreground text-xs">{t.precio_m2_mes?.toFixed(1)}€</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.superficie}</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.dem}d</td>
+                            <td className="py-2 text-right text-muted-foreground text-xs">{t.distancia_km}km</td>
+                            <td className="py-2 pl-3 text-[11px] text-muted-foreground">{t.diferencias}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Garaje y trastero */}
+                  {(valuation.precio_garaje_zona || valuation.precio_trastero_zona) && (
+                    <div className="mt-4 flex gap-4">
+                      {valuation.precio_garaje_zona && (
+                        <div className="flex-1 bg-secondary rounded-lg p-3 text-center">
+                          <p className="text-xs text-muted-foreground">Precio medio garaje zona</p>
+                          <p className="font-bold text-foreground">{fmt(valuation.precio_garaje_zona)}</p>
+                        </div>
+                      )}
+                      {valuation.precio_trastero_zona && (
+                        <div className="flex-1 bg-secondary rounded-lg p-3 text-center">
+                          <p className="text-xs text-muted-foreground">Precio medio trastero zona</p>
+                          <p className="font-bold text-foreground">{fmt(valuation.precio_trastero_zona)}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Evolución trimestral */}
+            {valuation.evolucion_trimestral && valuation.evolucion_trimestral.length > 0 && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <BarChart3 className="w-4 h-4 text-accent" /> Evolución del Precio Estimado
+                  </h3>
+                  <div className="flex items-end gap-1 h-40">
+                    {(() => {
+                      const precios = valuation.evolucion_trimestral!.map(e => e.precio);
+                      const maxP = Math.max(...precios);
+                      const minP = Math.min(...precios) * 0.9;
+                      return valuation.evolucion_trimestral!.map((e, i) => {
+                        const height = ((e.precio - minP) / (maxP - minP)) * 100;
+                        const isLast = i === valuation.evolucion_trimestral!.length - 1;
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                            <span className="text-[9px] text-muted-foreground font-medium">
+                              {isLast ? fmt(e.precio) : ""}
+                            </span>
+                            <div
+                              className={`w-full rounded-t ${isLast ? "bg-accent" : "bg-accent/30"}`}
+                              style={{ height: `${Math.max(height, 5)}%` }}
+                              title={`${e.trimestre}: ${fmt(e.precio)}`}
+                            />
+                            <span className="text-[8px] text-muted-foreground rotate-0 whitespace-nowrap">
+                              {e.trimestre}
+                            </span>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Datos sociodemográficos */}
+            {valuation.datos_zona && (
+              <Card>
+                <CardContent className="pt-6 pb-6">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2 mb-4">
+                    <MapPin className="w-4 h-4 text-accent" /> Datos Sociodemográficos de la Zona
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {valuation.datos_zona.poblacion && (
+                      <div className="bg-secondary rounded-lg p-3 text-center">
+                        <p className="text-xs text-muted-foreground">Población</p>
+                        <p className="font-bold text-foreground">{valuation.datos_zona.poblacion.toLocaleString("es-ES")}</p>
+                      </div>
+                    )}
+                    {valuation.datos_zona.renta_media && (
+                      <div className="bg-secondary rounded-lg p-3 text-center">
+                        <p className="text-xs text-muted-foreground">Renta media</p>
+                        <p className="font-bold text-foreground">{fmt(valuation.datos_zona.renta_media)}/año</p>
+                      </div>
+                    )}
+                    {valuation.datos_zona.tasa_actividad && (
+                      <div className="bg-secondary rounded-lg p-3 text-center">
+                        <p className="text-xs text-muted-foreground">Tasa actividad</p>
+                        <p className="font-bold text-foreground">{valuation.datos_zona.tasa_actividad}%</p>
+                      </div>
+                    )}
+                    {valuation.datos_zona.poblacion_extranjera_pct != null && (
+                      <div className="bg-secondary rounded-lg p-3 text-center">
+                        <p className="text-xs text-muted-foreground">Pob. extranjera</p>
+                        <p className="font-bold text-foreground">{valuation.datos_zona.poblacion_extranjera_pct}%</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tipología zona */}
+                  {valuation.tipologia_zona && (
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {valuation.tipologia_zona.por_superficie && (
+                        <div>
+                          <p className="text-xs text-muted-foreground font-medium mb-2">Distribución por superficie</p>
+                          {valuation.tipologia_zona.por_superficie.map((t, i) => (
+                            <div key={i} className="flex items-center gap-2 mb-1">
+                              <span className="text-xs text-muted-foreground w-16">{t.rango}</span>
+                              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-accent/60 rounded-full" style={{ width: `${t.porcentaje}%` }} />
+                              </div>
+                              <span className="text-xs font-medium text-foreground w-10 text-right">{t.porcentaje}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {valuation.tipologia_zona.por_antiguedad && (
+                        <div>
+                          <p className="text-xs text-muted-foreground font-medium mb-2">Distribución por antigüedad</p>
+                          {valuation.tipologia_zona.por_antiguedad.map((t, i) => (
+                            <div key={i} className="flex items-center gap-2 mb-1">
+                              <span className="text-xs text-muted-foreground w-24">{t.rango}</span>
+                              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-accent/40 rounded-full" style={{ width: `${t.porcentaje}%` }} />
+                              </div>
+                              <span className="text-xs font-medium text-foreground w-10 text-right">{t.porcentaje}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Puntos de interés */}
+                  {valuation.puntos_interes && (
+                    <div className="mt-4">
+                      <p className="text-xs text-muted-foreground font-medium mb-2">Puntos de interés cercanos</p>
+                      <div className="flex flex-wrap gap-2">
+                        {valuation.puntos_interes.transporte != null && (
+                          <span className="inline-flex items-center gap-1 bg-secondary px-3 py-1.5 rounded-full text-xs">🚇 Transporte: {valuation.puntos_interes.transporte}</span>
+                        )}
+                        {valuation.puntos_interes.comercio != null && (
+                          <span className="inline-flex items-center gap-1 bg-secondary px-3 py-1.5 rounded-full text-xs">🏪 Comercio: {valuation.puntos_interes.comercio}</span>
+                        )}
+                        {valuation.puntos_interes.educacion != null && (
+                          <span className="inline-flex items-center gap-1 bg-secondary px-3 py-1.5 rounded-full text-xs">🎓 Educación: {valuation.puntos_interes.educacion}</span>
+                        )}
+                        {valuation.puntos_interes.sanidad != null && (
+                          <span className="inline-flex items-center gap-1 bg-secondary px-3 py-1.5 rounded-full text-xs">🏥 Sanidad: {valuation.puntos_interes.sanidad}</span>
+                        )}
+                        {valuation.puntos_interes.zonas_verdes != null && (
+                          <span className="inline-flex items-center gap-1 bg-secondary px-3 py-1.5 rounded-full text-xs">🌳 Zonas verdes: {valuation.puntos_interes.zonas_verdes}</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -829,6 +1049,31 @@ const Valorador = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Metodología */}
+            <Card>
+              <CardContent className="pt-6 pb-6">
+                <h3 className="font-semibold text-foreground flex items-center gap-2 mb-3">
+                  <FileText className="w-4 h-4 text-accent" /> Metodología
+                </h3>
+                <div className="text-sm text-muted-foreground space-y-2">
+                  <p>
+                    Este informe aplica el <strong className="text-foreground">método de comparación</strong> reconocido por la normativa internacional de valoración y la <strong className="text-foreground">Orden ECO/805/2003</strong> (Art. 21).
+                  </p>
+                  <p>
+                    Se seleccionan inmuebles comparables por cercanía y características similares, debidamente homogeneizados según superficie (±30%), tipología, estado de conservación y ubicación.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">Precio mínimo estimado (bid price)</strong>: precio al que los compradores comienzan a interesarse.<br />
+                    <strong className="text-foreground">Precio máximo estimado (asking price)</strong>: precio de oferta del vendedor.<br />
+                    <strong className="text-foreground">Precio estimado de cierre</strong>: precio acordado entre comprador y vendedor, calculado considerando precios reales de cierre y rentabilidad inversora.
+                  </p>
+                  <p className="text-xs text-muted-foreground/70 mt-3 border-t border-border pt-3">
+                    Los informes de estimación de precios tienen carácter orientativo y no constituyen tasaciones oficiales según la normativa ECO/805/2003. Este informe no tiene validez legal. Para una tasación oficial, consulte con un tasador homologado.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Catastro photos + data */}
             {catastroData && (
