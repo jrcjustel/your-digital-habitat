@@ -165,7 +165,7 @@ const AdminPanel = () => {
   const [broadcastSending, setBroadcastSending] = useState(false);
   const [catastroRunning, setCatastroRunning] = useState(false);
   const [catastroProgress, setCatastroProgress] = useState<{
-    totalProcessed: number; totalEnriched: number; totalErrors: number; done: boolean; batches: number;
+    totalProcessed: number; totalEnriched: number; totalImages: number; totalErrors: number; done: boolean; batches: number;
   } | null>(null);
 
   useEffect(() => {
