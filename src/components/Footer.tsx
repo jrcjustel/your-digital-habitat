@@ -30,7 +30,7 @@ const footerSections = [
       { label: "Ruta Deuda / NPL", href: "/academia/ruta/ruta-deuda-npl" },
       { label: "Todos los artículos", href: "/academia" },
       { label: "Cómo funciona", href: "/como-funciona" },
-      { label: "Valorar mi inmueble", href: "/valorar" },
+      { label: "Inmobilator", href: "/inmobilator" },
     ],
   },
   {
