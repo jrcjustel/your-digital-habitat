@@ -174,11 +174,24 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
             <img
               src={currentItem.src}
               alt={currentItem.caption}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover ${currentItem.linkUrl ? "cursor-pointer" : ""}`}
+              onClick={() => {
+                if (currentItem.linkUrl) window.open(currentItem.linkUrl, "_blank", "noopener");
+              }}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/placeholder.svg";
               }}
             />
+          )}
+          {currentItem.linkUrl && (
+            <a
+              href={currentItem.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-14 right-3 bg-card/80 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card"
+            >
+              <ExternalLink className="w-3 h-3" /> Abrir en Google Maps
+            </a>
           )}
         </div>
 
