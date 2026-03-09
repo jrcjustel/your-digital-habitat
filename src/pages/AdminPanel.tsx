@@ -165,7 +165,7 @@ const AdminPanel = () => {
   const [broadcastSending, setBroadcastSending] = useState(false);
   const [catastroRunning, setCatastroRunning] = useState(false);
   const [catastroProgress, setCatastroProgress] = useState<{
-    totalProcessed: number; totalEnriched: number; totalErrors: number; done: boolean; batches: number;
+    totalProcessed: number; totalEnriched: number; totalImages: number; totalErrors: number; done: boolean; batches: number;
   } | null>(null);
 
   useEffect(() => {
@@ -341,11 +341,12 @@ const AdminPanel = () => {
 
   const runBulkCatastro = async () => {
     setCatastroRunning(true);
-    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalErrors: 0, done: false, batches: 0 });
+    setCatastroProgress({ totalProcessed: 0, totalEnriched: 0, totalImages: 0, totalErrors: 0, done: false, batches: 0 });
     let offset = 0;
     const batchSize = 30;
     let totalProcessed = 0;
     let totalEnriched = 0;
+    let totalImages = 0;
     let totalErrors = 0;
     let batches = 0;
 
@@ -360,14 +361,15 @@ const AdminPanel = () => {
         batches++;
         totalProcessed += data.total_in_batch || 0;
         totalEnriched += data.enriched || 0;
+        totalImages += data.images_added || 0;
         totalErrors += data.errors || 0;
-        setCatastroProgress({ totalProcessed, totalEnriched, totalErrors, done: data.done, batches });
+        setCatastroProgress({ totalProcessed, totalEnriched, totalImages, totalErrors, done: data.done, batches });
 
         if (data.done || !data.next_offset) break;
         offset = data.next_offset;
       }
 
-      toast.success(`Enriquecimiento completado: ${totalEnriched} activos actualizados`);
+      toast.success(`Enriquecimiento completado: ${totalEnriched} datos + ${totalImages} fotos fachada`);
     } catch (e: any) {
       toast.error("Error en enriquecimiento masivo: " + (e.message || "Error"));
     } finally {
@@ -701,9 +703,9 @@ const AdminPanel = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral
-                    y rellena dirección, municipio, provincia, superficie y año de construcción donde falten datos.
-                    Se procesan en lotes de 30 con pausa de 1s entre consultas.
+                    Consulta automáticamente la Sede Electrónica del Catastro para todos los activos con referencia catastral.
+                    Rellena datos faltantes (dirección, municipio, superficie...) y descarga las fotos de fachada al storage
+                    para que aparezcan en la galería de imágenes. Se procesan en lotes de 30 con pausa de 1s.
                   </p>
                   <div className="flex items-center gap-3">
                     <Button
@@ -720,6 +722,7 @@ const AdminPanel = () => {
                           <span className="text-muted-foreground">Lotes: <strong className="text-foreground">{catastroProgress.batches}</strong></span>
                           <span className="text-muted-foreground">Procesados: <strong className="text-foreground">{catastroProgress.totalProcessed}</strong></span>
                           <span className="text-primary">Enriquecidos: <strong>{catastroProgress.totalEnriched}</strong></span>
+                          <span className="text-accent">Fotos: <strong>{catastroProgress.totalImages}</strong></span>
                           {catastroProgress.totalErrors > 0 && (
                             <span className="text-destructive">Errores: <strong>{catastroProgress.totalErrors}</strong></span>
                           )}

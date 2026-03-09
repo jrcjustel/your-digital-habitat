@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const CATASTRO_DNPRC = "https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCallejero.asmx/Consulta_DNPRC";
+const CATASTRO_FACHADA = "https://ovc.catastro.meh.es/OVCServWeb/OVCWcfCallejero/OVCFotoFachada.svc/RecuperarFotoFachadaRC";
 
 function extractText(xml: string, tag: string): string {
   const regex = new RegExp(`<${tag}[^>]*>([^<]*)</${tag}>`, "i");
@@ -79,6 +80,65 @@ async function lookupCatastro(rc: string) {
   return { direccion, municipio, provincia, codigo_postal, superficie_total, anio_construccion: ant ? parseInt(ant) || null : null, tipo_activo };
 }
 
+async function fetchAndStoreFachada(
+  supabaseAdmin: any,
+  assetId: string,
+  rc: string,
+): Promise<boolean> {
+  try {
+    // Check if fachada image already exists for this asset
+    const { data: existing } = await supabaseAdmin
+      .from("asset_images")
+      .select("id")
+      .eq("asset_id", assetId)
+      .eq("caption", "Fachada (Catastro)")
+      .limit(1);
+
+    if (existing && existing.length > 0) return false; // Already has fachada
+
+    const fachadaUrl = `${CATASTRO_FACHADA}?ReferenciaCatastral=${rc}`;
+    const fachadaRes = await fetch(fachadaUrl);
+    if (!fachadaRes.ok) return false;
+
+    const contentType = fachadaRes.headers.get("content-type") || "image/jpeg";
+    if (!contentType.startsWith("image/")) return false;
+
+    const buffer = await fachadaRes.arrayBuffer();
+    if (buffer.byteLength < 1000) return false; // Too small, likely error
+
+    const ext = contentType.includes("png") ? "png" : "jpg";
+    const filePath = `${assetId}/fachada-catastro.${ext}`;
+
+    // Upload to storage
+    const { error: uploadErr } = await supabaseAdmin.storage
+      .from("asset-images")
+      .upload(filePath, new Uint8Array(buffer), {
+        contentType,
+        upsert: true,
+      });
+
+    if (uploadErr) {
+      console.error(`Upload error for ${assetId}:`, uploadErr.message);
+      return false;
+    }
+
+    // Insert asset_images record
+    await supabaseAdmin.from("asset_images").insert({
+      asset_id: assetId,
+      file_path: filePath,
+      file_name: `fachada-catastro.${ext}`,
+      caption: "Fachada (Catastro)",
+      is_cover: false,
+      sort_order: 100,
+    });
+
+    return true;
+  } catch (e) {
+    console.error(`Fachada error for ${assetId}:`, e);
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -92,7 +152,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Fetch assets with ref_catastral that are missing key data
+    // Fetch assets with ref_catastral
     const { data: assets, error: fetchErr } = await supabaseAdmin
       .from("npl_assets")
       .select("id, ref_catastral, direccion, municipio, provincia, sqm, anio_construccion, tipo_activo")
@@ -103,21 +163,17 @@ Deno.serve(async (req) => {
     if (fetchErr) throw fetchErr;
     if (!assets || assets.length === 0) {
       return new Response(
-        JSON.stringify({ success: true, processed: 0, enriched: 0, errors: 0, done: true }),
+        JSON.stringify({ success: true, processed: 0, enriched: 0, images: 0, errors: 0, done: true }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Filter to assets actually missing data
-    const toEnrich = assets.filter(a =>
-      !a.direccion || !a.municipio || !a.provincia || !a.sqm || a.sqm === 0
-    );
-
     let enriched = 0;
+    let imagesAdded = 0;
     let errors = 0;
     const errorDetails: { id: string; ref: string; error: string }[] = [];
 
-    for (const asset of toEnrich) {
+    for (const asset of assets) {
       try {
         const rc = asset.ref_catastral!.trim().toUpperCase().replace(/\s/g, "");
         if (rc.length < 14) {
@@ -126,25 +182,32 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        const data = await lookupCatastro(rc);
+        // Enrich missing text data
+        const needsTextEnrich = !asset.direccion || !asset.municipio || !asset.provincia || !asset.sqm || asset.sqm === 0;
+        if (needsTextEnrich) {
+          const data = await lookupCatastro(rc);
+          const updateData: Record<string, unknown> = {};
+          if (data.direccion && !asset.direccion) updateData.direccion = data.direccion;
+          if (data.municipio && !asset.municipio) updateData.municipio = data.municipio;
+          if (data.provincia && !asset.provincia) updateData.provincia = data.provincia;
+          if (data.codigo_postal) updateData.codigo_postal = data.codigo_postal;
+          if (data.superficie_total > 0 && (!asset.sqm || asset.sqm === 0)) updateData.sqm = data.superficie_total;
+          if (data.anio_construccion && !asset.anio_construccion) updateData.anio_construccion = data.anio_construccion;
+          if (data.tipo_activo && !asset.tipo_activo) updateData.tipo_activo = data.tipo_activo;
 
-        const updateData: Record<string, unknown> = {};
-        if (data.direccion && !asset.direccion) updateData.direccion = data.direccion;
-        if (data.municipio && !asset.municipio) updateData.municipio = data.municipio;
-        if (data.provincia && !asset.provincia) updateData.provincia = data.provincia;
-        if (data.codigo_postal) updateData.codigo_postal = data.codigo_postal;
-        if (data.superficie_total > 0 && (!asset.sqm || asset.sqm === 0)) updateData.sqm = data.superficie_total;
-        if (data.anio_construccion && !asset.anio_construccion) updateData.anio_construccion = data.anio_construccion;
-        if (data.tipo_activo && !asset.tipo_activo) updateData.tipo_activo = data.tipo_activo;
-
-        if (Object.keys(updateData).length > 0) {
-          const { error: updateErr } = await supabaseAdmin
-            .from("npl_assets")
-            .update(updateData)
-            .eq("id", asset.id);
-          if (updateErr) throw updateErr;
-          enriched++;
+          if (Object.keys(updateData).length > 0) {
+            const { error: updateErr } = await supabaseAdmin
+              .from("npl_assets")
+              .update(updateData)
+              .eq("id", asset.id);
+            if (updateErr) throw updateErr;
+            enriched++;
+          }
         }
+
+        // Always try to fetch and store fachada image
+        const imageStored = await fetchAndStoreFachada(supabaseAdmin, asset.id, rc);
+        if (imageStored) imagesAdded++;
 
         // Rate limit: ~1 req/sec to be polite to Catastro
         await new Promise(r => setTimeout(r, 1000));
@@ -160,8 +223,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         total_in_batch: assets.length,
-        needed_enrichment: toEnrich.length,
         enriched,
+        images_added: imagesAdded,
         errors,
         error_details: errorDetails.slice(0, 10),
         done: !hasMore,
