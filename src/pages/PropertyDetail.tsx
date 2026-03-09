@@ -20,6 +20,7 @@ import SaleTypeBanner from "@/components/SaleTypeBanner";
 import ValuationPanel from "@/components/ValuationPanel";
 import InvestmentCalculator from "@/components/InvestmentCalculator";
 import Disclaimer from "@/components/Disclaimer";
+import ImageGallery, { type GalleryItem } from "@/components/ImageGallery";
 
 const InfoRow = ({ label, value }: { label: string; value: string | number | undefined | null }) => {
   if (value === undefined || value === null) return null;
