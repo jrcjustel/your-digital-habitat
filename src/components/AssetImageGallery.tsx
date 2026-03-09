@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image as ImageIcon, Expand, MapPin, Building2, Map, ExternalLink } from "lucide-react";
 
 interface AssetImage {
   id: string;
