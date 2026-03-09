@@ -130,6 +130,17 @@ const Contacto = () => {
 
             {/* Right — Form */}
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+              {searchParams.get("servicio") && (
+                <div className="mb-5 bg-accent/10 border border-accent/20 rounded-xl px-4 py-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                    <Mail className="w-4 h-4 text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Servicio solicitado</p>
+                    <p className="text-sm font-semibold text-foreground">{searchParams.get("servicio")}</p>
+                  </div>
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
