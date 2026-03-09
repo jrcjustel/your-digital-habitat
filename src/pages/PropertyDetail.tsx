@@ -93,7 +93,7 @@ const PropertyDetail = () => {
   }, [property?.catastralRef]);
 
   // Build gallery items: static images + fachada + satellite embed
-  type GItem = { src: string; embedSrc?: string; caption: string; type: "static" | "fachada" | "satellite" };
+  type GItem = { src: string; embedSrc?: string; caption: string; type: "static" | "fachada" | "streetview" | "satellite" };
   const galleryItems: GItem[] = [];
   if (property) {
     property.images.forEach((img, i) => {
@@ -104,7 +104,10 @@ const PropertyDetail = () => {
     }
     const addressParts = [property.location, property.municipality, property.province].filter(Boolean);
     if (addressParts.length > 0) {
-      const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(addressParts.join(", "))}&maptype=satellite&zoom=18`;
+      const fullAddress = addressParts.join(", ");
+      const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
+      galleryItems.push({ src: streetViewUrl, caption: "Street View (Google Maps)", type: "streetview" });
+      const embedUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(fullAddress)}&maptype=satellite&zoom=18`;
       galleryItems.push({ src: "", embedSrc: embedUrl, caption: "Vista satélite (Google Maps)", type: "satellite" });
     }
   }
@@ -296,6 +299,11 @@ const PropertyDetail = () => {
                   <Building2 className="w-3 h-3" /> Catastro
                 </span>
               )}
+              {currentGalleryItem?.type === "streetview" && (
+                <span className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Street View
+                </span>
+              )}
               {currentGalleryItem?.type === "satellite" && (
                 <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
                   <MapPin className="w-3 h-3" /> Satélite
@@ -343,6 +351,9 @@ const PropertyDetail = () => {
                     )}
                     {item.type === "fachada" && (
                       <span className="absolute bottom-0 left-0 right-0 bg-accent/80 text-[8px] text-accent-foreground text-center py-0.5">Catastro</span>
+                    )}
+                    {item.type === "streetview" && (
+                      <span className="absolute bottom-0 left-0 right-0 bg-secondary/80 text-[8px] text-secondary-foreground text-center py-0.5">Street View</span>
                     )}
                     {item.type === "satellite" && (
                       <span className="absolute bottom-0 left-0 right-0 bg-primary/80 text-[8px] text-primary-foreground text-center py-0.5">Satélite</span>
