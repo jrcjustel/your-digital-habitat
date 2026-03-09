@@ -81,10 +81,12 @@ const AssetImageGallery = ({ assetId, refCatastral, direccion, municipio, provin
       const addressParts = [direccion, municipio, provincia].filter(Boolean);
       if (addressParts.length > 0) {
         const fullAddress = addressParts.join(", ");
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
         const streetViewUrl = `https://maps.googleapis.com/maps/api/streetview?size=800x450&location=${encodeURIComponent(fullAddress)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8`;
         items.push({
           id: "google-streetview",
           src: streetViewUrl,
+          linkUrl: mapsUrl,
           caption: "Street View (Google Maps)",
           type: "streetview",
         });
