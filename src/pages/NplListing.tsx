@@ -414,7 +414,6 @@ const NplListing = () => {
                 </label>
               </div>
               <div className="flex items-end">
-              <div className="flex items-end">
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input
                     type="checkbox"
