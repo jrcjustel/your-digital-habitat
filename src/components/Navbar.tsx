@@ -46,14 +46,6 @@ const navEntries: NavEntry[] = [
       { label: "Valorar inmueble", href: "/valorar", icon: Home, description: "Valoración online" },
     ],
   },
-  {
-    label: "IA & Análisis",
-    items: [
-      { label: "Insights IA", href: "/ai-insights", icon: Brain, description: "Análisis con IA" },
-      { label: "Analítica predictiva", href: "/analitica-predictiva", icon: TrendingUp, description: "Predicciones de mercado" },
-      { label: "Valoración híbrida", href: "/valoracion-hibrida", icon: BarChart3, description: "IA + datos reales" },
-    ],
-  },
   { label: "Academia", href: "/academia" },
   { label: "Servicios", href: "/servicios" },
 ];
