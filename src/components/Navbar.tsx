@@ -32,8 +32,6 @@ const navEntries: NavEntry[] = [
     items: [
       { label: "Todas las oportunidades", href: "/inmuebles", icon: TrendingUp, description: "Catálogo completo de activos" },
       { label: "Subastas BOE", href: "/subastas", icon: Gavel, description: "Subastas judiciales activas" },
-      { label: "NPL / Créditos", href: "/npl", icon: BarChart3, description: "Carteras de deuda hipotecaria" },
-      { label: "Mapa de oportunidades", href: "/mapa", icon: Map, description: "Visualización geográfica" },
     ],
   },
   {

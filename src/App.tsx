@@ -165,7 +165,7 @@ const App = () => (
             <Route path="/valoracion-hibrida" element={<HybridValuationPage />} />
             <Route path="/calculadoras" element={<CalculatorsPage />} />
             <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
-            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/mapa" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/comparador" element={<ComparatorPage />} />
             <Route path="/buscar" element={<SearchPage />} />
             {/* Investment & Marketplace */}
