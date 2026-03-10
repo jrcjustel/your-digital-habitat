@@ -8,9 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Filter, Gavel, Loader2, Search, TrendingDown, Maximize, SlidersHorizontal, X } from "lucide-react";
+import { MapPin, Filter, Gavel, Loader2, Search, TrendingDown, Maximize, SlidersHorizontal, X, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface AssetImage {
+  asset_id: string;
+  file_path: string;
+  is_cover: boolean;
+}
 
 interface AuctionAsset {
   id: string;
@@ -43,6 +49,7 @@ const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
 const AuctionsPage = () => {
+  const [coverImages, setCoverImages] = useState<Record<string, string>>({});
   const [assets, setAssets] = useState<AuctionAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,14 +64,32 @@ const AuctionsPage = () => {
 
   const fetchAssets = async () => {
     try {
-      const { data, error } = await supabase
-        .from("npl_assets")
-        .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_judicial, fase_judicial, cesion_credito, cesion_remate, postura_subasta, deuda_ob, tipo_procedimiento")
-        .eq("publicado", true)
-        .order("created_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      setAssets((data as unknown as AuctionAsset[]) || []);
+      const [assetsRes, imagesRes] = await Promise.all([
+        supabase
+          .from("npl_assets")
+          .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_judicial, fase_judicial, cesion_credito, cesion_remate, postura_subasta, deuda_ob, tipo_procedimiento")
+          .eq("publicado", true)
+          .order("created_at", { ascending: false })
+          .limit(500),
+        supabase
+          .from("asset_images")
+          .select("asset_id, file_path, is_cover")
+          .order("is_cover", { ascending: false })
+          .order("sort_order", { ascending: true }),
+      ]);
+      if (assetsRes.error) throw assetsRes.error;
+      setAssets((assetsRes.data as unknown as AuctionAsset[]) || []);
+
+      const imgMap: Record<string, string> = {};
+      if (imagesRes.data) {
+        for (const img of imagesRes.data as unknown as AssetImage[]) {
+          if (!imgMap[img.asset_id]) {
+            const { data: urlData } = supabase.storage.from("asset-images").getPublicUrl(img.file_path);
+            imgMap[img.asset_id] = urlData.publicUrl;
+          }
+        }
+      }
+      setCoverImages(imgMap);
     } catch {
       toast.error("Error cargando activos de subasta");
     } finally {
@@ -229,14 +254,21 @@ const AuctionsPage = () => {
                 return (
                   <Link key={a.id} to={`/npl/${a.id}`}>
                     <Card className="overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full border-border/60">
-                      <CardContent className="p-5 space-y-3">
-                        {/* Tags */}
-                        <div className="flex justify-between items-start gap-2">
-                          <Badge variant="outline">{a.tipo_activo || "Activo"}</Badge>
+                      {/* Cover image */}
+                      <div className="relative h-44 bg-muted overflow-hidden">
+                        {coverImages[a.id] ? (
+                          <img src={coverImages[a.id]} alt={a.tipo_activo || "Activo"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Building2 className="h-12 w-12 text-muted-foreground/30" />
+                          </div>
+                        )}
+                        <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
+                          <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">{a.tipo_activo || "Activo"}</Badge>
                           <div className="flex gap-1.5 flex-wrap justify-end">
-                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
-                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
-                            {a.postura_subasta && <Badge variant="secondary" className="text-[10px]">Subasta</Badge>}
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">CDR</Badge>}
+                            {a.postura_subasta && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">Subasta</Badge>}
                             {discount !== null && discount > 0 && (
                               <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
                                 <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
@@ -244,8 +276,8 @@ const AuctionsPage = () => {
                             )}
                           </div>
                         </div>
-
-                        {/* Title */}
+                      </div>
+                      <CardContent className="p-5 space-y-3">
                         <div>
                           <h3 className="font-semibold text-foreground line-clamp-1">
                             {a.tipo_activo}{a.municipio ? ` en ${a.municipio}` : ""}
