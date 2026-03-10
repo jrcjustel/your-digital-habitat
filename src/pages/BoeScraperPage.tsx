@@ -147,7 +147,7 @@ const BoeScraperPage = () => {
             {lastResult && (
               <div className="mt-4 p-4 rounded-lg bg-muted/50 border text-sm space-y-1">
                 <div className="flex items-center gap-2 font-medium">
-                  {lastResult.success ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-destructive" />}
+                  {lastResult.success ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <AlertTriangle className="h-4 w-4 text-destructive" />}
                   Resultado de importación
                 </div>
                 <p>Subastas encontradas: <strong>{lastResult.total_parsed || 0}</strong></p>
