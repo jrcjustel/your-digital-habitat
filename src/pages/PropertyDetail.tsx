@@ -69,9 +69,23 @@ const PropertyDetail = () => {
   useEffect(() => {
     if (!property) return;
     const timer = setTimeout(() => {
+      const assetInfo = [
+        `Referencia: ${property.reference}`,
+        `Tipo: ${property.type}`,
+        `Ubicación: ${property.location}, ${property.municipality}, ${property.province} (${property.community})`,
+        `Superficie: ${property.area} m²`,
+        `Precio: ${property.price?.toLocaleString("es-ES")} €`,
+        property.marketValue ? `Valor mercado: ${property.marketValue.toLocaleString("es-ES")} €` : null,
+        property.marketValue && property.price ? `Descuento: ${Math.round((1 - property.price / property.marketValue) * 100)}%` : null,
+        `Tipo venta: ${property.saleType}`,
+        `Ocupación: ${property.occupancyStatus}`,
+        property.profitability ? `Rentabilidad estimada: ${property.profitability}%` : null,
+        property.year ? `Año construcción: ${property.year}` : null,
+      ].filter(Boolean).join(" | ");
+
       const event = new CustomEvent("ikesa-proactive-chat", {
         detail: {
-          message: `Estoy viendo el activo ${property.title || property.id} en ${property.location || property.province}. ¿Puedes darme un análisis rápido de esta oportunidad de inversión? Precio: ${property.price?.toLocaleString("es-ES")} €`,
+          message: `Analiza esta oportunidad de inversión que estoy viendo:\n${assetInfo}\n\nDame tu valoración rápida: ¿es buena oportunidad?`,
           openChat: false,
         },
       });
