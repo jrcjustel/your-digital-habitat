@@ -162,15 +162,15 @@ const App = () => (
             <Route path="/buscar" element={<SearchPage />} />
             {/* Investment & Marketplace */}
             <Route path="/inversion" element={<InvestmentHomePage />} />
-            <Route path="/inversiones" element={<InvestmentsPage />} />
+            <Route path="/inversiones" element={<ProtectedRoute><InvestmentsPage /></ProtectedRoute>} />
             <Route path="/inversion/:id" element={<InvestmentDetailPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace-avanzado" element={<AdvancedMarketplacePage />} />
             <Route path="/subastas" element={<AuctionsPage />} />
             <Route path="/subastas-boe" element={<SubastasBOEPage />} />
             <Route path="/subastas-premium" element={<PremiumAuctionsPage />} />
-            <Route path="/portfolio" element={<PortfolioManagementPage />} />
-            <Route path="/estado-posesorio" element={<PossessionStatusPage />} />
+            <Route path="/portfolio" element={<ProtectedRoute><PortfolioManagementPage /></ProtectedRoute>} />
+            <Route path="/estado-posesorio" element={<ProtectedRoute><PossessionStatusPage /></ProtectedRoute>} />
             {/* AI & Analytics */}
             <Route path="/ai-insights" element={<AIInsightsPage />} />
             <Route path="/analitica-predictiva" element={<PredictiveAnalyticsPage />} />
