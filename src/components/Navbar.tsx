@@ -68,7 +68,7 @@ const DropdownMenu = ({ group, onNavigate }: { group: NavGroup; onNavigate: (hre
   }, []);
 
   const handleEnter = () => { if (timeout.current) clearTimeout(timeout.current); setOpen(true); };
-  const handleLeave = () => { timeout.current = setTimeout(() => setOpen(false), 150); };
+  const handleLeave = () => { timeout.current = setTimeout(() => setOpen(false), 200); };
 
   return (
     <div ref={ref} className="relative" onMouseEnter={handleEnter} onMouseLeave={handleLeave}>
@@ -77,27 +77,43 @@ const DropdownMenu = ({ group, onNavigate }: { group: NavGroup; onNavigate: (hre
         className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors rounded-lg hover:bg-secondary"
       >
         {group.label}
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ease-out ${open ? "rotate-180" : ""}`} />
       </button>
-      {open && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-xl shadow-lg py-2 z-50 animate-fade-in">
-          {group.items.map((item) => (
-            <button
-              key={item.href}
-              onClick={() => { onNavigate(item.href); setOpen(false); }}
-              className="flex items-start gap-3 w-full px-4 py-2.5 text-left hover:bg-secondary transition-colors"
-            >
-              <item.icon className="w-4 h-4 mt-0.5 text-accent shrink-0" />
-              <div>
-                <span className="text-sm font-medium text-foreground">{item.label}</span>
-                {item.description && (
-                  <p className="text-xs text-muted-foreground">{item.description}</p>
-                )}
-              </div>
-            </button>
+      <div
+        className={`absolute top-full left-0 mt-2 w-72 bg-card border border-border/60 rounded-2xl shadow-xl z-50 overflow-hidden transition-all duration-200 ease-out origin-top ${
+          open
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+        }`}
+      >
+        <div className="p-2">
+          <p className="px-3 pt-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+            {group.label}
+          </p>
+          <div className="h-px bg-border/50 mx-2 mb-1" />
+          {group.items.map((item, i) => (
+            <div key={item.href}>
+              <button
+                onClick={() => { onNavigate(item.href); setOpen(false); }}
+                className="flex items-start gap-3 w-full px-3 py-2.5 text-left rounded-xl hover:bg-accent/10 transition-colors duration-150 group"
+              >
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors duration-150 shrink-0">
+                  <item.icon className="w-4 h-4 text-accent" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-sm font-medium text-foreground group-hover:text-accent transition-colors duration-150">{item.label}</span>
+                  {item.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-tight">{item.description}</p>
+                  )}
+                </div>
+              </button>
+              {i < group.items.length - 1 && (
+                <div className="h-px bg-border/30 mx-3 my-0.5" />
+              )}
+            </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -194,16 +210,23 @@ const Navbar = () => {
                     <ChevronDown className={`w-4 h-4 transition-transform ${mobileExpanded === entry.label ? "rotate-180" : ""}`} />
                   </button>
                   {mobileExpanded === entry.label && (
-                    <div className="ml-4 space-y-1 pb-2">
-                      {entry.items.map((item) => (
-                        <button
-                          key={item.href}
-                          onClick={() => nav(item.href)}
-                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-secondary rounded-lg"
-                        >
-                          <item.icon className="w-4 h-4 text-accent" />
-                          {item.label}
-                        </button>
+                    <div className="ml-4 space-y-0.5 pb-2 animate-fade-in">
+                      <div className="h-px bg-border/40 mx-2 mb-1" />
+                      {entry.items.map((item, i) => (
+                        <div key={item.href}>
+                          <button
+                            onClick={() => nav(item.href)}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-accent/10 rounded-xl transition-colors duration-150"
+                          >
+                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent/10 shrink-0">
+                              <item.icon className="w-3.5 h-3.5 text-accent" />
+                            </div>
+                            {item.label}
+                          </button>
+                          {i < entry.items.length - 1 && (
+                            <div className="h-px bg-border/30 mx-6 my-0.5" />
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
