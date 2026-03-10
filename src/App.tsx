@@ -107,8 +107,8 @@ const App = () => (
             <Route path="/inmueble/:id" element={<PropertyDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/mi-cuenta" element={<Dashboard />} />
-            <Route path="/analytics" element={<AnalyticsDashboard />} />
+            <Route path="/mi-cuenta" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
             {/* Admin routes */}
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
