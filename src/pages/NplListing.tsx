@@ -80,7 +80,9 @@ const NplListing = () => {
   const [provincias, setProvincias] = useState<string[]>([]);
   const [ccaas, setCcaas] = useState<string[]>([]);
   const [tipos, setTipos] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">(
+    (searchParams.get("view") as "grid" | "list" | "map") || "grid"
+  );
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>("recientes");
   const [showAdvanced, setShowAdvanced] = useState(false);
