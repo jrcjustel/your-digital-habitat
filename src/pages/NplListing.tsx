@@ -536,6 +536,29 @@ const NplListing = () => {
               <X className="w-3 h-3" /> Limpiar filtros
             </Button>
           </div>
+        ) : viewMode === "map" ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="h-[600px] rounded-2xl overflow-hidden border border-border bg-secondary flex items-center justify-center">
+              <div className="text-center text-muted-foreground">
+                <MapIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm font-medium">Vista de mapa</p>
+                <p className="text-xs mt-1">Mostrando {assets.length} activos en la zona seleccionada</p>
+              </div>
+            </div>
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+              {assets.map((a) => (
+                <NplAssetCard
+                  key={a.id}
+                  asset={a}
+                  isFavorited={favorites.has(a.id)}
+                  userId={user?.id}
+                  onFavoriteToggle={handleFavoriteToggle}
+                  isNew={a.created_at ? (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false}
+                  priority={calcPriority(a) >= 40}
+                />
+              ))}
+            </div>
+          </div>
         ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {assets.map((a, i) => (
@@ -591,7 +614,7 @@ const NplListing = () => {
                         <td className="p-3 text-foreground text-right">{a.valor_mercado > 0 ? `${a.valor_mercado.toLocaleString("es-ES")} €` : "—"}</td>
                         <td className="p-3 text-right">
                           {dto && dto > 0 ? (
-                            <span className="text-green-600 font-bold flex items-center justify-end gap-0.5">
+                            <span className="font-bold flex items-center justify-end gap-0.5 text-accent">
                               <TrendingDown className="w-3 h-3" /> -{dto}%
                             </span>
                           ) : "—"}
