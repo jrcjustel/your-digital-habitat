@@ -229,7 +229,7 @@ const BoeScraperPage = () => {
                               {asset.estado_judicial}
                             </Badge>
                           )}
-                          {desc > 20 && <Badge className="bg-green-600/90">-{desc}%</Badge>}
+                          {desc > 20 && <Badge variant="default">-{desc}%</Badge>}
                         </div>
                         <p className="text-sm">
                           <span className="font-medium">{asset.municipio}</span>
