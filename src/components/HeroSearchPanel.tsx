@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Building2, MapPin, Euro, X, Sparkles } from "lucide-react";
+import { Search, Building2, MapPin, Euro, X, Sparkles, SlidersHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROUTE_TABS = [
