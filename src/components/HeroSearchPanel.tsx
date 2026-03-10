@@ -1,28 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Building2, Euro, X, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
-
-// Simplified SVG paths for Spain CCAA (approximate shapes for visual map)
-const CCAA_PATHS: Record<string, { d: string; label: string; x: number; y: number }> = {
-  "Galicia":          { d: "M30,60 L70,55 L75,90 L55,110 L25,105 Z", label: "GAL", x: 45, y: 80 },
-  "Asturias":         { d: "M75,55 L130,48 L135,70 L75,78 Z", label: "AST", x: 100, y: 62 },
-  "Cantabria":        { d: "M135,48 L175,45 L178,65 L135,70 Z", label: "CAN", x: 155, y: 56 },
-  "País Vasco":       { d: "M178,42 L215,38 L218,60 L178,65 Z", label: "PV", x: 196, y: 50 },
-  "Navarra":          { d: "M218,38 L260,35 L262,72 L218,60 Z", label: "NAV", x: 238, y: 52 },
-  "Aragón":           { d: "M262,35 L310,40 L315,130 L262,125 L262,72 Z", label: "ARA", x: 285, y: 82 },
-  "Cataluña":         { d: "M310,40 L370,45 L365,120 L315,130 Z", label: "CAT", x: 340, y: 80 },
-  "La Rioja":         { d: "M178,65 L218,60 L220,82 L180,85 Z", label: "RIO", x: 198, y: 72 },
-  "Castilla y León":  { d: "M55,110 L75,90 L135,70 L178,65 L180,85 L220,82 L262,72 L262,125 L240,150 L130,155 L60,140 Z", label: "CyL", x: 155, y: 115 },
-  "Madrid":           { d: "M155,155 L190,150 L195,180 L158,182 Z", label: "MAD", x: 174, y: 167 },
-  "Extremadura":      { d: "M40,165 L130,155 L155,155 L158,182 L150,225 L100,240 L35,225 Z", label: "EXT", x: 95, y: 195 },
-  "Castilla-La Mancha": { d: "M155,155 L240,150 L262,125 L315,130 L310,175 L280,210 L235,225 L195,220 L150,225 L158,182 L195,180 L190,150 Z", label: "CLM", x: 230, y: 180 },
-  "C. Valenciana":    { d: "M310,175 L365,120 L375,170 L355,230 L310,250 L280,210 Z", label: "VAL", x: 335, y: 185 },
-  "Murcia":           { d: "M280,210 L310,250 L295,275 L255,265 L235,225 Z", label: "MUR", x: 275, y: 245 },
-  "Andalucía":        { d: "M35,225 L100,240 L150,225 L195,220 L235,225 L255,265 L240,300 L195,320 L130,315 L60,295 L25,265 Z", label: "AND", x: 145, y: 275 },
-  "Illes Balears":    { d: "M380,150 L420,145 L425,170 L385,175 Z", label: "BAL", x: 400, y: 160 },
-  "Canarias":         { d: "M30,340 L110,335 L115,365 L35,370 Z", label: "CAN", x: 65, y: 352 },
-};
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 const ROUTE_TABS = [
   { key: "todos", label: "Todos", path: "/npl" },
@@ -32,13 +12,35 @@ const ROUTE_TABS = [
   { key: "subastas", label: "Subastas BOE", path: "/subastas" },
 ];
 
+const CCAA_CENTERS: Record<string, [number, number]> = {
+  "Andalucía": [37.5, -4.5],
+  "Aragón": [41.5, -0.9],
+  "Asturias": [43.3, -5.8],
+  "Illes Balears": [39.6, 2.9],
+  "Canarias": [28.1, -15.4],
+  "Cantabria": [43.2, -3.8],
+  "Castilla-La Mancha": [39.3, -2.7],
+  "Castilla y León": [41.6, -4.0],
+  "Cataluña": [41.8, 1.5],
+  "C. Valenciana": [39.5, -0.5],
+  "Extremadura": [39.0, -6.1],
+  "Galicia": [42.7, -7.9],
+  "Madrid": [40.4, -3.7],
+  "Murcia": [37.9, -1.1],
+  "Navarra": [42.7, -1.6],
+  "País Vasco": [43.0, -2.6],
+  "La Rioja": [42.3, -2.5],
+};
+
 const HeroSearchPanel = () => {
   const navigate = useNavigate();
   const [selectedCCAA, setSelectedCCAA] = useState<string>("");
   const [tipoActivo, setTipoActivo] = useState("");
   const [precioMax, setPrecioMax] = useState("");
   const [activeTab, setActiveTab] = useState("todos");
-  const [hoveredCCAA, setHoveredCCAA] = useState<string>("");
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,13 +53,95 @@ const HeroSearchPanel = () => {
     navigate(`${tab.path}${qs ? `?${qs}` : ""}`);
   };
 
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    const map = L.map(mapRef.current, {
+      center: [40.0, -3.5],
+      zoom: 5,
+      zoomControl: true,
+      attributionControl: false,
+      scrollWheelZoom: false,
+      dragging: true,
+    });
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 8,
+      minZoom: 4,
+    }).addTo(map);
+
+    // Add CCAA markers
+    const icon = L.divIcon({
+      className: "ccaa-marker",
+      html: `<div style="width:12px;height:12px;background:hsl(var(--accent));border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+
+    const markers: L.Marker[] = [];
+    Object.entries(CCAA_CENTERS).forEach(([name, coords]) => {
+      const marker = L.marker(coords, { icon })
+        .addTo(map)
+        .bindTooltip(name, {
+          permanent: false,
+          direction: "top",
+          className: "ccaa-tooltip",
+          offset: [0, -8],
+        });
+
+      marker.on("click", () => {
+        setSelectedCCAA((prev) => (prev === name ? "" : name));
+      });
+
+      markers.push(marker);
+    });
+
+    markersRef.current = markers;
+    mapInstanceRef.current = map;
+
+    // Fix map size after render
+    setTimeout(() => map.invalidateSize(), 100);
+
+    return () => {
+      map.remove();
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  // Highlight selected marker
+  useEffect(() => {
+    const selectedIcon = L.divIcon({
+      className: "ccaa-marker-selected",
+      html: `<div style="width:16px;height:16px;background:hsl(var(--accent));border-radius:50%;border:3px solid white;box-shadow:0 0 0 3px hsl(var(--accent) / 0.4), 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    });
+    const defaultIcon = L.divIcon({
+      className: "ccaa-marker",
+      html: `<div style="width:12px;height:12px;background:hsl(var(--accent));border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+
+    const names = Object.keys(CCAA_CENTERS);
+    markersRef.current.forEach((marker, i) => {
+      marker.setIcon(names[i] === selectedCCAA ? selectedIcon : defaultIcon);
+    });
+
+    if (selectedCCAA && CCAA_CENTERS[selectedCCAA] && mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo(CCAA_CENTERS[selectedCCAA], 7, { duration: 0.5 });
+    } else if (!selectedCCAA && mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([40.0, -3.5], 5, { duration: 0.5 });
+    }
+  }, [selectedCCAA]);
+
   return (
     <form
       onSubmit={handleSearch}
-      className="bg-primary-foreground/8 backdrop-blur-lg border border-primary-foreground/12 rounded-2xl p-5 shadow-2xl"
+      className="bg-primary-foreground/8 backdrop-blur-lg border border-primary-foreground/12 rounded-2xl p-4 shadow-2xl"
     >
       {/* Route tabs */}
-      <div className="flex gap-1 mb-4 overflow-x-auto pb-1 -mx-1 px-1">
+      <div className="flex gap-1 mb-3 overflow-x-auto pb-1 -mx-1 px-1">
         {ROUTE_TABS.map((tab) => (
           <button
             key={tab.key}
@@ -74,69 +158,13 @@ const HeroSearchPanel = () => {
         ))}
       </div>
 
-      {/* SVG Map of Spain */}
-      <div className="mb-4">
-        <label className="text-primary-foreground/50 text-[10px] font-semibold uppercase tracking-wider mb-2 block">
-          <MapPin className="w-3 h-3 inline mr-1" />
-          Selecciona zona en el mapa
-        </label>
-        <div className="relative bg-primary-foreground/5 rounded-xl border border-primary-foreground/8 p-2">
-          <svg viewBox="0 0 450 385" className="w-full h-auto" style={{ maxHeight: 200 }}>
-            {Object.entries(CCAA_PATHS).map(([name, { d, label, x, y }]) => {
-              const isSelected = selectedCCAA === name;
-              const isHovered = hoveredCCAA === name;
-              return (
-                <g key={name}>
-                  <path
-                    d={d}
-                    onClick={() => setSelectedCCAA(selectedCCAA === name ? "" : name)}
-                    onMouseEnter={() => setHoveredCCAA(name)}
-                    onMouseLeave={() => setHoveredCCAA("")}
-                    className="cursor-pointer transition-all duration-200"
-                    fill={
-                      isSelected
-                        ? "hsl(var(--accent) / 0.35)"
-                        : isHovered
-                        ? "hsl(var(--accent) / 0.15)"
-                        : "hsl(var(--primary-foreground) / 0.08)"
-                    }
-                    stroke={
-                      isSelected
-                        ? "hsl(var(--accent) / 0.8)"
-                        : isHovered
-                        ? "hsl(var(--accent) / 0.4)"
-                        : "hsl(var(--primary-foreground) / 0.15)"
-                    }
-                    strokeWidth={isSelected ? 2 : 1}
-                  />
-                  <text
-                    x={x}
-                    y={y}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className="pointer-events-none select-none"
-                    fill={
-                      isSelected
-                        ? "hsl(var(--accent))"
-                        : "hsl(var(--primary-foreground) / 0.4)"
-                    }
-                    fontSize={name === "Castilla y León" || name === "Castilla-La Mancha" || name === "Andalucía" ? 10 : 9}
-                    fontWeight={isSelected ? 700 : 500}
-                  >
-                    {label}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Hover/selected tooltip */}
-          {(hoveredCCAA || selectedCCAA) && (
-            <div className="absolute top-2 right-2 bg-primary/80 backdrop-blur-sm text-primary-foreground text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-primary-foreground/10">
-              {hoveredCCAA || selectedCCAA}
-            </div>
-          )}
-        </div>
+      {/* Leaflet Map */}
+      <div className="mb-3">
+        <div
+          ref={mapRef}
+          className="w-full rounded-xl overflow-hidden border border-primary-foreground/10"
+          style={{ height: 220 }}
+        />
       </div>
 
       {/* Filters row */}
