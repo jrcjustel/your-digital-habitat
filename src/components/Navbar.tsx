@@ -31,7 +31,7 @@ const navEntries: NavEntry[] = [
     label: "Oportunidades",
     items: [
       { label: "Todas las oportunidades", href: "/inmuebles", icon: TrendingUp, description: "Catálogo completo de activos" },
-      { label: "Subastas BOE", href: "/subastas", icon: Gavel, description: "Subastas judiciales activas" },
+      { label: "Subastas BOE", href: "/inmuebles", icon: Gavel, description: "Subastas judiciales activas" },
     ],
   },
   {
