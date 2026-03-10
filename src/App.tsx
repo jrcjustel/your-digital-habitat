@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminImport from "./pages/AdminImport";
 import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import NplListing from "./pages/NplListing";
 import AiChatWidget from "./components/AiChatWidget";
 import SocialChannelsFloat from "./components/SocialChannelsFloat";
@@ -106,8 +107,8 @@ const App = () => (
             <Route path="/inmueble/:id" element={<PropertyDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/mi-cuenta" element={<Dashboard />} />
-            <Route path="/analytics" element={<AnalyticsDashboard />} />
+            <Route path="/mi-cuenta" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
             {/* Admin routes */}
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
@@ -176,10 +177,10 @@ const App = () => (
             <Route path="/analisis-competitivo" element={<CompetitiveAnalysisPage />} />
             <Route path="/metricas" element={<PublicMetricsPage />} />
             {/* Client Area */}
-            <Route path="/area-cliente" element={<ClientAreaPage />} />
-            <Route path="/panel-cliente" element={<ClientPanelPage />} />
-            <Route path="/alertas" element={<AlertsPage />} />
-            <Route path="/comunicaciones" element={<CommunicationsPage />} />
+            <Route path="/area-cliente" element={<ProtectedRoute><ClientAreaPage /></ProtectedRoute>} />
+            <Route path="/panel-cliente" element={<ProtectedRoute><ClientPanelPage /></ProtectedRoute>} />
+            <Route path="/alertas" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+            <Route path="/comunicaciones" element={<ProtectedRoute><CommunicationsPage /></ProtectedRoute>} />
             {/* Professional & Network */}
             <Route path="/hub" element={<IkesaHubPage />} />
             <Route path="/colaboradores" element={<CollaboratorsPage />} />
