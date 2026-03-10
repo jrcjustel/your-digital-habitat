@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import VendedoresPage from "./pages/VendedoresPage";
 import NosotrosPage from "./pages/NosotrosPage";
+import InvestmentAnalysisPage from "./pages/InvestmentAnalysisPage";
 import PropertyListing from "./pages/PropertyListing";
 import PropertyDetail from "./pages/PropertyDetail";
 import Auth from "./pages/Auth";
@@ -161,6 +162,7 @@ const App = () => (
             <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
             <Route path="/valoracion-hibrida" element={<HybridValuationPage />} />
             <Route path="/calculadoras" element={<CalculatorsPage />} />
+            <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
             <Route path="/mapa" element={<MapPage />} />
             <Route path="/comparador" element={<ComparatorPage />} />
             <Route path="/buscar" element={<SearchPage />} />
