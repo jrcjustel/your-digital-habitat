@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Package, Percent } from "lucide-react";
+import { MapPin, Package, Percent, Euro } from "lucide-react";
 import { motion } from "framer-motion";
 
 const KpiBar = () => {
@@ -27,11 +27,14 @@ const KpiBar = () => {
 
       const provinces = new Set(assets?.map(a => a.provincia).filter(Boolean)).size || 52;
 
+      const totalVolume = assets?.reduce((s, a) => s + (a.valor_mercado || 0), 0) || 0;
+      const volumeMillions = (totalVolume / 1_000_000).toFixed(1);
+
       return {
         totalAssets: totalAssets || 27000,
         avgDiscount,
         provinces,
-        avgRoi: 28,
+        volumeMillions,
       };
     },
     staleTime: 5 * 60 * 1000,
@@ -41,6 +44,7 @@ const KpiBar = () => {
     { icon: Package, value: stats ? `${(stats.totalAssets).toLocaleString("es-ES")}` : "27.000+", label: "Activos disponibles" },
     { icon: Percent, value: stats ? `${stats.avgDiscount}%` : "42%", label: "Descuento medio" },
     { icon: MapPin, value: stats ? `${stats.provinces}` : "52", label: "Provincias" },
+    { icon: Euro, value: stats ? `${stats.volumeMillions}M €` : "—", label: "Volumen gestionado" },
   ];
 
   return (
@@ -52,7 +56,7 @@ const KpiBar = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="bg-card rounded-2xl shadow-xl border border-border p-2"
         >
-          <div className="grid grid-cols-3 divide-x divide-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
             {kpis.map((kpi) => (
               <div key={kpi.label} className="flex items-center gap-3 px-4 py-5 md:px-6">
                 <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
