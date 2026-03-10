@@ -27,11 +27,14 @@ const KpiBar = () => {
 
       const provinces = new Set(assets?.map(a => a.provincia).filter(Boolean)).size || 52;
 
+      const totalVolume = assets?.reduce((s, a) => s + (a.valor_mercado || 0), 0) || 0;
+      const volumeMillions = (totalVolume / 1_000_000).toFixed(1);
+
       return {
         totalAssets: totalAssets || 27000,
         avgDiscount,
         provinces,
-        avgRoi: 28,
+        volumeMillions,
       };
     },
     staleTime: 5 * 60 * 1000,
