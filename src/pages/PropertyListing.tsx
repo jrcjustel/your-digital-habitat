@@ -177,12 +177,11 @@ const PropertyListing = () => {
       case "type": result.sort((a, b) => a.type.localeCompare(b.type)); break;
       case "recent":
       default:
-        // Prioritize new/recent items first, then by published date
+        // Prioritize new/recent items first
         result.sort((a, b) => {
           const aRecent = isRecent(a) ? 1 : 0;
           const bRecent = isRecent(b) ? 1 : 0;
-          if (bRecent !== aRecent) return bRecent - aRecent;
-          return (daysAgo(a.publishedAt) - daysAgo(b.publishedAt));
+          return bRecent - aRecent;
         });
         break;
     }
