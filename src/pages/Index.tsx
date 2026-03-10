@@ -1,8 +1,8 @@
 import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
-import QuickLinks from "@/components/QuickLinks";
-
-import InvestorMarketplace from "@/components/InvestorMarketplace";
+import KpiBar from "@/components/KpiBar";
+import CategoryShowcase from "@/components/CategoryShowcase";
+import ConversionCtas from "@/components/ConversionCtas";
 import WhyInvest from "@/components/WhyInvest";
 import ValuationCta from "@/components/ValuationCta";
 import Newsletter from "@/components/Newsletter";
@@ -30,11 +30,11 @@ const Index = () => {
       />
       <Navbar />
       <HeroSearch />
-      <QuickLinks />
-      
-      <InvestorMarketplace />
-      <ValuationCta />
+      <KpiBar />
+      <CategoryShowcase />
+      <ConversionCtas />
       <WhyInvest />
+      <ValuationCta />
       <Newsletter />
       <BlogSection />
       <Footer />
