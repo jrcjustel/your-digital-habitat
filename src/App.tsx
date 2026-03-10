@@ -177,10 +177,10 @@ const App = () => (
             <Route path="/analisis-competitivo" element={<CompetitiveAnalysisPage />} />
             <Route path="/metricas" element={<PublicMetricsPage />} />
             {/* Client Area */}
-            <Route path="/area-cliente" element={<ClientAreaPage />} />
-            <Route path="/panel-cliente" element={<ClientPanelPage />} />
-            <Route path="/alertas" element={<AlertsPage />} />
-            <Route path="/comunicaciones" element={<CommunicationsPage />} />
+            <Route path="/area-cliente" element={<ProtectedRoute><ClientAreaPage /></ProtectedRoute>} />
+            <Route path="/panel-cliente" element={<ProtectedRoute><ClientPanelPage /></ProtectedRoute>} />
+            <Route path="/alertas" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
+            <Route path="/comunicaciones" element={<ProtectedRoute><CommunicationsPage /></ProtectedRoute>} />
             {/* Professional & Network */}
             <Route path="/hub" element={<IkesaHubPage />} />
             <Route path="/colaboradores" element={<CollaboratorsPage />} />
