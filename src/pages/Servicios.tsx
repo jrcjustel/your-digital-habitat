@@ -183,6 +183,15 @@ const ExpandableSection = ({
 /* ── PAGE ── */
 
 const Servicios = () => {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.3]);
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -193,12 +202,12 @@ const Servicios = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary">
-        <div className="absolute inset-0 opacity-10">
+      <section ref={heroRef} className="relative overflow-hidden bg-primary">
+        <motion.div className="absolute inset-0 opacity-10" style={{ y: bgY }}>
           <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent blur-[120px] translate-x-1/3 -translate-y-1/3" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent blur-[100px] -translate-x-1/3 translate-y-1/3" />
-        </div>
-        <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
+        </motion.div>
+        <motion.div className="container mx-auto px-4 py-12 md:py-16 relative z-10" style={{ y: textY, opacity: heroOpacity }}>
           <div className="max-w-3xl">
             <motion.p
               initial={{ opacity: 0, y: 10 }}
