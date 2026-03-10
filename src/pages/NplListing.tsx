@@ -512,11 +512,8 @@ const NplListing = () => {
               <Button variant={viewMode === "grid" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("grid")}>
                 <LayoutGrid className="w-4 h-4" />
               </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none border-x border-border" onClick={() => setViewMode("list")}>
+              <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("list")}>
                 <List className="w-4 h-4" />
-              </Button>
-              <Button variant={viewMode === "map" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("map")}>
-                <MapIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
