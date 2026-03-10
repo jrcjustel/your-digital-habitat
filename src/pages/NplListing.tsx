@@ -89,7 +89,7 @@ const NplListing = () => {
   const [precioMin, setPrecioMin] = useState("");
   const [precioMax, setPrecioMax] = useState(searchParams.get("precio_max") || "");
   const [soloDisponibles, setSoloDisponibles] = useState(true);
-  const [soloCdr, setSoloCdr] = useState(false);
+  const [soloCdr, setSoloCdr] = useState(searchParams.get("cdr") === "true");
   const [soloCc, setSoloCc] = useState(false);
 
   // Suggestions for autocomplete
