@@ -64,14 +64,32 @@ const AuctionsPage = () => {
 
   const fetchAssets = async () => {
     try {
-      const { data, error } = await supabase
-        .from("npl_assets")
-        .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_judicial, fase_judicial, cesion_credito, cesion_remate, postura_subasta, deuda_ob, tipo_procedimiento")
-        .eq("publicado", true)
-        .order("created_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      setAssets((data as unknown as AuctionAsset[]) || []);
+      const [assetsRes, imagesRes] = await Promise.all([
+        supabase
+          .from("npl_assets")
+          .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_judicial, fase_judicial, cesion_credito, cesion_remate, postura_subasta, deuda_ob, tipo_procedimiento")
+          .eq("publicado", true)
+          .order("created_at", { ascending: false })
+          .limit(500),
+        supabase
+          .from("asset_images")
+          .select("asset_id, file_path, is_cover")
+          .order("is_cover", { ascending: false })
+          .order("sort_order", { ascending: true }),
+      ]);
+      if (assetsRes.error) throw assetsRes.error;
+      setAssets((assetsRes.data as unknown as AuctionAsset[]) || []);
+
+      const imgMap: Record<string, string> = {};
+      if (imagesRes.data) {
+        for (const img of imagesRes.data as unknown as AssetImage[]) {
+          if (!imgMap[img.asset_id]) {
+            const { data: urlData } = supabase.storage.from("asset-images").getPublicUrl(img.file_path);
+            imgMap[img.asset_id] = urlData.publicUrl;
+          }
+        }
+      }
+      setCoverImages(imgMap);
     } catch {
       toast.error("Error cargando activos de subasta");
     } finally {
