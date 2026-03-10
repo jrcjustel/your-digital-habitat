@@ -7,8 +7,11 @@ import ikesaLogo from "@/assets/ikesa-logo-color.png";
 
 const navItems = [
   { label: "Inmuebles", href: "/inmuebles" },
+  { label: "Marketplace", href: "/marketplace" },
+  { label: "Subastas", href: "/subastas" },
+  { label: "Mapa", href: "/mapa" },
+  { label: "Calculadoras", href: "/calculadoras" },
   { label: "Academia", href: "/academia" },
-  { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Servicios", href: "/servicios" },
   { label: "Valorar inmueble", href: "/valorar" },
 ];
