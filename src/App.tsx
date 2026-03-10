@@ -140,7 +140,7 @@ const App = () => (
             <Route path="/academia" element={<Academia />} />
             <Route path="/academia/ruta/:rutaSlug" element={<AcademiaRuta />} />
             <Route path="/academia/:slug" element={<AcademiaArticle />} />
-            <Route path="/npl" element={<NplListing />} />
+            <Route path="/npl" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/vendedores" element={<VendedoresPage />} />
@@ -165,7 +165,7 @@ const App = () => (
             <Route path="/valoracion-hibrida" element={<HybridValuationPage />} />
             <Route path="/calculadoras" element={<CalculatorsPage />} />
             <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
-            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/mapa" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/comparador" element={<ComparatorPage />} />
             <Route path="/buscar" element={<SearchPage />} />
             {/* Investment & Marketplace */}

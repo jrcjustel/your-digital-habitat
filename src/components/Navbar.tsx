@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Menu, X, Heart, LogOut, Shield, ChevronDown, Map, Calculator, GitCompare, Gavel, Store, TrendingUp, Brain, BarChart3, BookOpen, Wrench, Home } from "lucide-react";
+import { User, Menu, X, Heart, LogOut, Shield, ChevronDown, Calculator, GitCompare, Gavel, Store, TrendingUp, Brain, BookOpen, Wrench, Home } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useRole";
 import ikesaLogo from "@/assets/ikesa-logo-color.png";
@@ -32,8 +32,6 @@ const navEntries: NavEntry[] = [
     items: [
       { label: "Todas las oportunidades", href: "/inmuebles", icon: TrendingUp, description: "Catálogo completo de activos" },
       { label: "Subastas BOE", href: "/subastas", icon: Gavel, description: "Subastas judiciales activas" },
-      { label: "NPL / Créditos", href: "/npl", icon: BarChart3, description: "Carteras de deuda hipotecaria" },
-      { label: "Mapa de oportunidades", href: "/mapa", icon: Map, description: "Visualización geográfica" },
     ],
   },
   {
