@@ -208,16 +208,26 @@ const MarketplacePage = () => {
           </CardContent>
         </Card>
 
-        {/* Results count */}
+        {/* Results count & sort */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             {filtered.length} {filtered.length === 1 ? "activo encontrado" : "activos encontrados"}
           </p>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            <Select value={sortBy} onValueChange={(v) => { setSortBy(v); setPage(0); }}>
+              <SelectTrigger className="w-[180px] h-9 text-sm">
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">Más recientes</SelectItem>
+                <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
+                <SelectItem value="price-desc">Precio: mayor a menor</SelectItem>
+                <SelectItem value="discount">Mayor descuento</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-
-        {/* Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-accent" />
           </div>
         ) : filtered.length === 0 ? (
