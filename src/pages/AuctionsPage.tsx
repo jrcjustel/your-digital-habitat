@@ -49,6 +49,7 @@ const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
 const AuctionsPage = () => {
+  const [coverImages, setCoverImages] = useState<Record<string, string>>({});
   const [assets, setAssets] = useState<AuctionAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
