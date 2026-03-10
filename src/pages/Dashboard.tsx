@@ -267,7 +267,7 @@ const Dashboard = () => {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {favoriteProperties.map(({ id, property }) => (
                   <Card key={id} className="overflow-hidden card-elevated">
-                    <div className="relative cursor-pointer" onClick={() => navigate(`/inmueble/${property!.id}`)}>
+                    <div className="relative cursor-pointer" onClick={() => navigate(`/npl/${property!.id}`)}>
                       <img src={property!.images[0]} alt={property!.title} className="w-full h-48 object-cover" />
                     </div>
                     <CardContent className="p-4">
