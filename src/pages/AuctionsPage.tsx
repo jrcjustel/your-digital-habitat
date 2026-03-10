@@ -254,14 +254,21 @@ const AuctionsPage = () => {
                 return (
                   <Link key={a.id} to={`/npl/${a.id}`}>
                     <Card className="overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full border-border/60">
-                      <CardContent className="p-5 space-y-3">
-                        {/* Tags */}
-                        <div className="flex justify-between items-start gap-2">
-                          <Badge variant="outline">{a.tipo_activo || "Activo"}</Badge>
+                      {/* Cover image */}
+                      <div className="relative h-44 bg-muted overflow-hidden">
+                        {coverImages[a.id] ? (
+                          <img src={coverImages[a.id]} alt={a.tipo_activo || "Activo"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Building2 className="h-12 w-12 text-muted-foreground/30" />
+                          </div>
+                        )}
+                        <div className="absolute top-2 left-2 right-2 flex justify-between items-start">
+                          <Badge variant="outline" className="bg-background/80 backdrop-blur-sm">{a.tipo_activo || "Activo"}</Badge>
                           <div className="flex gap-1.5 flex-wrap justify-end">
-                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
-                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
-                            {a.postura_subasta && <Badge variant="secondary" className="text-[10px]">Subasta</Badge>}
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">CDR</Badge>}
+                            {a.postura_subasta && <Badge variant="secondary" className="text-[10px] bg-background/80 backdrop-blur-sm">Subasta</Badge>}
                             {discount !== null && discount > 0 && (
                               <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
                                 <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
