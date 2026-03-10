@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, LayoutGrid, List, SlidersHorizontal, X, TrendingDown, Sparkles, Clock, Map as MapIcon } from "lucide-react";
 import NplAssetCard from "@/components/NplAssetCard";
+import NplAssetsMap from "@/components/NplAssetsMap";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 
 interface NplAsset {
