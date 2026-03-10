@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Building2, MapPin, Euro, X, Sparkles } from "lucide-react";
+import { Search, Building2, MapPin, Euro, X, Sparkles, Map as MapIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROUTE_TABS = [
@@ -193,19 +193,37 @@ const HeroSearchPanel = () => {
         </div>
       )}
 
-      {/* Search button */}
-      <button
-        type="submit"
-        className="w-full flex items-center justify-center gap-2 bg-accent text-accent-foreground font-bold py-3 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-accent/25 text-sm"
-      >
-        <Search className="w-4 h-4" />
-        Buscar oportunidades
-        {activeFilters > 0 && (
-          <span className="bg-accent-foreground/20 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-            {activeFilters}
-          </span>
-        )}
-      </button>
+      {/* Action buttons */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="submit"
+          className="flex items-center justify-center gap-2 bg-accent text-accent-foreground font-bold py-3 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-accent/25 text-sm"
+        >
+          <Search className="w-4 h-4" />
+          Buscar
+          {activeFilters > 0 && (
+            <span className="bg-accent-foreground/20 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              {activeFilters}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const params = new URLSearchParams();
+            params.set("view", "map");
+            if (search) params.set("q", search);
+            if (ccaa) params.set("ccaa", ccaa);
+            if (tipo) params.set("tipo", tipo);
+            if (precioMax) params.set("precio_max", precioMax);
+            navigate(`/inmuebles?${params.toString()}`);
+          }}
+          className="flex items-center justify-center gap-2 border border-primary-foreground/20 text-primary-foreground font-bold py-3 rounded-xl hover:border-accent/50 hover:text-accent transition-all text-sm"
+        >
+          <MapIcon className="w-4 h-4" />
+          Ver en mapa
+        </button>
+      </div>
 
       <p className="text-center text-primary-foreground/30 text-[11px] mt-2.5 flex items-center justify-center gap-1">
         <Sparkles className="w-3 h-3" />
