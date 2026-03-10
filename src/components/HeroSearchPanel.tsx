@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Building2, MapPin, Euro, X, Sparkles, SlidersHorizontal } from "lucide-react";
+import { Search, Building2, MapPin, Euro, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROUTE_TABS = [
-  { key: "todos", label: "Todos", path: "/inmuebles" },
-  { key: "npl", label: "NPL", path: "/inmuebles" },
-  { key: "cdr", label: "Cesión Remate", path: "/inmuebles" },
-  { key: "ocupados", label: "Ocupados", path: "/inmuebles" },
+  { key: "todos", label: "Todos", path: "/npl" },
+  { key: "npl", label: "NPL", path: "/npl" },
+  { key: "cdr", label: "Cesión Remate", path: "/inversores/cdr" },
+  { key: "ocupados", label: "Ocupados", path: "/inversores/ocupados" },
   { key: "subastas", label: "Subastas BOE", path: "/subastas" },
 ];
 
@@ -68,10 +68,6 @@ const HeroSearchPanel = () => {
     if (ccaa) params.set("ccaa", ccaa);
     if (tipo) params.set("tipo", tipo);
     if (precioMax) params.set("precio_max", precioMax);
-    // Map tab to specific filter
-    if (activeTab === "cdr") params.set("cdr", "true");
-    if (activeTab === "ocupados") params.set("ocupados", "true");
-    if (activeTab === "npl") params.set("npl", "true");
     const qs = params.toString();
     navigate(`${tab.path}${qs ? `?${qs}` : ""}`);
   };
@@ -197,40 +193,21 @@ const HeroSearchPanel = () => {
         </div>
       )}
 
-      {/* Action buttons */}
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <button
-          type="submit"
-          className="flex items-center justify-center gap-2 bg-accent text-accent-foreground font-bold py-3 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-accent/25 text-sm"
-        >
-          <Search className="w-4 h-4" />
-          Buscar
-          {activeFilters > 0 && (
-            <span className="bg-accent-foreground/20 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-              {activeFilters}
-            </span>
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate("/inmuebles?view=map")}
-          className="flex items-center justify-center gap-2 bg-primary-foreground/10 border border-primary-foreground/15 text-primary-foreground font-bold py-3 rounded-xl hover:bg-primary-foreground/15 transition-all text-sm"
-        >
-          <MapPin className="w-4 h-4" />
-          Ver en mapa
-        </button>
-      </div>
-
+      {/* Search button */}
       <button
-        type="button"
-        onClick={() => navigate("/inmuebles?advanced=true")}
-        className="w-full flex items-center justify-center gap-2 text-primary-foreground/50 hover:text-accent text-xs font-semibold py-2 transition-colors"
+        type="submit"
+        className="w-full flex items-center justify-center gap-2 bg-accent text-accent-foreground font-bold py-3 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-accent/25 text-sm"
       >
-        <SlidersHorizontal className="w-3.5 h-3.5" />
-        Búsqueda avanzada con más filtros
+        <Search className="w-4 h-4" />
+        Buscar oportunidades
+        {activeFilters > 0 && (
+          <span className="bg-accent-foreground/20 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            {activeFilters}
+          </span>
+        )}
       </button>
 
-      <p className="text-center text-primary-foreground/30 text-[11px] mt-1 flex items-center justify-center gap-1">
+      <p className="text-center text-primary-foreground/30 text-[11px] mt-2.5 flex items-center justify-center gap-1">
         <Sparkles className="w-3 h-3" />
         Datos reales de la base de activos IKESA
       </p>

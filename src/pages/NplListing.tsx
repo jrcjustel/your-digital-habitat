@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, LayoutGrid, List, SlidersHorizontal, X, TrendingDown, Sparkles, Clock, Map as MapIcon } from "lucide-react";
 import NplAssetCard from "@/components/NplAssetCard";
-import NplAssetsMap from "@/components/NplAssetsMap";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 
 interface NplAsset {
@@ -81,16 +80,14 @@ const NplListing = () => {
   const [provincias, setProvincias] = useState<string[]>([]);
   const [ccaas, setCcaas] = useState<string[]>([]);
   const [tipos, setTipos] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">(
-    (searchParams.get("view") as "grid" | "list" | "map") || "grid"
-  );
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>("recientes");
-  const [showAdvanced, setShowAdvanced] = useState(searchParams.get("advanced") === "true");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [precioMin, setPrecioMin] = useState("");
   const [precioMax, setPrecioMax] = useState(searchParams.get("precio_max") || "");
   const [soloDisponibles, setSoloDisponibles] = useState(true);
-  const [soloCdr, setSoloCdr] = useState(searchParams.get("cdr") === "true");
+  const [soloCdr, setSoloCdr] = useState(false);
   const [soloCc, setSoloCc] = useState(false);
 
   // Suggestions for autocomplete
@@ -268,13 +265,13 @@ const NplListing = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Oportunidades de Inversión Inmobiliaria | IKESA"
-        description={`Explora ${total > 0 ? total.toLocaleString("es-ES") + " " : ""}oportunidades de inversión inmobiliaria en España: cesiones de remate, inmuebles ocupados y deuda hipotecaria con descuentos de hasta el 60%.`}
-        canonical="/inmuebles"
-        keywords="inversión inmobiliaria España, oportunidades inmobiliarias, cesiones de remate, inmuebles ocupados, NPL, activos distressed"
+        title="Activos NPL en Venta — Comprar Deuda Hipotecaria e Inmuebles Distressed"
+        description={`Explora ${total > 0 ? total.toLocaleString("es-ES") + " " : ""}activos NPL en España: cesiones de remate, inmuebles ocupados y deuda hipotecaria con descuentos de hasta el 60%. Filtra por provincia, tipo y precio.`}
+        canonical="/npl"
+        keywords="comprar NPL España, activos distressed, deuda hipotecaria, cesiones de remate, inmuebles ocupados en venta, non-performing loans"
         jsonLd={createBreadcrumbSchema([
           { name: "Inicio", url: "/" },
-          { name: "Oportunidades", url: "/inmuebles" },
+          { name: "Activos NPL", url: "/npl" },
         ])}
       />
       <Navbar />
@@ -517,9 +514,6 @@ const NplListing = () => {
               <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("list")}>
                 <List className="w-4 h-4" />
               </Button>
-              <Button variant={viewMode === "map" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("map")}>
-                <MapIcon className="w-4 h-4" />
-              </Button>
             </div>
           </div>
         </div>
@@ -536,25 +530,6 @@ const NplListing = () => {
             <Button variant="outline" size="sm" onClick={clearFilters} className="gap-2">
               <X className="w-3 h-3" /> Limpiar filtros
             </Button>
-          </div>
-        ) : viewMode === "map" ? (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div className="h-[600px] rounded-2xl overflow-hidden border border-border">
-              <NplAssetsMap assets={assets} onSelect={(id) => window.open(`/npl/${id}`, "_blank")} />
-            </div>
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-              {assets.map((a) => (
-                <NplAssetCard
-                  key={a.id}
-                  asset={a}
-                  isFavorited={favorites.has(a.id)}
-                  userId={user?.id}
-                  onFavoriteToggle={handleFavoriteToggle}
-                  isNew={a.created_at ? (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false}
-                  priority={calcPriority(a) >= 40}
-                />
-              ))}
-            </div>
           </div>
         ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -611,7 +586,7 @@ const NplListing = () => {
                         <td className="p-3 text-foreground text-right">{a.valor_mercado > 0 ? `${a.valor_mercado.toLocaleString("es-ES")} €` : "—"}</td>
                         <td className="p-3 text-right">
                           {dto && dto > 0 ? (
-                            <span className="font-bold flex items-center justify-end gap-0.5 text-accent">
+                            <span className="text-green-600 font-bold flex items-center justify-end gap-0.5">
                               <TrendingDown className="w-3 h-3" /> -{dto}%
                             </span>
                           ) : "—"}
