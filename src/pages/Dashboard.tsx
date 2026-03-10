@@ -44,6 +44,17 @@ interface Favorite {
   created_at: string;
 }
 
+interface FavoriteAsset {
+  id: string;
+  municipio: string | null;
+  provincia: string | null;
+  tipo_activo: string | null;
+  direccion: string | null;
+  sqm: number | null;
+  precio_orientativo: number | null;
+  valor_mercado: number | null;
+}
+
 interface Alert {
   id: string;
   name: string;
