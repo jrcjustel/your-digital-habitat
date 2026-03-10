@@ -108,7 +108,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/inmuebles" element={<PropertyListing />} />
-            <Route path="/inmueble/:id" element={<PropertyDetail />} />
+            <Route path="/inmueble/:id" element={<NplDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mi-cuenta" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
