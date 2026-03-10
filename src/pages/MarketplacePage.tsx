@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, TrendingDown, Filter, Search, Maximize, Building2, Loader2, SlidersHorizontal, X } from "lucide-react";
+import { MapPin, TrendingDown, Filter, Search, Maximize, Building2, Loader2, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -46,6 +46,7 @@ const MarketplacePage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", propertyType: "all", province: "all" });
   const [page, setPage] = useState(0);
+  const [sortBy, setSortBy] = useState<string>("recent");
   const PAGE_SIZE = 24;
 
   useEffect(() => {
@@ -110,8 +111,28 @@ const MarketplacePage = () => {
     });
   }, [assets, searchTerm, filters]);
 
-  const paged = filtered.slice(0, (page + 1) * PAGE_SIZE);
-  const hasMore = paged.length < filtered.length;
+  const getDiscount = (a: Asset) =>
+    a.valor_mercado && a.precio_orientativo && a.valor_mercado > 0
+      ? Math.round((1 - a.precio_orientativo / a.valor_mercado) * 100)
+      : 0;
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "price-asc":
+        return arr.sort((a, b) => (a.precio_orientativo || 0) - (b.precio_orientativo || 0));
+      case "price-desc":
+        return arr.sort((a, b) => (b.precio_orientativo || 0) - (a.precio_orientativo || 0));
+      case "discount":
+        return arr.sort((a, b) => getDiscount(b) - getDiscount(a));
+      case "recent":
+      default:
+        return arr;
+    }
+  }, [filtered, sortBy]);
+
+  const paged = sorted.slice(0, (page + 1) * PAGE_SIZE);
+  const hasMore = paged.length < sorted.length;
 
   const activeFilterCount = [filters.minPrice, filters.maxPrice, filters.propertyType !== "all" && filters.propertyType, filters.province !== "all" && filters.province].filter(Boolean).length;
 
@@ -187,11 +208,25 @@ const MarketplacePage = () => {
           </CardContent>
         </Card>
 
-        {/* Results count */}
+        {/* Results count & sort */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             {filtered.length} {filtered.length === 1 ? "activo encontrado" : "activos encontrados"}
           </p>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            <Select value={sortBy} onValueChange={(v) => { setSortBy(v); setPage(0); }}>
+              <SelectTrigger className="w-[180px] h-9 text-sm">
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">Más recientes</SelectItem>
+                <SelectItem value="price-asc">Precio: menor a mayor</SelectItem>
+                <SelectItem value="price-desc">Precio: mayor a menor</SelectItem>
+                <SelectItem value="discount">Mayor descuento</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Grid */}
@@ -302,7 +337,7 @@ const MarketplacePage = () => {
             {hasMore && (
               <div className="flex justify-center pt-4">
                 <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
-                  Cargar más activos ({filtered.length - paged.length} restantes)
+                  Cargar más activos ({sorted.length - paged.length} restantes)
                 </Button>
               </div>
             )}
