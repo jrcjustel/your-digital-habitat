@@ -32,6 +32,7 @@ const Index = () => {
       <Navbar />
       <HeroSearch />
       <KpiBar />
+      <ServicersBar />
       <CategoryShowcase />
       <ConversionCtas />
       <WhyInvest />
