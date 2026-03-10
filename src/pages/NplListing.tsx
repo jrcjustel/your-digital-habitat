@@ -539,12 +539,8 @@ const NplListing = () => {
           </div>
         ) : viewMode === "map" ? (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div className="h-[600px] rounded-2xl overflow-hidden border border-border bg-secondary flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <MapIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p className="text-sm font-medium">Vista de mapa</p>
-                <p className="text-xs mt-1">Mostrando {assets.length} activos en la zona seleccionada</p>
-              </div>
+            <div className="h-[600px] rounded-2xl overflow-hidden border border-border">
+              <NplAssetsMap assets={assets} onSelect={(id) => window.open(`/npl/${id}`, "_blank")} />
             </div>
             <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
               {assets.map((a) => (
