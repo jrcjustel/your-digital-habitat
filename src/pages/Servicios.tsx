@@ -290,7 +290,8 @@ const Servicios = () => {
               badge="Gratis"
               delay={0}
             >
-              <div className="p-5 space-y-1">
+              <AnimatedCounter target={incluidoItems.length} label="servicios incluidos sin coste adicional en cada operación" />
+              <div className="p-5 pt-0 space-y-1">
                 {incluidoItems.map((item, i) => (
                   <motion.div
                     key={item.title}
