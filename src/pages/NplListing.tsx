@@ -34,9 +34,10 @@ interface NplAsset {
 
 const PAGE_SIZE = 24;
 
-type SortOption = "precio_desc" | "precio_asc" | "descuento" | "recientes" | "superficie";
+type SortOption = "precio_desc" | "precio_asc" | "descuento" | "recientes" | "superficie" | "prioridad";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: "prioridad", label: "Prioridad" },
   { value: "precio_desc", label: "Mayor precio" },
   { value: "precio_asc", label: "Menor precio" },
   { value: "descuento", label: "Mayor descuento" },
