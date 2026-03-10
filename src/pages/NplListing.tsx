@@ -127,7 +127,7 @@ const NplListing = () => {
 
   useEffect(() => {
     loadAssets();
-  }, [page, provincia, ccaa, tipo, sortBy, soloCdr, soloCc, soloDisponibles, precioMin, precioMax]);
+  }, [page, provincia, ccaa, tipo, sortBy, soloCdr, soloCc, soloDisponibles, precioMin, precioMax, search]);
 
   const loadAssets = async () => {
     setLoading(true);
