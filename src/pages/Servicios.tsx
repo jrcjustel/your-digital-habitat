@@ -4,8 +4,8 @@ import SEOHead from "@/components/SEOHead";
 import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCircle2, Mail, Sparkles, Gavel, ClipboardList, Home, Receipt, Landmark, Users, Search, Handshake, DoorOpen, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useState, useRef } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 /* ── DATA ── */
@@ -72,6 +72,32 @@ const legalItems = [
     { s: "Intermediación en venta", p: "Consultar" },
   ]},
 ];
+
+/* ── ANIMATED COUNTER ── */
+
+const AnimatedCounter = ({ target, label }: { target: number; label: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const motionVal = useMotionValue(0);
+  const spring = useSpring(motionVal, { stiffness: 80, damping: 20 });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (isInView) motionVal.set(target);
+  }, [isInView, target, motionVal]);
+
+  useEffect(() => {
+    const unsubscribe = spring.on("change", (v) => setDisplay(Math.round(v)));
+    return unsubscribe;
+  }, [spring]);
+
+  return (
+    <div ref={ref} className="flex items-center gap-3 bg-accent/10 rounded-xl p-4 mb-4 mx-5">
+      <span className="text-3xl font-heading font-black text-accent tabular-nums">{display}</span>
+      <span className="text-xs text-muted-foreground leading-tight">{label}</span>
+    </div>
+  );
+};
 
 /* ── COLUMN COMPONENT ── */
 
@@ -264,7 +290,8 @@ const Servicios = () => {
               badge="Gratis"
               delay={0}
             >
-              <div className="p-5 space-y-1">
+              <AnimatedCounter target={incluidoItems.length} label="servicios incluidos sin coste adicional en cada operación" />
+              <div className="p-5 pt-0 space-y-1">
                 {incluidoItems.map((item, i) => (
                   <motion.div
                     key={item.title}
