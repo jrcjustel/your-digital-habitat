@@ -31,7 +31,6 @@ const navEntries: NavEntry[] = [
   {
     label: "Inversión",
     items: [
-      { label: "Marketplace", href: "/marketplace", icon: Store, description: "Activos disponibles" },
       { label: "Subastas", href: "/subastas", icon: Gavel, description: "Pujas en tiempo real" },
       { label: "Inversiones", href: "/inversiones", icon: TrendingUp, description: "Portfolio y seguimiento" },
       { label: "Inversores", href: "/inversores", icon: BarChart3, description: "Hub del inversor" },
