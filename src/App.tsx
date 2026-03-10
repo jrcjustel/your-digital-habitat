@@ -40,6 +40,16 @@ import CrmPropertyNew from "./pages/CrmPropertyNew";
 import CrmInesAI from "./pages/CrmInesAI";
 import CrmPelayoAI from "./pages/CrmPelayoAI";
 import { CrmCalendar, CrmCommunications, CrmContracts, CrmDemand, CrmJudicial, CrmPipeline } from "./pages/CrmPlaceholders";
+import AIInsightsPage from "./pages/AIInsightsPage";
+import PredictiveAnalyticsPage from "./pages/PredictiveAnalyticsPage";
+import MarketplacePage from "./pages/MarketplacePage";
+import AuctionsPage from "./pages/AuctionsPage";
+import MapPage from "./pages/MapPage";
+import CalculatorsPage from "./pages/CalculatorsPage";
+import ExcelAnalyzerPage from "./pages/ExcelAnalyzerPage";
+import ClientAreaPage from "./pages/ClientAreaPage";
+import HybridValuationPage from "./pages/HybridValuationPage";
+import InvestmentHomePage from "./pages/InvestmentHomePage";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +93,17 @@ const App = () => (
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="/valorar" element={<Valorador />} />
             <Route path="/contacto" element={<Contacto />} />
+            {/* Investment & Tools routes */}
+            <Route path="/ai-insights" element={<AIInsightsPage />} />
+            <Route path="/analitica-predictiva" element={<PredictiveAnalyticsPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/subastas" element={<AuctionsPage />} />
+            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/calculadoras" element={<CalculatorsPage />} />
+            <Route path="/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
+            <Route path="/area-cliente" element={<ClientAreaPage />} />
+            <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
+            <Route path="/inversion" element={<InvestmentHomePage />} />
             {/* CRM routes */}
             <Route path="/crm/leads" element={<AdminRoute><CrmLeads /></AdminRoute>} />
             <Route path="/crm/propiedad-nueva" element={<AdminRoute><CrmPropertyNew /></AdminRoute>} />
