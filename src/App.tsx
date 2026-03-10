@@ -8,8 +8,7 @@ import Index from "./pages/Index";
 import VendedoresPage from "./pages/VendedoresPage";
 import NosotrosPage from "./pages/NosotrosPage";
 import InvestmentAnalysisPage from "./pages/InvestmentAnalysisPage";
-import PropertyListing from "./pages/PropertyListing";
-import PropertyDetail from "./pages/PropertyDetail";
+// PropertyListing and PropertyDetail removed — unified into NplListing / NplDetail
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
