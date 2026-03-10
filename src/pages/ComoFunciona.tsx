@@ -189,6 +189,7 @@ const faqs = [
 const ComoFunciona = () => {
   const navigate = useNavigate();
   const [expandedFaq, setExpandedFaq] = useState(false);
+  const [openVideo, setOpenVideo] = useState<string | null>(null);
   const visibleFaqs = expandedFaq ? faqs : faqs.slice(0, 6);
 
   return (
