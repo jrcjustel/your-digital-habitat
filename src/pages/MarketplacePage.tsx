@@ -217,15 +217,42 @@ const MarketplacePage = () => {
                 return (
                   <Link key={a.id} to={`/npl/${a.id}`}>
                     <Card className="overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full border-border/60">
+                      {coverImages[a.id] ? (
+                        <div className="relative h-44 overflow-hidden bg-muted">
+                          <img
+                            src={coverImages[a.id]}
+                            alt={`${a.tipo_activo || "Activo"} en ${a.municipio || "ubicación desconocida"}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute top-2 left-2 flex gap-1.5">
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px] backdrop-blur-sm bg-secondary/80">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px] backdrop-blur-sm bg-secondary/80">CDR</Badge>}
+                          </div>
+                          {discount !== null && discount > 0 && (
+                            <Badge className="absolute top-2 right-2 bg-emerald-600 text-white hover:bg-emerald-700 backdrop-blur-sm">
+                              <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="relative h-44 bg-muted/60 flex items-center justify-center">
+                          <Building2 className="h-12 w-12 text-muted-foreground/30" />
+                          <div className="absolute top-2 left-2 flex gap-1.5">
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
+                          </div>
+                          {discount !== null && discount > 0 && (
+                            <Badge className="absolute top-2 right-2 bg-emerald-600 text-white hover:bg-emerald-700">
+                              <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                       <CardContent className="p-5 space-y-3">
                         <div className="flex justify-between items-start gap-2">
                           <Badge variant="outline">{a.tipo_activo || "Activo"}</Badge>
-                          <div className="flex gap-1.5">
-                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
-                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
-                            {discount !== null && discount > 0 && (
-                              <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
-                                <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
+                        </div>
                               </Badge>
                             )}
                           </div>
