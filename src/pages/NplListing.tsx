@@ -414,16 +414,6 @@ const NplListing = () => {
                 </label>
               </div>
               <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
-                    checked={soloCc}
-                    onChange={(e) => { setSoloCc(e.target.checked); setPage(1); }}
-                    className="rounded border-border accent-accent"
-                  />
-                  <span className="text-foreground text-xs font-medium">Solo Cesión Crédito</span>
-                </label>
-              </div>
               <div className="flex items-end">
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input
