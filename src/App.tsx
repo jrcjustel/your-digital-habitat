@@ -169,8 +169,8 @@ const App = () => (
             <Route path="/subastas" element={<AuctionsPage />} />
             <Route path="/subastas-boe" element={<SubastasBOEPage />} />
             <Route path="/subastas-premium" element={<PremiumAuctionsPage />} />
-            <Route path="/portfolio" element={<PortfolioManagementPage />} />
-            <Route path="/estado-posesorio" element={<PossessionStatusPage />} />
+            <Route path="/portfolio" element={<ProtectedRoute><PortfolioManagementPage /></ProtectedRoute>} />
+            <Route path="/estado-posesorio" element={<ProtectedRoute><PossessionStatusPage /></ProtectedRoute>} />
             {/* AI & Analytics */}
             <Route path="/ai-insights" element={<AIInsightsPage />} />
             <Route path="/analitica-predictiva" element={<PredictiveAnalyticsPage />} />
