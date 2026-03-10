@@ -123,6 +123,7 @@ const modalities = [
     ],
     color: "bg-[hsl(160,60%,35%)]",
     cta: "/inversores/ocupados",
+    videoUrl: "", // Placeholder
   },
 ];
 
