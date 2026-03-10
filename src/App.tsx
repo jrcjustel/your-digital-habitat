@@ -128,6 +128,7 @@ const App = () => (
             <Route path="/admin/seguridad" element={<AdminRoute><SecurityDashboardPage /></AdminRoute>} />
             <Route path="/admin/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
             <Route path="/admin/agentes" element={<AdminRoute><SpecializedAgentsPage /></AdminRoute>} />
+            <Route path="/admin/scraper-boe" element={<AdminRoute><BoeScraperPage /></AdminRoute>} />
             {/* Redirects from old investor routes */}
             <Route path="/inversores" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/inversores/npl" element={<Navigate to="/inmuebles?saleType=npl" replace />} />
