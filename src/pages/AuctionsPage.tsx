@@ -276,8 +276,8 @@ const AuctionsPage = () => {
                             )}
                           </div>
                         </div>
-
-                        {/* Title */}
+                      </div>
+                      <CardContent className="p-5 space-y-3">
                         <div>
                           <h3 className="font-semibold text-foreground line-clamp-1">
                             {a.tipo_activo}{a.municipio ? ` en ${a.municipio}` : ""}
