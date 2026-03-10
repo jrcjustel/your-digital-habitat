@@ -560,7 +560,7 @@ const NplListing = () => {
                 userId={user?.id}
                 onFavoriteToggle={handleFavoriteToggle}
                 isNew={a.created_at ? (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false}
-                priority={i < 4}
+                priority={calcPriority(a) >= 40}
               />
             ))}
           </div>
