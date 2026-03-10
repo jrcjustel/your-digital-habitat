@@ -8,9 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Filter, Gavel, Loader2, Search, TrendingDown, Maximize, SlidersHorizontal, X } from "lucide-react";
+import { MapPin, Filter, Gavel, Loader2, Search, TrendingDown, Maximize, SlidersHorizontal, X, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface AssetImage {
+  asset_id: string;
+  file_path: string;
+  is_cover: boolean;
+}
 
 interface AuctionAsset {
   id: string;
