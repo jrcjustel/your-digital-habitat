@@ -68,6 +68,10 @@ const HeroSearchPanel = () => {
     if (ccaa) params.set("ccaa", ccaa);
     if (tipo) params.set("tipo", tipo);
     if (precioMax) params.set("precio_max", precioMax);
+    // Map tab to specific filter
+    if (activeTab === "cdr") params.set("cdr", "true");
+    if (activeTab === "ocupados") params.set("ocupados", "true");
+    if (activeTab === "npl") params.set("npl", "true");
     const qs = params.toString();
     navigate(`${tab.path}${qs ? `?${qs}` : ""}`);
   };
