@@ -35,6 +35,11 @@ import AdminPanel from "./pages/AdminPanel";
 import Academia from "./pages/Academia";
 import AcademiaArticle from "./pages/AcademiaArticle";
 import AcademiaRuta from "./pages/AcademiaRuta";
+import CrmLeads from "./pages/CrmLeads";
+import CrmPropertyNew from "./pages/CrmPropertyNew";
+import CrmInesAI from "./pages/CrmInesAI";
+import CrmPelayoAI from "./pages/CrmPelayoAI";
+import { CrmCalendar, CrmCommunications, CrmContracts, CrmDemand, CrmJudicial, CrmPipeline } from "./pages/CrmPlaceholders";
 
 const queryClient = new QueryClient();
 
