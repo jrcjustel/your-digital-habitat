@@ -30,6 +30,12 @@ interface Asset {
   codigo_postal: string | null;
 }
 
+interface AssetImage {
+  asset_id: string;
+  file_path: string;
+  is_cover: boolean;
+}
+
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
