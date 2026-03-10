@@ -30,11 +30,18 @@ interface Asset {
   codigo_postal: string | null;
 }
 
+interface AssetImage {
+  asset_id: string;
+  file_path: string;
+  is_cover: boolean;
+}
+
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
 const MarketplacePage = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [coverImages, setCoverImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", propertyType: "all", province: "all" });
@@ -47,14 +54,33 @@ const MarketplacePage = () => {
 
   const fetchAssets = async () => {
     try {
-      const { data, error } = await supabase
-        .from("npl_assets")
-        .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_ocupacional, cesion_credito, cesion_remate, deuda_ob, codigo_postal")
-        .eq("publicado", true)
-        .order("created_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      setAssets((data as unknown as Asset[]) || []);
+      const [assetsRes, imagesRes] = await Promise.all([
+        supabase
+          .from("npl_assets")
+          .select("id, tipo_activo, municipio, provincia, direccion, sqm, precio_orientativo, valor_mercado, comunidad_autonoma, estado, estado_ocupacional, cesion_credito, cesion_remate, deuda_ob, codigo_postal")
+          .eq("publicado", true)
+          .order("created_at", { ascending: false })
+          .limit(500),
+        supabase
+          .from("asset_images")
+          .select("asset_id, file_path, is_cover")
+          .order("is_cover", { ascending: false })
+          .order("sort_order", { ascending: true }),
+      ]);
+      if (assetsRes.error) throw assetsRes.error;
+      setAssets((assetsRes.data as unknown as Asset[]) || []);
+
+      // Build a map: asset_id -> first cover image URL
+      const imgMap: Record<string, string> = {};
+      if (imagesRes.data) {
+        for (const img of imagesRes.data as unknown as AssetImage[]) {
+          if (!imgMap[img.asset_id]) {
+            const { data: urlData } = supabase.storage.from("asset-images").getPublicUrl(img.file_path);
+            imgMap[img.asset_id] = urlData.publicUrl;
+          }
+        }
+      }
+      setCoverImages(imgMap);
     } catch {
       toast.error("Error cargando activos");
     } finally {
@@ -191,18 +217,41 @@ const MarketplacePage = () => {
                 return (
                   <Link key={a.id} to={`/npl/${a.id}`}>
                     <Card className="overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full border-border/60">
+                      {coverImages[a.id] ? (
+                        <div className="relative h-44 overflow-hidden bg-muted">
+                          <img
+                            src={coverImages[a.id]}
+                            alt={`${a.tipo_activo || "Activo"} en ${a.municipio || "ubicación desconocida"}`}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute top-2 left-2 flex gap-1.5">
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px] backdrop-blur-sm bg-secondary/80">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px] backdrop-blur-sm bg-secondary/80">CDR</Badge>}
+                          </div>
+                          {discount !== null && discount > 0 && (
+                            <Badge className="absolute top-2 right-2 bg-emerald-600 text-white hover:bg-emerald-700 backdrop-blur-sm">
+                              <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="relative h-44 bg-muted/60 flex items-center justify-center">
+                          <Building2 className="h-12 w-12 text-muted-foreground/30" />
+                          <div className="absolute top-2 left-2 flex gap-1.5">
+                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
+                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
+                          </div>
+                          {discount !== null && discount > 0 && (
+                            <Badge className="absolute top-2 right-2 bg-emerald-600 text-white hover:bg-emerald-700">
+                              <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                       <CardContent className="p-5 space-y-3">
                         <div className="flex justify-between items-start gap-2">
                           <Badge variant="outline">{a.tipo_activo || "Activo"}</Badge>
-                          <div className="flex gap-1.5">
-                            {a.cesion_credito && <Badge variant="secondary" className="text-[10px]">NPL</Badge>}
-                            {a.cesion_remate && <Badge variant="secondary" className="text-[10px]">CDR</Badge>}
-                            {discount !== null && discount > 0 && (
-                              <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
-                                <TrendingDown className="h-3 w-3 mr-1" />-{discount}%
-                              </Badge>
-                            )}
-                          </div>
                         </div>
 
                         <div>
