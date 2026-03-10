@@ -1,212 +1,16 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCircle2, Mail, Sparkles, Gavel, ClipboardList, Home, Receipt, Landmark, Users, Search, Handshake, DoorOpen, Briefcase } from "lucide-react";
+import { ArrowRight, Mail, Sparkles, Gavel, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
-/* ── DATA ── */
-
-const incluidoItems = [
-  { icon: FileText, title: "Análisis documental", desc: "Revisamos toda la documentación de la oportunidad y la presentamos al fondo." },
-  { icon: Scale, title: "Análisis jurídico", desc: "Situación legal del activo: posición adquirida, implicaciones y riesgos." },
-  { icon: Building2, title: "Análisis inmobiliario", desc: "Evaluación del activo vinculado para darte una visión completa." },
-  { icon: BarChart3, title: "Análisis financiero", desc: "Rentabilidades, costes asociados y escenarios de salida." },
-  { icon: ShieldCheck, title: "Proceso PBC", desc: "Te guiamos en Prevención de Blanqueo de Capitales." },
-  { icon: CheckCircle2, title: "Cierre operación", desc: "Acompañamiento hasta la firma ante notario." },
-];
-
-const gestoriaItems = [
-  { emoji: "🏠", cat: "Escrituras", items: [
-    { s: "Compraventa", p: "380 €" }, { s: "Cancelación hipoteca", p: "350 €" },
-    { s: "Obra nueva", p: "300–1.000 €" }, { s: "División horizontal", p: "350–2.000 €" },
-    { s: "Herencias", p: "450–2.500 €" }, { s: "Donaciones", p: "250–700 €" },
-  ]},
-  { emoji: "📋", cat: "Catastro", items: [
-    { s: "Cambio titularidad", p: "30 €" }, { s: "Subsanación ref. catastral", p: "75 €" },
-  ]},
-  { emoji: "🏗️", cat: "VPO / VPP", items: [
-    { s: "Certificado precio máximo", p: "210 €" }, { s: "Autorización de venta", p: "210 €" },
-  ]},
-  { emoji: "📄", cat: "Certificados", items: [
-    { s: "Tanteo y retracto", p: "175 €" }, { s: "CEE (Energético)", p: "210 €" },
-  ]},
-  { emoji: "💰", cat: "Deudas IBI y CCPP", items: [
-    { s: "Obtención y pago IBI", p: "60 €" }, { s: "Deuda comunidad", p: "60 €" },
-  ]},
-  { emoji: "🧾", cat: "Fiscalidad", items: [
-    { s: "Análisis fiscal", p: "120 €" }, { s: "Pago ITP / AJD", p: "120 €" },
-    { s: "Sucesiones y donaciones", p: "300 €" }, { s: "No residentes (M. 211)", p: "120 €" },
-  ]},
-  { emoji: "📊", cat: "Plusvalía", items: [
-    { s: "Comunicación Ayto.", p: "30 €" }, { s: "Estudio y cálculo", p: "120 €" },
-  ]},
-];
-
-const legalItems = [
-  { icon: Search, cat: "Informes Ocupacionales", items: [
-    { s: "Informe ocupacional (1–5 uds.)", p: "250 €/ud" },
-    { s: "Informe ocupacional (+5 uds.)", p: "200 €/ud" },
-    { s: "Informe jurídico 24h (1–5)", p: "250 €/ud" },
-    { s: "Informe jurídico 24h (+5)", p: "200 €/ud" },
-    { s: "Due Diligence 48h", p: "Desde 600 €" },
-    { s: "Pack Jurídico + Ocupacional", p: "400 €/ud" },
-  ]},
-  { icon: Handshake, cat: "Mediación (Cash for Keys)", items: [
-    { s: "Resolución CFK (3–15 días)", p: "250 €/ud" },
-    { s: "Mediación extrajudicial (21d)", p: "200 €/ud" },
-    { s: "Negociación amistosa (0–3m)", p: "1.500 € + variable" },
-  ]},
-  { icon: DoorOpen, cat: "Door Knocking", items: [
-    { s: "Informe + carta intenciones", p: "Consultar" },
-  ]},
-  { icon: Gavel, cat: "Procedimientos Judiciales", items: [
-    { s: "Asistencia judicial completa", p: "2.950 €" },
-    { s: "Personación + gestión CDR", p: "1.000 + 1.800 €" },
-    { s: "Sucesión + homologación", p: "750 €" },
-  ]},
-  { icon: Briefcase, cat: "Comercialización Real Estate", items: [
-    { s: "Intermediación en venta", p: "Consultar" },
-  ]},
-];
-
-/* ── ANIMATED COUNTER ── */
-
-const AnimatedCounter = ({ target, label }: { target: number; label: string }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const motionVal = useMotionValue(0);
-  const spring = useSpring(motionVal, { stiffness: 80, damping: 20 });
-  const [display, setDisplay] = useState(0);
-
-  useEffect(() => {
-    if (isInView) motionVal.set(target);
-  }, [isInView, target, motionVal]);
-
-  useEffect(() => {
-    const unsubscribe = spring.on("change", (v) => setDisplay(Math.round(v)));
-    return unsubscribe;
-  }, [spring]);
-
-  return (
-    <div ref={ref} className="flex items-center gap-3 bg-accent/10 rounded-xl p-4 mb-4 mx-5">
-      <span className="text-3xl font-heading font-black text-accent tabular-nums">{display}</span>
-      <span className="text-xs text-muted-foreground leading-tight">{label}</span>
-    </div>
-  );
-};
-
-/* ── COLUMN COMPONENT ── */
-
-const ColumnCard = ({ 
-  color, 
-  icon: Icon, 
-  title, 
-  subtitle, 
-  badge,
-  children,
-  delay = 0,
-}: { 
-  color: string; 
-  icon: any; 
-  title: string; 
-  subtitle: string; 
-  badge?: string;
-  children: React.ReactNode;
-  delay?: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, y: 40, scale: 0.97 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-    className="bg-card border border-border rounded-3xl overflow-hidden flex flex-col md:flex-row hover:shadow-xl transition-shadow duration-500"
-  >
-    {/* Column header */}
-    <div className={`px-6 py-6 ${color} relative overflow-hidden md:w-64 md:shrink-0 md:flex md:flex-col md:justify-center`}>
-      {badge && (
-        <span className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-          {badge}
-        </span>
-      )}
-      <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3">
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-      <h3 className="font-heading text-xl font-bold text-white">{title}</h3>
-      <p className="text-white/70 text-sm mt-1">{subtitle}</p>
-    </div>
-    {/* Column content */}
-    <div className="flex-1 overflow-y-auto">
-      {children}
-    </div>
-  </motion.div>
-);
-
-/* ── ACCORDION-LIKE EXPANDABLE SECTION ── */
-
-const ExpandableSection = ({ 
-  emoji, 
-  icon: Icon, 
-  title, 
-  items,
-  defaultOpen = false,
-}: { 
-  emoji?: string; 
-  icon?: any; 
-  title: string; 
-  items: { s: string; p: string }[];
-  defaultOpen?: boolean;
-}) => {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <div className="border-b border-border/60 last:border-b-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-secondary/40 transition-colors text-left"
-      >
-        {emoji && <span className="text-lg">{emoji}</span>}
-        {Icon && <Icon className="w-4 h-4 text-accent shrink-0" />}
-        <span className="text-sm font-semibold text-foreground flex-1">{title}</span>
-        <span className="text-xs text-muted-foreground tabular-nums">{items.length}</span>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="text-muted-foreground text-xs"
-        >
-          ▼
-        </motion.span>
-      </button>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="px-5 pb-3"
-        >
-          {items.map((item, i) => (
-            <div key={i} className="flex items-start justify-between gap-2 py-2 border-b border-dashed border-border/40 last:border-b-0">
-              <span className="text-xs text-muted-foreground leading-snug flex-1">{item.s}</span>
-              <span className="text-xs font-bold text-foreground whitespace-nowrap tabular-nums bg-accent/10 px-2 py-0.5 rounded-md">{item.p}</span>
-            </div>
-          ))}
-          <Link
-            to={`/contacto?servicio=${encodeURIComponent(title)}`}
-            className="group mt-3 mb-1 flex items-center justify-center gap-1.5 text-[11px] font-semibold text-accent bg-accent/5 hover:bg-accent hover:text-white rounded-lg py-2 px-3 transition-all duration-300 hover:shadow-md hover:shadow-accent/20 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <Mail className="w-3 h-3 transition-transform duration-300 group-hover:-rotate-12" />
-            Solicitar este servicio
-            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </motion.div>
-      )}
-    </div>
-  );
-};
-
-/* ── PAGE ── */
+import AnimatedCounter from "@/components/servicios/AnimatedCounter";
+import ColumnCard from "@/components/servicios/ColumnCard";
+import ExpandableSection from "@/components/servicios/ExpandableSection";
+import { incluidoItems, gestoriaItems, legalItems } from "@/data/servicios-data";
 
 const Servicios = () => {
   const heroRef = useRef<HTMLElement>(null);
@@ -281,7 +85,7 @@ const Servicios = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 gap-6">
 
-            {/* COLUMN 1: INCLUIDO */}
+            {/* INCLUIDO */}
             <ColumnCard
               color="bg-gradient-to-br from-accent to-accent/80"
               icon={Sparkles}
@@ -319,7 +123,7 @@ const Servicios = () => {
               </div>
             </ColumnCard>
 
-            {/* COLUMN 2: GESTORÍA */}
+            {/* GESTORÍA */}
             <ColumnCard
               color="bg-gradient-to-br from-primary to-primary/80"
               icon={ClipboardList}
@@ -346,7 +150,7 @@ const Servicios = () => {
               </div>
             </ColumnCard>
 
-            {/* COLUMN 3: LEGAL */}
+            {/* LEGAL */}
             <ColumnCard
               color="bg-gradient-to-br from-foreground to-foreground/80"
               icon={Gavel}
