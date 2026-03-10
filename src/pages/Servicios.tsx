@@ -247,7 +247,7 @@ const Servicios = () => {
               </Link>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Three columns */}
