@@ -64,7 +64,7 @@ const CheckboxFilter = ({ label, count, checked, onChange }: {
 /* ─── Main component ─── */
 const PropertyListing = () => {
   const [searchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>((searchParams.get("view") as ViewMode) || "grid");
   const [sortBy, setSortBy] = useState("recent");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
