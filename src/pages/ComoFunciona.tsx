@@ -89,6 +89,7 @@ const modalities = [
     ],
     color: "bg-primary",
     cta: "/npl",
+    videoUrl: "", // Placeholder — reemplazar con URL real de YouTube embed
   },
   {
     id: "cesion",
