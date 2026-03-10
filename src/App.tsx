@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminImport from "./pages/AdminImport";
 import AdminDocuments from "./pages/AdminDocuments";
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 import NplListing from "./pages/NplListing";
 import AiChatWidget from "./components/AiChatWidget";
 import SocialChannelsFloat from "./components/SocialChannelsFloat";
