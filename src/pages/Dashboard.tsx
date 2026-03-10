@@ -177,8 +177,8 @@ const Dashboard = () => {
 
   const favoriteProperties = favorites.map((f) => ({
     ...f,
-    property: properties.find((p) => p.id === f.property_id),
-  })).filter((f) => f.property);
+    asset: favoriteAssets.find((a) => a.id === f.property_id),
+  })).filter((f) => f.asset);
 
 
   const handleQuickSearch = (e: React.FormEvent) => {
