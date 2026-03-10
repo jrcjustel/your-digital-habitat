@@ -45,6 +45,27 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "superficie", label: "Mayor superficie" },
 ];
 
+// Priority scoring for enterprise sort
+function calcPriority(asset: NplAsset): number {
+  let score = 0;
+  const tipo = (asset.tipo_activo || "").toLowerCase();
+  if (tipo.includes("nave") || tipo.includes("industrial")) score += 30;
+  if (tipo.includes("local")) score += 20;
+  if (asset.cesion_remate) score += 15;
+  if (asset.cesion_credito) score += 10;
+  if (asset.created_at) {
+    const days = (Date.now() - new Date(asset.created_at).getTime()) / (1000 * 60 * 60 * 24);
+    if (days <= 7) score += 25;
+    else if (days <= 30) score += 10;
+  }
+  if (asset.valor_mercado > 0 && asset.precio_orientativo > 0) {
+    const discount = (1 - asset.precio_orientativo / asset.valor_mercado) * 100;
+    if (discount >= 50) score += 20;
+    else if (discount >= 30) score += 10;
+  }
+  return score;
+}
+
 const NplListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
