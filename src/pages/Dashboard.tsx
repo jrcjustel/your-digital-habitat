@@ -112,7 +112,18 @@ const Dashboard = () => {
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
     ]);
     if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
-    if (favRes.data) setFavorites(favRes.data);
+    if (favRes.data) {
+      setFavorites(favRes.data);
+      // Fetch corresponding npl_assets
+      const ids = favRes.data.map((f: any) => f.property_id);
+      if (ids.length > 0) {
+        const { data: assetsData } = await supabase
+          .from("npl_assets")
+          .select("id, municipio, provincia, tipo_activo, direccion, sqm, precio_orientativo, valor_mercado")
+          .in("id", ids);
+        if (assetsData) setFavoriteAssets(assetsData as unknown as FavoriteAsset[]);
+      }
+    }
     if (alertRes.data) setAlerts(alertRes.data);
     if (offersRes.data) setOffers(offersRes.data as unknown as Offer[]);
   };
