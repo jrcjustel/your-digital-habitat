@@ -85,7 +85,7 @@ const NplListing = () => {
   );
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<SortOption>("recientes");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(searchParams.get("advanced") === "true");
   const [precioMin, setPrecioMin] = useState("");
   const [precioMax, setPrecioMax] = useState(searchParams.get("precio_max") || "");
   const [soloDisponibles, setSoloDisponibles] = useState(true);
