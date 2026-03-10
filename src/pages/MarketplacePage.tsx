@@ -253,10 +253,6 @@ const MarketplacePage = () => {
                         <div className="flex justify-between items-start gap-2">
                           <Badge variant="outline">{a.tipo_activo || "Activo"}</Badge>
                         </div>
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
 
                         <div>
                           <h3 className="font-semibold text-foreground line-clamp-1">
