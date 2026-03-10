@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/accordion";
 import PriceCycleGraph from "@/components/PriceCycleGraph";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 /* ── Reusable pieces ── */
