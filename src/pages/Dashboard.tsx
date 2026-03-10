@@ -271,7 +271,7 @@ const Dashboard = () => {
                       <img src={property!.images[0]} alt={property!.title} className="w-full h-48 object-cover" />
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/inmueble/${property!.id}`)}>
+                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/npl/${property!.id}`)}>
                         {property!.title}
                       </h3>
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
