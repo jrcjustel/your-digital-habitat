@@ -41,8 +41,6 @@ const navEntries: NavEntry[] = [
     label: "Herramientas",
     items: [
       { label: "Calculadoras", href: "/calculadoras", icon: Calculator, description: "Hipoteca y rentabilidad" },
-      { label: "Mapa", href: "/mapa", icon: Map, description: "Explorar por ubicación" },
-      { label: "Comparador", href: "/comparador", icon: GitCompare, description: "Compara activos" },
       { label: "Valorar inmueble", href: "/valorar", icon: Home, description: "Valoración online" },
     ],
   },
