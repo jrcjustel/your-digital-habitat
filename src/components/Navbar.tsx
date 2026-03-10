@@ -27,15 +27,7 @@ type NavEntry = NavSingle | NavGroup;
 const isGroup = (entry: NavEntry): entry is NavGroup => "items" in entry;
 
 const navEntries: NavEntry[] = [
-  { label: "Inmuebles", href: "/inmuebles" },
-  {
-    label: "Inversión",
-    items: [
-      { label: "Subastas", href: "/subastas", icon: Gavel, description: "Pujas en tiempo real" },
-      { label: "Inversiones", href: "/inversiones", icon: TrendingUp, description: "Portfolio y seguimiento" },
-      { label: "Inversores", href: "/inversores", icon: BarChart3, description: "Hub del inversor" },
-    ],
-  },
+  { label: "Oportunidades", href: "/inmuebles" },
   {
     label: "Herramientas",
     items: [
