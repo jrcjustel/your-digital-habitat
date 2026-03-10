@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/accordion";
 import PriceCycleGraph from "@/components/PriceCycleGraph";
 import ProcessTimeline from "@/components/ProcessTimeline";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 /* ── Reusable pieces ── */
@@ -89,6 +89,7 @@ const modalities = [
     ],
     color: "bg-primary",
     cta: "/npl",
+    videoUrl: "", // Placeholder — reemplazar con URL real de YouTube embed
   },
   {
     id: "cesion",
@@ -105,6 +106,7 @@ const modalities = [
     ],
     color: "bg-accent",
     cta: "/inversores/cdr",
+    videoUrl: "", // Placeholder
   },
   {
     id: "ocupados",
@@ -121,6 +123,7 @@ const modalities = [
     ],
     color: "bg-[hsl(160,60%,35%)]",
     cta: "/inversores/ocupados",
+    videoUrl: "", // Placeholder
   },
 ];
 
@@ -186,6 +189,7 @@ const faqs = [
 const ComoFunciona = () => {
   const navigate = useNavigate();
   const [expandedFaq, setExpandedFaq] = useState(false);
+  const [openVideo, setOpenVideo] = useState<string | null>(null);
   const visibleFaqs = expandedFaq ? faqs : faqs.slice(0, 6);
 
   return (
@@ -394,14 +398,58 @@ const ComoFunciona = () => {
                         ))}
                       </div>
 
-                      <Button
-                        onClick={() => navigate(mod.cta)}
-                        variant="outline"
-                        className="gap-2"
-                      >
-                        Ver oportunidades
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
+                      {/* Video toggle */}
+                      <AnimatePresence>
+                        {openVideo === mod.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mb-6 overflow-hidden"
+                          >
+                            {mod.videoUrl ? (
+                              <div className="aspect-video rounded-xl overflow-hidden bg-secondary">
+                                <iframe
+                                  src={mod.videoUrl}
+                                  title={`Video: ${mod.title}`}
+                                  className="w-full h-full"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            ) : (
+                              <div className="aspect-video rounded-xl bg-secondary flex flex-col items-center justify-center gap-3">
+                                <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center">
+                                  <Play className="w-7 h-7 text-accent" />
+                                </div>
+                                <p className="text-sm text-muted-foreground font-medium">Vídeo próximamente</p>
+                                <p className="text-xs text-muted-foreground/60">Estamos preparando contenido explicativo para esta modalidad</p>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          variant={openVideo === mod.id ? "secondary" : "default"}
+                          size="sm"
+                          onClick={() => setOpenVideo(openVideo === mod.id ? null : mod.id)}
+                          className="gap-2"
+                        >
+                          <Play className="w-4 h-4" />
+                          {openVideo === mod.id ? "Cerrar vídeo" : "Ver vídeo"}
+                        </Button>
+                        <Button
+                          onClick={() => navigate(mod.cta)}
+                          variant="outline"
+                          size="sm"
+                          className="gap-2"
+                        >
+                          Ver oportunidades
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </div>
                 </Card>
