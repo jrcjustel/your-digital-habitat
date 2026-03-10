@@ -265,7 +265,7 @@ const InvestmentAnalysisPage = () => {
                     <CardContent className="p-5 text-center">
                       <div className="flex justify-center gap-2 mb-3">
                         {(["verde", "amarillo", "rojo"] as const).map(c => (
-                          <div key={c} className={`w-5 h-5 rounded-full ${result.trafficLight === c ? trafficLightColors[c] : "bg-muted"} transition-all ${result.trafficLight === c ? "scale-125 ring-2 ring-offset-2 ring-offset-card" : "opacity-40"}`} style={result.trafficLight === c ? { ringColor: `var(--${c === "verde" ? "accent" : c === "rojo" ? "destructive" : "primary"})` } : {}} />
+                          <div key={c} className={`w-5 h-5 rounded-full ${result.trafficLight === c ? trafficLightColors[c] : "bg-muted"} transition-all ${result.trafficLight === c ? "scale-125 ring-2 ring-offset-2 ring-offset-card ring-accent" : "opacity-40"}`} />
                         ))}
                       </div>
                       <p className="text-xs text-muted-foreground">Semáforo</p>
