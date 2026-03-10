@@ -134,9 +134,19 @@ const NplAssetCard = memo(({ asset, isFavorited = false, userId, onFavoriteToggl
                   </Tooltip>
                 </TooltipProvider>
               )}
-              {isNew && !isUnavailable && (
+              {showNew && !isUnavailable && (
                 <Badge className="text-[10px] gap-0.5 bg-accent/15 text-accent border-accent/30 hover:bg-accent/20">
                   <Sparkles className="w-3 h-3" /> Nuevo
+                </Badge>
+              )}
+              {priority && !isUnavailable && (
+                <Badge className="text-[10px] gap-0.5 bg-destructive/15 text-destructive border-destructive/30">
+                  Alta
+                </Badge>
+              )}
+              {isExpiring && !isUnavailable && (
+                <Badge className="text-[10px] gap-0.5 bg-blue-500/15 text-blue-600 border-blue-500/30">
+                  <Clock className="w-3 h-3" /> Vence
                 </Badge>
               )}
               {isUnavailable && (
