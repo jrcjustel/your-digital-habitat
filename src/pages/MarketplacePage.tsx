@@ -46,6 +46,7 @@ const MarketplacePage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", propertyType: "all", province: "all" });
   const [page, setPage] = useState(0);
+  const [sortBy, setSortBy] = useState<string>("recent");
   const PAGE_SIZE = 24;
 
   useEffect(() => {
