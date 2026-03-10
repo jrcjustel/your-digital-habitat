@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import HeroSearch from "@/components/HeroSearch";
 import KpiBar from "@/components/KpiBar";
 import CategoryShowcase from "@/components/CategoryShowcase";
+import ServicersBar from "@/components/ServicersBar";
 import ConversionCtas from "@/components/ConversionCtas";
 import WhyInvest from "@/components/WhyInvest";
 import ValuationCta from "@/components/ValuationCta";
@@ -31,6 +32,7 @@ const Index = () => {
       <Navbar />
       <HeroSearch />
       <KpiBar />
+      <ServicersBar />
       <CategoryShowcase />
       <ConversionCtas />
       <WhyInvest />
