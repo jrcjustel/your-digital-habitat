@@ -40,6 +40,7 @@ import CrmPropertyNew from "./pages/CrmPropertyNew";
 import CrmInesAI from "./pages/CrmInesAI";
 import CrmPelayoAI from "./pages/CrmPelayoAI";
 import { CrmCalendar, CrmCommunications, CrmContracts, CrmDemand, CrmJudicial, CrmPipeline } from "./pages/CrmPlaceholders";
+// Phase 1 pages
 import AIInsightsPage from "./pages/AIInsightsPage";
 import PredictiveAnalyticsPage from "./pages/PredictiveAnalyticsPage";
 import MarketplacePage from "./pages/MarketplacePage";
@@ -50,6 +51,7 @@ import ExcelAnalyzerPage from "./pages/ExcelAnalyzerPage";
 import ClientAreaPage from "./pages/ClientAreaPage";
 import HybridValuationPage from "./pages/HybridValuationPage";
 import InvestmentHomePage from "./pages/InvestmentHomePage";
+// Phase 2 batch 1 pages
 import APIEcosystemPage from "./pages/APIEcosystemPage";
 import AlertsPage from "./pages/AlertsPage";
 import BlogPage from "./pages/BlogPage";
@@ -68,6 +70,25 @@ import SpecializedAgentsPage from "./pages/SpecializedAgentsPage";
 import SystemDiagnosticsPage from "./pages/SystemDiagnosticsPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import WhistleblowingPage from "./pages/WhistleblowingPage";
+// Phase 2 batch 2 pages
+import AdvancedMarketplacePage from "./pages/AdvancedMarketplacePage";
+import ChatManagementPage from "./pages/ChatManagementPage";
+import ClientPanelPage from "./pages/ClientPanelPage";
+import CompetitiveAnalysisPage from "./pages/CompetitiveAnalysisPage";
+import DocumentManagementPage from "./pages/DocumentManagementPage";
+import InvestmentDetailPage from "./pages/InvestmentDetailPage";
+import LeadInboxPage from "./pages/LeadInboxPage";
+import LegalDemandsPage from "./pages/LegalDemandsPage";
+import SubastasBOEPage from "./pages/SubastasBOEPage";
+import PremiumAuctionsPage from "./pages/PremiumAuctionsPage";
+import SearchPage from "./pages/SearchPage";
+import NewsletterPage from "./pages/NewsletterPage";
+import TokenManagementPage from "./pages/TokenManagementPage";
+import SystemMonitoringPage from "./pages/SystemMonitoringPage";
+import IkesaHubPage from "./pages/IkesaHubPage";
+import LinkedInProfessionalPage from "./pages/LinkedInProfessionalPage";
+import EducationPage from "./pages/EducationPage";
+import PossessionStatusPage from "./pages/PossessionStatusPage";
 
 const queryClient = new QueryClient();
 
@@ -87,15 +108,27 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mi-cuenta" element={<Dashboard />} />
             <Route path="/analytics" element={<AnalyticsDashboard />} />
+            {/* Admin routes */}
             <Route path="/admin/importar" element={<AdminRoute><AdminImport /></AdminRoute>} />
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
             <Route path="/admin/leads-valoracion" element={<AdminRoute><AdminValuationLeads /></AdminRoute>} />
             <Route path="/admin/panel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+            <Route path="/admin/chats" element={<AdminRoute><ChatManagementPage /></AdminRoute>} />
+            <Route path="/admin/documentos-ia" element={<AdminRoute><DocumentManagementPage /></AdminRoute>} />
+            <Route path="/admin/leads-inbox" element={<AdminRoute><LeadInboxPage /></AdminRoute>} />
+            <Route path="/admin/demandas" element={<AdminRoute><LegalDemandsPage /></AdminRoute>} />
+            <Route path="/admin/tokens" element={<AdminRoute><TokenManagementPage /></AdminRoute>} />
+            <Route path="/admin/monitoreo" element={<AdminRoute><SystemMonitoringPage /></AdminRoute>} />
+            <Route path="/admin/diagnosticos" element={<AdminRoute><SystemDiagnosticsPage /></AdminRoute>} />
+            <Route path="/admin/seguridad" element={<AdminRoute><SecurityDashboardPage /></AdminRoute>} />
+            <Route path="/admin/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
+            <Route path="/admin/agentes" element={<AdminRoute><SpecializedAgentsPage /></AdminRoute>} />
             {/* Redirects from old investor routes */}
             <Route path="/inversores" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/inversores/npl" element={<Navigate to="/inmuebles?saleType=npl" replace />} />
             <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
             <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
+            {/* Content pages */}
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/servicios" element={<Servicios />} />
             <Route path="/academia" element={<Academia />} />
@@ -103,25 +136,56 @@ const App = () => (
             <Route path="/academia/:slug" element={<AcademiaArticle />} />
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
-            {/* Legal */}
+            <Route path="/contacto" element={<Contacto />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/testimonios" element={<TestimonialsPage />} />
+            <Route path="/educacion" element={<EducationPage />} />
+            <Route path="/newsletter" element={<NewsletterPage />} />
+            {/* Legal pages */}
             <Route path="/aviso-legal" element={<AvisoLegal />} />
             <Route path="/aviso-legal-activos" element={<AvisoLegalNpl />} />
             <Route path="/privacidad" element={<PoliticaPrivacidad />} />
             <Route path="/cookies" element={<PoliticaCookies />} />
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
+            <Route path="/terminos-legales" element={<LegalTermsPage />} />
+            <Route path="/rgpd" element={<GDPRPage />} />
+            <Route path="/whistleblowing" element={<WhistleblowingPage />} />
+            {/* Tools & Valuation */}
             <Route path="/valorar" element={<Valorador />} />
-            <Route path="/contacto" element={<Contacto />} />
-            {/* Investment & Tools routes */}
+            <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
+            <Route path="/valoracion-hibrida" element={<HybridValuationPage />} />
+            <Route path="/calculadoras" element={<CalculatorsPage />} />
+            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/comparador" element={<ComparatorPage />} />
+            <Route path="/buscar" element={<SearchPage />} />
+            {/* Investment & Marketplace */}
+            <Route path="/inversion" element={<InvestmentHomePage />} />
+            <Route path="/inversiones" element={<InvestmentsPage />} />
+            <Route path="/inversion/:id" element={<InvestmentDetailPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/marketplace-avanzado" element={<AdvancedMarketplacePage />} />
+            <Route path="/subastas" element={<AuctionsPage />} />
+            <Route path="/subastas-boe" element={<SubastasBOEPage />} />
+            <Route path="/subastas-premium" element={<PremiumAuctionsPage />} />
+            <Route path="/portfolio" element={<PortfolioManagementPage />} />
+            <Route path="/estado-posesorio" element={<PossessionStatusPage />} />
+            {/* AI & Analytics */}
             <Route path="/ai-insights" element={<AIInsightsPage />} />
             <Route path="/analitica-predictiva" element={<PredictiveAnalyticsPage />} />
-            <Route path="/marketplace" element={<MarketplacePage />} />
-            <Route path="/subastas" element={<AuctionsPage />} />
-            <Route path="/mapa" element={<MapPage />} />
-            <Route path="/calculadoras" element={<CalculatorsPage />} />
-            <Route path="/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
+            <Route path="/analisis-competitivo" element={<CompetitiveAnalysisPage />} />
+            <Route path="/metricas" element={<PublicMetricsPage />} />
+            {/* Client Area */}
             <Route path="/area-cliente" element={<ClientAreaPage />} />
-            <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
-            <Route path="/inversion" element={<InvestmentHomePage />} />
+            <Route path="/panel-cliente" element={<ClientPanelPage />} />
+            <Route path="/alertas" element={<AlertsPage />} />
+            <Route path="/comunicaciones" element={<CommunicationsPage />} />
+            {/* Professional & Network */}
+            <Route path="/hub" element={<IkesaHubPage />} />
+            <Route path="/colaboradores" element={<CollaboratorsPage />} />
+            <Route path="/red-profesional" element={<ProfessionalNetworkPage />} />
+            <Route path="/linkedin" element={<LinkedInProfessionalPage />} />
+            <Route path="/api-ecosistema" element={<APIEcosystemPage />} />
             {/* CRM routes */}
             <Route path="/crm/leads" element={<AdminRoute><CrmLeads /></AdminRoute>} />
             <Route path="/crm/propiedad-nueva" element={<AdminRoute><CrmPropertyNew /></AdminRoute>} />
