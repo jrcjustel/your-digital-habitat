@@ -56,7 +56,7 @@ const KpiBar = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="bg-card rounded-2xl shadow-xl border border-border p-2"
         >
-          <div className="grid grid-cols-3 divide-x divide-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
             {kpis.map((kpi) => (
               <div key={kpi.label} className="flex items-center gap-3 px-4 py-5 md:px-6">
                 <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
