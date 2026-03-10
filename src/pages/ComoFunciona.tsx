@@ -119,7 +119,7 @@ const modalities = [
       "Acompañamiento legal hasta la recuperación de posesión",
       "Plusvalía inmediata tras la desocupación",
     ],
-    color: "bg-emerald-600",
+    color: "bg-[hsl(160,60%,35%)]",
     cta: "/inversores/ocupados",
   },
 ];
