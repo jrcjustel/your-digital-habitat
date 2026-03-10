@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Building2, Euro, X, MapPin } from "lucide-react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { Search, Building2, MapPin, Euro, X, SlidersHorizontal, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
 
 const ROUTE_TABS = [
   { key: "todos", label: "Todos", path: "/npl" },
@@ -12,136 +12,87 @@ const ROUTE_TABS = [
   { key: "subastas", label: "Subastas BOE", path: "/subastas" },
 ];
 
-const CCAA_CENTERS: Record<string, [number, number]> = {
-  "Andalucía": [37.5, -4.5],
-  "Aragón": [41.5, -0.9],
-  "Asturias": [43.3, -5.8],
-  "Illes Balears": [39.6, 2.9],
-  "Canarias": [28.1, -15.4],
-  "Cantabria": [43.2, -3.8],
-  "Castilla-La Mancha": [39.3, -2.7],
-  "Castilla y León": [41.6, -4.0],
-  "Cataluña": [41.8, 1.5],
-  "C. Valenciana": [39.5, -0.5],
-  "Extremadura": [39.0, -6.1],
-  "Galicia": [42.7, -7.9],
-  "Madrid": [40.4, -3.7],
-  "Murcia": [37.9, -1.1],
-  "Navarra": [42.7, -1.6],
-  "País Vasco": [43.0, -2.6],
-  "La Rioja": [42.3, -2.5],
-};
-
 const HeroSearchPanel = () => {
   const navigate = useNavigate();
-  const [selectedCCAA, setSelectedCCAA] = useState<string>("");
-  const [tipoActivo, setTipoActivo] = useState("");
-  const [precioMax, setPrecioMax] = useState("");
   const [activeTab, setActiveTab] = useState("todos");
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const [search, setSearch] = useState("");
+  const [ccaa, setCcaa] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [precioMax, setPrecioMax] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  // DB-driven filter options
+  const [ccaas, setCcaas] = useState<string[]>([]);
+  const [tipos, setTipos] = useState<string[]>([]);
+
+  // Autocomplete
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Load filter options from DB
+  useEffect(() => {
+    Promise.all([
+      supabase.from("npl_assets").select("comunidad_autonoma").eq("publicado", true),
+      supabase.from("npl_assets").select("tipo_activo").eq("publicado", true),
+    ]).then(([ccaaRes, tipoRes]) => {
+      if (ccaaRes.data) setCcaas([...new Set(ccaaRes.data.map((d: any) => d.comunidad_autonoma).filter(Boolean))].sort() as string[]);
+      if (tipoRes.data) setTipos([...new Set(tipoRes.data.map((d: any) => d.tipo_activo).filter(Boolean))].sort() as string[]);
+    });
+  }, []);
+
+  // Autocomplete suggestions
+  const handleSearchInput = useCallback((value: string) => {
+    setSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (value.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      const { data } = await supabase
+        .from("npl_assets")
+        .select("municipio, provincia, direccion")
+        .eq("publicado", true)
+        .or(`municipio.ilike.%${value}%,direccion.ilike.%${value}%,provincia.ilike.%${value}%`)
+        .limit(8);
+
+      if (data) {
+        const unique = [...new Set(
+          data.flatMap((d: any) => [d.municipio, d.provincia, d.direccion].filter(Boolean))
+            .filter((s: string) => s.toLowerCase().includes(value.toLowerCase()))
+        )].slice(0, 5);
+        setSuggestions(unique as string[]);
+        setShowSuggestions(unique.length > 0);
+      }
+    }, 250);
+  }, []);
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setShowSuggestions(false);
     const tab = ROUTE_TABS.find((t) => t.key === activeTab) || ROUTE_TABS[0];
     const params = new URLSearchParams();
-    if (selectedCCAA) params.set("ccaa", selectedCCAA);
-    if (tipoActivo) params.set("tipo", tipoActivo);
+    if (search) params.set("q", search);
+    if (ccaa) params.set("ccaa", ccaa);
+    if (tipo) params.set("tipo", tipo);
     if (precioMax) params.set("precio_max", precioMax);
     const qs = params.toString();
     navigate(`${tab.path}${qs ? `?${qs}` : ""}`);
   };
 
-  useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    const map = L.map(mapRef.current, {
-      center: [40.0, -3.5],
-      zoom: 5,
-      zoomControl: true,
-      attributionControl: false,
-      scrollWheelZoom: false,
-      dragging: true,
-    });
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 8,
-      minZoom: 4,
-    }).addTo(map);
-
-    // Add CCAA markers
-    const icon = L.divIcon({
-      className: "ccaa-marker",
-      html: `<div style="width:12px;height:12px;background:hsl(var(--accent));border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
-
-    const markers: L.Marker[] = [];
-    Object.entries(CCAA_CENTERS).forEach(([name, coords]) => {
-      const marker = L.marker(coords, { icon })
-        .addTo(map)
-        .bindTooltip(name, {
-          permanent: false,
-          direction: "top",
-          className: "ccaa-tooltip",
-          offset: [0, -8],
-        });
-
-      marker.on("click", () => {
-        setSelectedCCAA((prev) => (prev === name ? "" : name));
-      });
-
-      markers.push(marker);
-    });
-
-    markersRef.current = markers;
-    mapInstanceRef.current = map;
-
-    // Fix map size after render
-    setTimeout(() => map.invalidateSize(), 100);
-
-    return () => {
-      map.remove();
-      mapInstanceRef.current = null;
-    };
-  }, []);
-
-  // Highlight selected marker
-  useEffect(() => {
-    const selectedIcon = L.divIcon({
-      className: "ccaa-marker-selected",
-      html: `<div style="width:16px;height:16px;background:hsl(var(--accent));border-radius:50%;border:3px solid white;box-shadow:0 0 0 3px hsl(var(--accent) / 0.4), 0 2px 8px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
-    });
-    const defaultIcon = L.divIcon({
-      className: "ccaa-marker",
-      html: `<div style="width:12px;height:12px;background:hsl(var(--accent));border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    });
-
-    const names = Object.keys(CCAA_CENTERS);
-    markersRef.current.forEach((marker, i) => {
-      marker.setIcon(names[i] === selectedCCAA ? selectedIcon : defaultIcon);
-    });
-
-    if (selectedCCAA && CCAA_CENTERS[selectedCCAA] && mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo(CCAA_CENTERS[selectedCCAA], 7, { duration: 0.5 });
-    } else if (!selectedCCAA && mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([40.0, -3.5], 5, { duration: 0.5 });
-    }
-  }, [selectedCCAA]);
+  const activeFilters = [ccaa, tipo, precioMax, search].filter(Boolean).length;
 
   return (
     <form
       onSubmit={handleSearch}
-      className="bg-primary-foreground/8 backdrop-blur-lg border border-primary-foreground/12 rounded-2xl p-4 shadow-2xl"
+      className="bg-primary-foreground/8 backdrop-blur-lg border border-primary-foreground/12 rounded-2xl p-5 shadow-2xl"
     >
       {/* Route tabs */}
-      <div className="flex gap-1 mb-3 overflow-x-auto pb-1 -mx-1 px-1">
+      <div className="flex gap-1 mb-4 overflow-x-auto pb-1 -mx-1 px-1">
         {ROUTE_TABS.map((tab) => (
           <button
             key={tab.key}
@@ -158,41 +109,82 @@ const HeroSearchPanel = () => {
         ))}
       </div>
 
-      {/* Leaflet Map */}
-      <div className="mb-3">
-        <div
-          ref={mapRef}
-          className="w-full rounded-xl overflow-hidden border border-primary-foreground/10"
-          style={{ height: 220 }}
+      {/* Search input with autocomplete */}
+      <div className="relative mb-3">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40" />
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Buscar municipio, dirección, referencia..."
+          value={search}
+          onChange={(e) => handleSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+            if (e.key === "Escape") setShowSuggestions(false);
+          }}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          className="w-full pl-11 pr-4 py-3 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm placeholder:text-primary-foreground/35 focus:outline-none focus:border-accent/50 transition-colors"
         />
+        {/* Autocomplete dropdown */}
+        {showSuggestions && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-secondary transition-colors flex items-center gap-2 border-b border-border last:border-0"
+                onMouseDown={() => {
+                  setSearch(s);
+                  setShowSuggestions(false);
+                }}
+              >
+                <MapPin className="w-3 h-3 text-accent shrink-0" />
+                <span className="truncate">{s}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Filters row */}
-      <div className="grid grid-cols-2 gap-2 mb-3">
+      {/* Filter row */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="relative">
-          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40" />
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40 pointer-events-none" />
           <select
-            value={tipoActivo}
-            onChange={(e) => setTipoActivo(e.target.value)}
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm focus:outline-none focus:border-accent/50 transition-colors appearance-none"
+            value={ccaa}
+            onChange={(e) => setCcaa(e.target.value)}
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm focus:outline-none focus:border-accent/50 transition-colors appearance-none cursor-pointer"
           >
-            <option value="" className="text-foreground">Tipología</option>
-            <option value="vivienda" className="text-foreground">Vivienda</option>
-            <option value="local" className="text-foreground">Local comercial</option>
-            <option value="oficina" className="text-foreground">Oficina</option>
-            <option value="terreno" className="text-foreground">Terreno</option>
-            <option value="garaje" className="text-foreground">Garaje</option>
-            <option value="nave" className="text-foreground">Nave industrial</option>
+            <option value="" className="text-foreground">Comunidad</option>
+            {ccaas.map((c) => (
+              <option key={c} value={c} className="text-foreground">{c}</option>
+            ))}
           </select>
         </div>
+
         <div className="relative">
-          <Euro className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40" />
+          <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40 pointer-events-none" />
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm focus:outline-none focus:border-accent/50 transition-colors appearance-none cursor-pointer"
+          >
+            <option value="" className="text-foreground">Tipología</option>
+            {tipos.map((t) => (
+              <option key={t} value={t} className="text-foreground">{t}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="relative">
+          <Euro className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-foreground/40 pointer-events-none" />
           <select
             value={precioMax}
             onChange={(e) => setPrecioMax(e.target.value)}
-            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm focus:outline-none focus:border-accent/50 transition-colors appearance-none"
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-primary-foreground/10 border border-primary-foreground/10 text-primary-foreground text-sm focus:outline-none focus:border-accent/50 transition-colors appearance-none cursor-pointer"
           >
-            <option value="" className="text-foreground">Precio máximo</option>
+            <option value="" className="text-foreground">Precio máx.</option>
             <option value="50000" className="text-foreground">Hasta 50.000 €</option>
             <option value="100000" className="text-foreground">Hasta 100.000 €</option>
             <option value="200000" className="text-foreground">Hasta 200.000 €</option>
@@ -202,26 +194,34 @@ const HeroSearchPanel = () => {
         </div>
       </div>
 
-      {/* Active filters */}
-      {(selectedCCAA || tipoActivo || precioMax) && (
+      {/* Active filter chips */}
+      {activeFilters > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {selectedCCAA && (
+          {ccaa && (
             <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[11px] font-semibold px-2.5 py-1 rounded-full">
               <MapPin className="w-3 h-3" />
-              {selectedCCAA}
-              <button type="button" onClick={() => setSelectedCCAA("")}><X className="w-3 h-3" /></button>
+              {ccaa}
+              <button type="button" onClick={() => setCcaa("")}><X className="w-3 h-3" /></button>
             </span>
           )}
-          {tipoActivo && (
+          {tipo && (
             <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[11px] font-semibold px-2.5 py-1 rounded-full">
-              {tipoActivo}
-              <button type="button" onClick={() => setTipoActivo("")}><X className="w-3 h-3" /></button>
+              <Building2 className="w-3 h-3" />
+              {tipo}
+              <button type="button" onClick={() => setTipo("")}><X className="w-3 h-3" /></button>
             </span>
           )}
           {precioMax && (
             <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[11px] font-semibold px-2.5 py-1 rounded-full">
               ≤ {Number(precioMax).toLocaleString("es-ES")} €
               <button type="button" onClick={() => setPrecioMax("")}><X className="w-3 h-3" /></button>
+            </span>
+          )}
+          {search && (
+            <span className="inline-flex items-center gap-1 bg-accent/15 text-accent text-[11px] font-semibold px-2.5 py-1 rounded-full">
+              <Search className="w-3 h-3" />
+              "{search}"
+              <button type="button" onClick={() => setSearch("")}><X className="w-3 h-3" /></button>
             </span>
           )}
         </div>
@@ -234,7 +234,18 @@ const HeroSearchPanel = () => {
       >
         <Search className="w-4 h-4" />
         Buscar oportunidades
+        {activeFilters > 0 && (
+          <span className="bg-accent-foreground/20 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+            {activeFilters}
+          </span>
+        )}
       </button>
+
+      {/* Asset count hint */}
+      <p className="text-center text-primary-foreground/30 text-[11px] mt-2.5 flex items-center justify-center gap-1">
+        <Sparkles className="w-3 h-3" />
+        Datos reales de la base de activos IKESA
+      </p>
     </form>
   );
 };
