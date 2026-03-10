@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, MapPin, Package, Percent } from "lucide-react";
+import { MapPin, Package, Percent } from "lucide-react";
 import { motion } from "framer-motion";
 
 const KpiBar = () => {
