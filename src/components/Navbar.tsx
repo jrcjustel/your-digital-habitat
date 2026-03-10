@@ -210,16 +210,23 @@ const Navbar = () => {
                     <ChevronDown className={`w-4 h-4 transition-transform ${mobileExpanded === entry.label ? "rotate-180" : ""}`} />
                   </button>
                   {mobileExpanded === entry.label && (
-                    <div className="ml-4 space-y-1 pb-2">
-                      {entry.items.map((item) => (
-                        <button
-                          key={item.href}
-                          onClick={() => nav(item.href)}
-                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-secondary rounded-lg"
-                        >
-                          <item.icon className="w-4 h-4 text-accent" />
-                          {item.label}
-                        </button>
+                    <div className="ml-4 space-y-0.5 pb-2 animate-fade-in">
+                      <div className="h-px bg-border/40 mx-2 mb-1" />
+                      {entry.items.map((item, i) => (
+                        <div key={item.href}>
+                          <button
+                            onClick={() => nav(item.href)}
+                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-accent/10 rounded-xl transition-colors duration-150"
+                          >
+                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent/10 shrink-0">
+                              <item.icon className="w-3.5 h-3.5 text-accent" />
+                            </div>
+                            {item.label}
+                          </button>
+                          {i < entry.items.length - 1 && (
+                            <div className="h-px bg-border/30 mx-6 my-0.5" />
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}
