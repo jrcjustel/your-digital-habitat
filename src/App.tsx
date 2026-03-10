@@ -162,7 +162,7 @@ const App = () => (
             <Route path="/buscar" element={<SearchPage />} />
             {/* Investment & Marketplace */}
             <Route path="/inversion" element={<InvestmentHomePage />} />
-            <Route path="/inversiones" element={<InvestmentsPage />} />
+            <Route path="/inversiones" element={<ProtectedRoute><InvestmentsPage /></ProtectedRoute>} />
             <Route path="/inversion/:id" element={<InvestmentDetailPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace-avanzado" element={<AdvancedMarketplacePage />} />
