@@ -50,6 +50,24 @@ import ExcelAnalyzerPage from "./pages/ExcelAnalyzerPage";
 import ClientAreaPage from "./pages/ClientAreaPage";
 import HybridValuationPage from "./pages/HybridValuationPage";
 import InvestmentHomePage from "./pages/InvestmentHomePage";
+import APIEcosystemPage from "./pages/APIEcosystemPage";
+import AlertsPage from "./pages/AlertsPage";
+import BlogPage from "./pages/BlogPage";
+import CollaboratorsPage from "./pages/CollaboratorsPage";
+import CommunicationsPage from "./pages/CommunicationsPage";
+import ComparatorPage from "./pages/ComparatorPage";
+import FAQPage from "./pages/FAQPage";
+import GDPRPage from "./pages/GDPRPage";
+import InvestmentsPage from "./pages/InvestmentsPage";
+import LegalTermsPage from "./pages/LegalTermsPage";
+import PortfolioManagementPage from "./pages/PortfolioManagementPage";
+import ProfessionalNetworkPage from "./pages/ProfessionalNetworkPage";
+import PublicMetricsPage from "./pages/PublicMetricsPage";
+import SecurityDashboardPage from "./pages/SecurityDashboardPage";
+import SpecializedAgentsPage from "./pages/SpecializedAgentsPage";
+import SystemDiagnosticsPage from "./pages/SystemDiagnosticsPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import WhistleblowingPage from "./pages/WhistleblowingPage";
 
 const queryClient = new QueryClient();
 
