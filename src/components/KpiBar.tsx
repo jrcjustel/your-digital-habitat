@@ -44,6 +44,7 @@ const KpiBar = () => {
     { icon: Package, value: stats ? `${(stats.totalAssets).toLocaleString("es-ES")}` : "27.000+", label: "Activos disponibles" },
     { icon: Percent, value: stats ? `${stats.avgDiscount}%` : "42%", label: "Descuento medio" },
     { icon: MapPin, value: stats ? `${stats.provinces}` : "52", label: "Provincias" },
+    { icon: Euro, value: stats ? `${stats.volumeMillions}M €` : "—", label: "Volumen gestionado" },
   ];
 
   return (
