@@ -227,6 +227,16 @@ function formatAssetsContext(assets: any[]): string {
   return ctx;
 }
 
+function detectInlineAssetData(messages: any[]): string | null {
+  const lastMsg = messages[messages.length - 1]?.content || '';
+  // Detect messages that contain inline asset data (sent from PropertyDetail page)
+  const hasInlineData = /Referencia:\s*.+\|.*Tipo:\s*.+\|.*Precio:/i.test(lastMsg);
+  if (hasInlineData) {
+    return `\n\n--- DATOS DEL ACTIVO QUE EL USUARIO ESTÁ VIENDO ---\n${lastMsg}\n\nAnaliza este activo con los datos proporcionados. NO busques en la base de datos, usa estos datos directamente. Responde como si fuera un activo de tu cartera.`;
+  }
+  return null;
+}
+
 function detectAssetQuery(messages: any[]): { needsAssets: boolean; filters: any } {
   const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || '';
 
