@@ -327,6 +327,7 @@ const Servicios = () => {
               subtitle="Trámites administrativos y fiscales"
               delay={0.1}
             >
+              <AnimatedCounter target={gestoriaItems.reduce((acc, g) => acc + g.items.length, 0)} label="trámites administrativos y fiscales disponibles" />
               {gestoriaItems.map((grupo, i) => (
                 <ExpandableSection
                   key={grupo.cat}
@@ -353,6 +354,7 @@ const Servicios = () => {
               subtitle="Mediación, procedimientos y comercialización"
               delay={0.2}
             >
+              <AnimatedCounter target={legalItems.reduce((acc, g) => acc + g.items.length, 0)} label="servicios legales y de mediación disponibles" />
               {legalItems.map((grupo, i) => (
                 <ExpandableSection
                   key={grupo.cat}
