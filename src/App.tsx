@@ -83,6 +83,17 @@ const App = () => (
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="/valorar" element={<Valorador />} />
             <Route path="/contacto" element={<Contacto />} />
+            {/* CRM routes */}
+            <Route path="/crm/leads" element={<AdminRoute><CrmLeads /></AdminRoute>} />
+            <Route path="/crm/propiedad-nueva" element={<AdminRoute><CrmPropertyNew /></AdminRoute>} />
+            <Route path="/crm/ai/ines" element={<AdminRoute><CrmInesAI /></AdminRoute>} />
+            <Route path="/crm/ai/pelayo" element={<AdminRoute><CrmPelayoAI /></AdminRoute>} />
+            <Route path="/crm/agenda" element={<AdminRoute><CrmCalendar /></AdminRoute>} />
+            <Route path="/crm/comunicaciones" element={<AdminRoute><CrmCommunications /></AdminRoute>} />
+            <Route path="/crm/contratos" element={<AdminRoute><CrmContracts /></AdminRoute>} />
+            <Route path="/crm/demanda" element={<AdminRoute><CrmDemand /></AdminRoute>} />
+            <Route path="/crm/judicial" element={<AdminRoute><CrmJudicial /></AdminRoute>} />
+            <Route path="/crm/pipeline" element={<AdminRoute><CrmPipeline /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AiChatWidget />
