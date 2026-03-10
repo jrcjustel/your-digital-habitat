@@ -337,7 +337,7 @@ const MarketplacePage = () => {
             {hasMore && (
               <div className="flex justify-center pt-4">
                 <Button variant="outline" onClick={() => setPage((p) => p + 1)}>
-                  Cargar más activos ({filtered.length - paged.length} restantes)
+                  Cargar más activos ({sorted.length - paged.length} restantes)
                 </Button>
               </div>
             )}
