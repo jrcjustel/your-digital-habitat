@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { Property } from "@/data/property-types";
+import type { Property } from "@/data/properties";
 
 // Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -61,7 +61,7 @@ const PropertyMap = ({ properties, selectedId, onSelect }: PropertyMapProps) => 
     properties.forEach((property) => {
       const marker = L.marker([property.lat, property.lng]).addTo(map);
       marker.bindPopup(`
-        <a href="/npl/${property.id}" style="text-decoration:none;color:inherit;display:block;max-width:220px">
+        <a href="/inmueble/${property.id}" style="text-decoration:none;color:inherit;display:block;max-width:220px">
           <img src="${property.images[0]}" alt="${property.title}" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:8px"/>
           <p style="font-weight:600;font-size:13px;margin:0 0 4px">${property.title}</p>
           <p style="font-size:11px;color:#888;margin:0 0 4px">${property.location} · ${property.area} m²${property.bedrooms ? ` · ${property.bedrooms} hab.` : ""}</p>

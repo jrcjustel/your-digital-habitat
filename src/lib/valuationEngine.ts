@@ -1,4 +1,4 @@
-import type { Property, OccupancyStatus, JudicialPhase } from "@/data/property-types";
+import type { Property, OccupancyStatus, JudicialPhase } from "@/data/properties";
 
 // ─── ZONE LIQUIDITY ───
 export type ZoneLiquidity = "alta" | "media" | "baja";

@@ -623,7 +623,7 @@ const AlertNotifications = ({ userId }: { userId?: string }) => {
                 </Button>
               )}
               <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                <a href={`/npl/${notif.asset_id}`} title="Ver activo">
+                <a href={`/inmuebles/${notif.asset_id}`} title="Ver activo">
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </Button>

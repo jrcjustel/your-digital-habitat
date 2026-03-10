@@ -2,8 +2,8 @@
  * Adapters to convert Property and NplAsset data into DossierData
  */
 import type { DossierData } from "./types";
-import type { Property } from "@/data/property-types";
-import { occupancyLabels, judicialPhaseLabels } from "@/data/property-types";
+import type { Property } from "@/data/properties";
+import { occupancyLabels, judicialPhaseLabels } from "@/data/properties";
 
 export { generateInvestmentDossier, generateDossierBlob } from "./generateDossier";
 export type { DossierData } from "./types";

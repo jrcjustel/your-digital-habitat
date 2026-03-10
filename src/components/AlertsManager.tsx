@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { saleTypes } from "@/data/property-types";
+import { saleTypes } from "@/data/properties";
 
 interface AlertFilters {
   minDiscount?: number;

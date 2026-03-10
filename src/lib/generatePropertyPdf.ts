@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
-import type { Property } from "@/data/property-types";
-import { occupancyLabels, judicialPhaseLabels, saleTypes } from "@/data/property-types";
+import type { Property } from "@/data/properties";
+import { occupancyLabels, judicialPhaseLabels, saleTypes } from "@/data/properties";
 import logoUrl from "@/assets/ikesa-logo-color.png";
 
 const typeLabels: Record<string, string> = {

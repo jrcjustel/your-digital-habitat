@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { properties } from "@/data/properties";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -44,17 +45,6 @@ interface Favorite {
   created_at: string;
 }
 
-interface FavoriteAsset {
-  id: string;
-  municipio: string | null;
-  provincia: string | null;
-  tipo_activo: string | null;
-  direccion: string | null;
-  sqm: number | null;
-  precio_orientativo: number | null;
-  valor_mercado: number | null;
-}
-
 interface Alert {
   id: string;
   name: string;
@@ -86,7 +76,6 @@ const Dashboard = () => {
     acepta_marketing: false, lead_score: 0,
   });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [favoriteAssets, setFavoriteAssets] = useState<FavoriteAsset[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [saving, setSaving] = useState(false);
@@ -112,18 +101,7 @@ const Dashboard = () => {
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
     ]);
     if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
-    if (favRes.data) {
-      setFavorites(favRes.data);
-      // Fetch corresponding npl_assets
-      const ids = favRes.data.map((f: any) => f.property_id);
-      if (ids.length > 0) {
-        const { data: assetsData } = await supabase
-          .from("npl_assets")
-          .select("id, municipio, provincia, tipo_activo, direccion, sqm, precio_orientativo, valor_mercado")
-          .in("id", ids);
-        if (assetsData) setFavoriteAssets(assetsData as unknown as FavoriteAsset[]);
-      }
-    }
+    if (favRes.data) setFavorites(favRes.data);
     if (alertRes.data) setAlerts(alertRes.data);
     if (offersRes.data) setOffers(offersRes.data as unknown as Offer[]);
   };
@@ -177,8 +155,8 @@ const Dashboard = () => {
 
   const favoriteProperties = favorites.map((f) => ({
     ...f,
-    asset: favoriteAssets.find((a) => a.id === f.property_id),
-  })).filter((f) => f.asset);
+    property: properties.find((p) => p.id === f.property_id),
+  })).filter((f) => f.property);
 
 
   const handleQuickSearch = (e: React.FormEvent) => {
@@ -286,29 +264,27 @@ const Dashboard = () => {
                 <Button className="mt-4" onClick={() => navigate("/inmuebles")}>Explorar inmuebles</Button>
               </CardContent></Card>
             ) : (
-               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {favoriteProperties.map(({ id, asset }) => (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {favoriteProperties.map(({ id, property }) => (
                   <Card key={id} className="overflow-hidden card-elevated">
-                    <div className="relative cursor-pointer bg-muted h-48 flex items-center justify-center" onClick={() => navigate(`/npl/${asset!.id}`)}>
-                      <MapPin className="w-8 h-8 text-muted-foreground/30" />
+                    <div className="relative cursor-pointer" onClick={() => navigate(`/inmueble/${property!.id}`)}>
+                      <img src={property!.images[0]} alt={property!.title} className="w-full h-48 object-cover" />
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/npl/${asset!.id}`)}>
-                        {asset!.tipo_activo || "Activo"} — {asset!.municipio || "Sin municipio"}
+                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/inmueble/${property!.id}`)}>
+                        {property!.title}
                       </h3>
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{asset!.municipio}, {asset!.provincia}</span>
-                        {asset!.sqm && asset!.sqm > 0 && <span className="flex items-center gap-1"><Ruler className="w-3 h-3" />{asset!.sqm} m²</span>}
+                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{property!.location}</span>
+                        <span className="flex items-center gap-1"><Ruler className="w-3 h-3" />{property!.area} m²</span>
+                        {property!.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-3 h-3" />{property!.bedrooms}</span>}
                       </div>
                       <div className="flex items-center justify-between mt-3">
-                        {asset!.precio_orientativo && asset!.precio_orientativo > 0 ? (
-                          <span className="text-lg font-bold text-foreground flex items-center gap-1">
-                            <Euro className="w-4 h-4" />
-                            {asset!.precio_orientativo.toLocaleString("es-ES")}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Precio bajo consulta</span>
-                        )}
+                        <span className="text-lg font-bold text-foreground flex items-center gap-1">
+                          <Euro className="w-4 h-4" />
+                          {property!.price.toLocaleString("es-ES")}
+                          {property!.operation === "alquiler" && <span className="text-sm font-normal">/mes</span>}
+                        </span>
                         <Button variant="ghost" size="icon" onClick={() => removeFavorite(id)}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
