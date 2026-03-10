@@ -174,8 +174,8 @@ const App = () => (
             <Route path="/inversion/:id" element={<InvestmentDetailPage />} />
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace-avanzado" element={<AdvancedMarketplacePage />} />
-            <Route path="/subastas" element={<AuctionsPage />} />
-            <Route path="/subastas-boe" element={<SubastasBOEPage />} />
+            <Route path="/subastas" element={<Navigate to="/inmuebles" replace />} />
+            <Route path="/subastas-boe" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/subastas-premium" element={<PremiumAuctionsPage />} />
             <Route path="/portfolio" element={<ProtectedRoute><PortfolioManagementPage /></ProtectedRoute>} />
             <Route path="/estado-posesorio" element={<ProtectedRoute><PossessionStatusPage /></ProtectedRoute>} />
