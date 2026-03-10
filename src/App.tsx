@@ -84,6 +84,7 @@ import InvestmentDetailPage from "./pages/InvestmentDetailPage";
 import LeadInboxPage from "./pages/LeadInboxPage";
 import LegalDemandsPage from "./pages/LegalDemandsPage";
 import SubastasBOEPage from "./pages/SubastasBOEPage";
+import BoeScraperPage from "./pages/BoeScraperPage";
 import PremiumAuctionsPage from "./pages/PremiumAuctionsPage";
 import SearchPage from "./pages/SearchPage";
 import NewsletterPage from "./pages/NewsletterPage";
