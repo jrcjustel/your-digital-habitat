@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
+import VendedoresPage from "./pages/VendedoresPage";
+import NosotrosPage from "./pages/NosotrosPage";
 import PropertyListing from "./pages/PropertyListing";
 import PropertyDetail from "./pages/PropertyDetail";
 import Auth from "./pages/Auth";
@@ -138,6 +140,8 @@ const App = () => (
             <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route path="/vendedores" element={<VendedoresPage />} />
+            <Route path="/nosotros" element={<NosotrosPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/testimonios" element={<TestimonialsPage />} />

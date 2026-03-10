@@ -27,16 +27,26 @@ type NavEntry = NavSingle | NavGroup;
 const isGroup = (entry: NavEntry): entry is NavGroup => "items" in entry;
 
 const navEntries: NavEntry[] = [
-  { label: "Oportunidades", href: "/inmuebles" },
+  {
+    label: "Oportunidades",
+    items: [
+      { label: "Todas las oportunidades", href: "/inmuebles", icon: TrendingUp, description: "Catálogo completo de activos" },
+      { label: "Subastas BOE", href: "/subastas", icon: Gavel, description: "Subastas judiciales activas" },
+      { label: "NPL / Créditos", href: "/npl", icon: BarChart3, description: "Carteras de deuda hipotecaria" },
+      { label: "Mapa de oportunidades", href: "/mapa", icon: Map, description: "Visualización geográfica" },
+    ],
+  },
   {
     label: "Herramientas",
     items: [
       { label: "Calculadoras", href: "/calculadoras", icon: Calculator, description: "Hipoteca y rentabilidad" },
-      { label: "Valorar inmueble", href: "/valorar", icon: Home, description: "Valoración online" },
+      { label: "Valorar inmueble", href: "/valorar", icon: Home, description: "Valoración online gratuita" },
+      { label: "Comparador", href: "/comparador", icon: GitCompare, description: "Compara hasta 4 activos" },
     ],
   },
+  { label: "Vendedores", href: "/vendedores" },
   { label: "Academia", href: "/academia" },
-  { label: "Servicios", href: "/servicios" },
+  { label: "Nosotros", href: "/nosotros" },
 ];
 
 const DropdownMenu = ({ group, onNavigate }: { group: NavGroup; onNavigate: (href: string) => void }) => {
