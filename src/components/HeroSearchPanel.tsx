@@ -4,10 +4,10 @@ import { Search, Building2, MapPin, Euro, X, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROUTE_TABS = [
-  { key: "todos", label: "Todos", path: "/npl" },
-  { key: "npl", label: "NPL", path: "/npl" },
-  { key: "cdr", label: "Cesión Remate", path: "/inversores/cdr" },
-  { key: "ocupados", label: "Ocupados", path: "/inversores/ocupados" },
+  { key: "todos", label: "Todos", path: "/inmuebles" },
+  { key: "npl", label: "NPL", path: "/inmuebles" },
+  { key: "cdr", label: "Cesión Remate", path: "/inmuebles" },
+  { key: "ocupados", label: "Ocupados", path: "/inmuebles" },
   { key: "subastas", label: "Subastas BOE", path: "/subastas" },
 ];
 
