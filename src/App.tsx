@@ -8,8 +8,7 @@ import Index from "./pages/Index";
 import VendedoresPage from "./pages/VendedoresPage";
 import NosotrosPage from "./pages/NosotrosPage";
 import InvestmentAnalysisPage from "./pages/InvestmentAnalysisPage";
-import PropertyListing from "./pages/PropertyListing";
-import PropertyDetail from "./pages/PropertyDetail";
+// PropertyListing and PropertyDetail removed — unified into NplListing / NplDetail
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
@@ -107,8 +106,8 @@ const App = () => (
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/inmuebles" element={<PropertyListing />} />
-            <Route path="/inmueble/:id" element={<PropertyDetail />} />
+            <Route path="/inmuebles" element={<NplListing />} />
+            <Route path="/inmueble/:id" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mi-cuenta" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -140,7 +139,7 @@ const App = () => (
             <Route path="/academia" element={<Academia />} />
             <Route path="/academia/ruta/:rutaSlug" element={<AcademiaRuta />} />
             <Route path="/academia/:slug" element={<AcademiaArticle />} />
-            <Route path="/npl" element={<Navigate to="/inmuebles" replace />} />
+            <Route path="/npl" element={<NplListing />} />
             <Route path="/npl/:id" element={<NplDetail />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/vendedores" element={<VendedoresPage />} />
