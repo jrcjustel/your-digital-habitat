@@ -111,8 +111,28 @@ const MarketplacePage = () => {
     });
   }, [assets, searchTerm, filters]);
 
-  const paged = filtered.slice(0, (page + 1) * PAGE_SIZE);
-  const hasMore = paged.length < filtered.length;
+  const getDiscount = (a: Asset) =>
+    a.valor_mercado && a.precio_orientativo && a.valor_mercado > 0
+      ? Math.round((1 - a.precio_orientativo / a.valor_mercado) * 100)
+      : 0;
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "price-asc":
+        return arr.sort((a, b) => (a.precio_orientativo || 0) - (b.precio_orientativo || 0));
+      case "price-desc":
+        return arr.sort((a, b) => (b.precio_orientativo || 0) - (a.precio_orientativo || 0));
+      case "discount":
+        return arr.sort((a, b) => getDiscount(b) - getDiscount(a));
+      case "recent":
+      default:
+        return arr;
+    }
+  }, [filtered, sortBy]);
+
+  const paged = sorted.slice(0, (page + 1) * PAGE_SIZE);
+  const hasMore = paged.length < sorted.length;
 
   const activeFilterCount = [filters.minPrice, filters.maxPrice, filters.propertyType !== "all" && filters.propertyType, filters.province !== "all" && filters.province].filter(Boolean).length;
 
