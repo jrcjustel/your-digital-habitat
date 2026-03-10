@@ -4,10 +4,9 @@ import SEOHead from "@/components/SEOHead";
 import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCircle2, Mail, Sparkles, Gavel, ClipboardList, Home, Receipt, Landmark, Users, Search, Handshake, DoorOpen, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useScroll, useTransform } from "framer-motion";
 
 /* ── DATA ── */
 
