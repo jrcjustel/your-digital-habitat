@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Menu, X, Heart, LogOut, Shield, ChevronDown, Map, Calculator, GitCompare, Gavel, Store, TrendingUp, Brain, BarChart3, BookOpen, Wrench, Home } from "lucide-react";
+import { User, Menu, X, Heart, LogOut, Shield, ChevronDown, Calculator, GitCompare, Gavel, Store, TrendingUp, Brain, BookOpen, Wrench, Home } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useRole";
 import ikesaLogo from "@/assets/ikesa-logo-color.png";
