@@ -453,6 +453,33 @@ const NplListing = () => {
           )}
         </div>
 
+        {/* Dashboard summary */}
+        {!loading && assets.length > 0 && (
+          <div className="bg-card rounded-xl border border-border px-5 py-3 mb-4 flex flex-wrap items-center gap-4 text-xs">
+            <span className="font-bold text-foreground">{total.toLocaleString("es-ES")} activos</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 text-accent">
+              <Sparkles className="w-3 h-3" />
+              {assets.filter(a => a.created_at && (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000).length} nuevos
+            </span>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 text-blue-600">
+              <Clock className="w-3 h-3" />
+              {assets.filter(a => {
+                if (!a.created_at) return false;
+                const d = (Date.now() - new Date(a.created_at).getTime()) / (1000 * 60 * 60 * 24);
+                return d > 30 && d <= 37;
+              }).length} próximos a vencer
+            </span>
+            {activeFiltersCount > 0 && (
+              <>
+                <span className="text-muted-foreground">|</span>
+                <span className="text-muted-foreground">{activeFiltersCount} filtros activos</span>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Results header */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
