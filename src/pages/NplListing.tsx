@@ -151,6 +151,9 @@ const NplListing = () => {
 
     // Sort
     switch (sortBy) {
+      case "prioridad":
+        query = query.order("created_at", { ascending: false });
+        break;
       case "precio_desc":
         query = query.order("precio_orientativo", { ascending: false, nullsFirst: false });
         break;
@@ -164,7 +167,6 @@ const NplListing = () => {
         query = query.order("sqm", { ascending: false, nullsFirst: false });
         break;
       case "descuento":
-        // Sort by price desc as proxy (real discount sort would need a computed column)
         query = query.order("precio_orientativo", { ascending: true, nullsFirst: false });
         break;
     }
@@ -173,7 +175,14 @@ const NplListing = () => {
     query = query.range(from, from + PAGE_SIZE - 1);
 
     const { data, count } = await query;
-    setAssets((data as unknown as NplAsset[]) || []);
+    let results = (data as unknown as NplAsset[]) || [];
+
+    // Client-side priority sort
+    if (sortBy === "prioridad") {
+      results = results.sort((a, b) => calcPriority(b) - calcPriority(a));
+    }
+
+    setAssets(results);
     setTotal(count || 0);
     setLoading(false);
   };
