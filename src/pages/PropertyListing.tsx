@@ -25,11 +25,7 @@ import {
 type ViewMode = "grid" | "list" | "map";
 
 /* ─── Recency helper ─── */
-const daysAgo = (dateStr?: string) => {
-  if (!dateStr) return Infinity;
-  return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
-};
-const isRecent = (p: typeof properties[0]) => p.isNew || daysAgo(p.publishedAt) <= 7;
+const isRecent = (p: typeof properties[0]) => !!p.isNew;
 
 /* ─── Label maps ─── */
 const saleTypeLabels: Record<string, string> = {
