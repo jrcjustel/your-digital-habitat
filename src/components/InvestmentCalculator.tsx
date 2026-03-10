@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Calculator, TrendingUp, DollarSign, Clock, Info } from "lucide-react";
 import { calculateInvestmentReturns } from "@/lib/valuationEngine";
-import type { Property } from "@/data/properties";
+import type { Property } from "@/data/property-types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 // ITP rates by comunidad autónoma (general rate for second-hand properties, 2024-2025)

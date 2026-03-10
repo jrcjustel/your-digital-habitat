@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { properties } from "@/data/properties";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -45,6 +44,17 @@ interface Favorite {
   created_at: string;
 }
 
+interface FavoriteAsset {
+  id: string;
+  municipio: string | null;
+  provincia: string | null;
+  tipo_activo: string | null;
+  direccion: string | null;
+  sqm: number | null;
+  precio_orientativo: number | null;
+  valor_mercado: number | null;
+}
+
 interface Alert {
   id: string;
   name: string;
@@ -76,6 +86,7 @@ const Dashboard = () => {
     acepta_marketing: false, lead_score: 0,
   });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [favoriteAssets, setFavoriteAssets] = useState<FavoriteAsset[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [saving, setSaving] = useState(false);
@@ -101,7 +112,18 @@ const Dashboard = () => {
       supabase.from("offers").select("*").order("created_at", { ascending: false }),
     ]);
     if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
-    if (favRes.data) setFavorites(favRes.data);
+    if (favRes.data) {
+      setFavorites(favRes.data);
+      // Fetch corresponding npl_assets
+      const ids = favRes.data.map((f: any) => f.property_id);
+      if (ids.length > 0) {
+        const { data: assetsData } = await supabase
+          .from("npl_assets")
+          .select("id, municipio, provincia, tipo_activo, direccion, sqm, precio_orientativo, valor_mercado")
+          .in("id", ids);
+        if (assetsData) setFavoriteAssets(assetsData as unknown as FavoriteAsset[]);
+      }
+    }
     if (alertRes.data) setAlerts(alertRes.data);
     if (offersRes.data) setOffers(offersRes.data as unknown as Offer[]);
   };
@@ -155,8 +177,8 @@ const Dashboard = () => {
 
   const favoriteProperties = favorites.map((f) => ({
     ...f,
-    property: properties.find((p) => p.id === f.property_id),
-  })).filter((f) => f.property);
+    asset: favoriteAssets.find((a) => a.id === f.property_id),
+  })).filter((f) => f.asset);
 
 
   const handleQuickSearch = (e: React.FormEvent) => {

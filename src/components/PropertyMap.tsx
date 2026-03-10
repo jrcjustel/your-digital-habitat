@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import type { Property } from "@/data/properties";
+import type { Property } from "@/data/property-types";
 
 // Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
