@@ -267,13 +267,13 @@ const NplListing = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Activos NPL en Venta — Comprar Deuda Hipotecaria e Inmuebles Distressed"
-        description={`Explora ${total > 0 ? total.toLocaleString("es-ES") + " " : ""}activos NPL en España: cesiones de remate, inmuebles ocupados y deuda hipotecaria con descuentos de hasta el 60%. Filtra por provincia, tipo y precio.`}
-        canonical="/npl"
-        keywords="comprar NPL España, activos distressed, deuda hipotecaria, cesiones de remate, inmuebles ocupados en venta, non-performing loans"
+        title="Oportunidades de Inversión Inmobiliaria | IKESA"
+        description={`Explora ${total > 0 ? total.toLocaleString("es-ES") + " " : ""}oportunidades de inversión inmobiliaria en España: cesiones de remate, inmuebles ocupados y deuda hipotecaria con descuentos de hasta el 60%.`}
+        canonical="/inmuebles"
+        keywords="inversión inmobiliaria España, oportunidades inmobiliarias, cesiones de remate, inmuebles ocupados, NPL, activos distressed"
         jsonLd={createBreadcrumbSchema([
           { name: "Inicio", url: "/" },
-          { name: "Activos NPL", url: "/npl" },
+          { name: "Oportunidades", url: "/inmuebles" },
         ])}
       />
       <Navbar />
