@@ -417,17 +417,6 @@ const NplListing = () => {
                 <label className="flex items-center gap-2 cursor-pointer text-sm">
                   <input
                     type="checkbox"
-                    checked={soloCc}
-                    onChange={(e) => { setSoloCc(e.target.checked); setPage(1); }}
-                    className="rounded border-border accent-accent"
-                  />
-                  <span className="text-foreground text-xs font-medium">Solo Cesión Crédito</span>
-                </label>
-              </div>
-              <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="checkbox"
                     checked={soloDisponibles}
                     onChange={(e) => { setSoloDisponibles(e.target.checked); setPage(1); }}
                     className="rounded border-border accent-accent"
@@ -473,11 +462,6 @@ const NplListing = () => {
               {soloCdr && (
                 <Badge variant="outline" className="gap-1 text-xs cursor-pointer hover:bg-destructive/10" onClick={() => setSoloCdr(false)}>
                   CDR <X className="w-3 h-3" />
-                </Badge>
-              )}
-              {soloCc && (
-                <Badge variant="outline" className="gap-1 text-xs cursor-pointer hover:bg-destructive/10" onClick={() => setSoloCc(false)}>
-                  Cesión crédito <X className="w-3 h-3" />
                 </Badge>
               )}
             </div>
@@ -527,11 +511,8 @@ const NplListing = () => {
               <Button variant={viewMode === "grid" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("grid")}>
                 <LayoutGrid className="w-4 h-4" />
               </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none border-x border-border" onClick={() => setViewMode("list")}>
+              <Button variant={viewMode === "list" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("list")}>
                 <List className="w-4 h-4" />
-              </Button>
-              <Button variant={viewMode === "map" ? "default" : "ghost"} size="icon" className="h-8 w-8 rounded-none" onClick={() => setViewMode("map")}>
-                <MapIcon className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -563,12 +544,6 @@ const NplListing = () => {
                 priority={calcPriority(a) >= 40}
               />
             ))}
-          </div>
-        ) : viewMode === "map" ? (
-          <div className="bg-card rounded-2xl border border-border p-6 text-center">
-            <MapIcon className="w-10 h-10 text-accent mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground mb-2">Vista de mapa disponible en la página dedicada.</p>
-            <Link to="/mapa" className="text-sm text-accent font-semibold hover:underline">Abrir mapa completo →</Link>
           </div>
         ) : (
           /* List view */
