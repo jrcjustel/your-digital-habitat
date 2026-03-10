@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { TrendingUp, MapPin, BarChart3, Droplets, Building2, ArrowUp, ArrowDown, Minus } from "lucide-react";
-import { properties } from "@/data/properties";
+import type { Property } from "@/data/property-types";
 import { estimateZoneLiquidity, type ZoneLiquidity } from "@/lib/valuationEngine";
 
 interface ProvinceData {

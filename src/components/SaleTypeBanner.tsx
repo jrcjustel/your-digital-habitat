@@ -1,5 +1,5 @@
 import { AlertTriangle, Home, Gavel, CreditCard, Ban, Building2, Scale, Clock, ExternalLink, Eye, EyeOff, FileText } from "lucide-react";
-import type { SaleType } from "@/data/properties";
+import type { SaleType } from "@/data/property-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 

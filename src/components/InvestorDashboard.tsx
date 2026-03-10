@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { TrendingUp, BarChart3, PieChart, Target, MapPin, Building2, AlertTriangle, DollarSign } from "lucide-react";
-import { properties } from "@/data/properties";
+import type { Property } from "@/data/property-types";
 import { autoValuateProperty, estimateZoneLiquidity } from "@/lib/valuationEngine";
 
 const InvestorDashboard = () => {

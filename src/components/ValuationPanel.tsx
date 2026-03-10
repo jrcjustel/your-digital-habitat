@@ -1,5 +1,5 @@
 import { TrendingUp, AlertTriangle, Clock, DollarSign, Shield, BarChart3, Target } from "lucide-react";
-import type { Property } from "@/data/properties";
+import type { Property } from "@/data/property-types";
 import { autoValuateProperty, type OpportunityScoreResult, type CesionRemateResult, type OcupadoResult, type SubastaResult, type ZoneLiquidity } from "@/lib/valuationEngine";
 
 const ScoreGauge = ({ score, label, color }: { score: number; label: string; color: string }) => {
