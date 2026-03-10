@@ -415,7 +415,7 @@ const PropertyListing = () => {
       : 0;
 
     return (
-      <Link to={`/inmueble/${property.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row">
+      <Link to={`/npl/${property.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row">
         <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0">
           <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
