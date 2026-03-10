@@ -465,11 +465,6 @@ const NplListing = () => {
                   CDR <X className="w-3 h-3" />
                 </Badge>
               )}
-              {soloCc && (
-                <Badge variant="outline" className="gap-1 text-xs cursor-pointer hover:bg-destructive/10" onClick={() => setSoloCc(false)}>
-                  Cesión crédito <X className="w-3 h-3" />
-                </Badge>
-              )}
             </div>
           )}
         </div>
