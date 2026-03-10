@@ -106,6 +106,7 @@ const modalities = [
     ],
     color: "bg-accent",
     cta: "/inversores/cdr",
+    videoUrl: "", // Placeholder
   },
   {
     id: "ocupados",
