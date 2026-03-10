@@ -5,8 +5,9 @@ import { ArrowRight, FileText, Scale, Building2, BarChart3, ShieldCheck, CheckCi
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useScroll, useTransform } from "framer-motion";
 
 /* ── DATA ── */
 
