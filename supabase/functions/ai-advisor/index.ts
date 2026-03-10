@@ -313,24 +313,34 @@ Deno.serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    // Detect if the query needs asset data
-    const { needsAssets, filters } = detectAssetQuery(messages);
+    // First check if the message contains inline asset data (from PropertyDetail page)
+    const inlineAssetContext = detectInlineAssetData(messages);
+    
     let assetContext = '';
-
-    if (needsAssets) {
-      console.log('Fetching NPL assets with filters:', JSON.stringify(filters));
-      const assets = await fetchNplAssets(filters);
-      console.log(`Found ${assets.length} assets`);
-      assetContext = formatAssetsContext(assets);
-    }
-
     let systemMessage: string;
-    if (needsAssets && assetContext.includes('No se encontraron')) {
-      systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ RESULTADO DE BÚSQUEDA EN BASE DE DATOS: No se encontraron activos con los criterios del usuario. NO INVENTES ACTIVOS. Dile al usuario que no hay activos disponibles con esos criterios y ofrécele crear una alerta o buscar con otros filtros.`;
-    } else if (assetContext) {
-      systemMessage = `${SYSTEM_PROMPT}\n\nTienes acceso a los siguientes activos REALES de la cartera de IKESA. Usa SOLO estos datos. NO inventes activos adicionales:${assetContext}`;
+
+    if (inlineAssetContext) {
+      // The user is viewing a specific property — use inline data directly, no DB fetch needed
+      console.log('Using inline asset data from PropertyDetail page');
+      systemMessage = `${SYSTEM_PROMPT}\n\n${inlineAssetContext}`;
     } else {
-      systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ No se ha consultado la base de datos de activos. Si el usuario pregunta por activos concretos, NO inventes datos. Responde con información general y ofrece buscar en la cartera.`;
+      // Detect if the query needs asset data from the database
+      const { needsAssets, filters } = detectAssetQuery(messages);
+
+      if (needsAssets) {
+        console.log('Fetching NPL assets with filters:', JSON.stringify(filters));
+        const assets = await fetchNplAssets(filters);
+        console.log(`Found ${assets.length} assets`);
+        assetContext = formatAssetsContext(assets);
+      }
+
+      if (needsAssets && assetContext.includes('No se encontraron')) {
+        systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ RESULTADO DE BÚSQUEDA EN BASE DE DATOS: No se encontraron activos con los criterios del usuario. NO INVENTES ACTIVOS. Dile al usuario que no hay activos disponibles con esos criterios y ofrécele crear una alerta o buscar con otros filtros.`;
+      } else if (assetContext) {
+        systemMessage = `${SYSTEM_PROMPT}\n\nTienes acceso a los siguientes activos REALES de la cartera de IKESA. Usa SOLO estos datos. NO inventes activos adicionales:${assetContext}`;
+      } else {
+        systemMessage = `${SYSTEM_PROMPT}\n\n⚠️ No se ha consultado la base de datos de activos. Si el usuario pregunta por activos concretos, NO inventes datos. Responde con información general y ofrece buscar en la cartera.`;
+      }
     }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
