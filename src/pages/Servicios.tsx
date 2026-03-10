@@ -93,10 +93,10 @@ const ColumnCard = ({
   delay?: number;
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay }}
+    initial={{ opacity: 0, y: 40, scale: 0.97 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
     className="bg-card border border-border rounded-3xl overflow-hidden flex flex-col md:flex-row hover:shadow-xl transition-shadow duration-500"
   >
     {/* Column header */}
