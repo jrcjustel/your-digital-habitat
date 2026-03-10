@@ -40,6 +40,16 @@ import CrmPropertyNew from "./pages/CrmPropertyNew";
 import CrmInesAI from "./pages/CrmInesAI";
 import CrmPelayoAI from "./pages/CrmPelayoAI";
 import { CrmCalendar, CrmCommunications, CrmContracts, CrmDemand, CrmJudicial, CrmPipeline } from "./pages/CrmPlaceholders";
+import AIInsightsPage from "./pages/AIInsightsPage";
+import PredictiveAnalyticsPage from "./pages/PredictiveAnalyticsPage";
+import MarketplacePage from "./pages/MarketplacePage";
+import AuctionsPage from "./pages/AuctionsPage";
+import MapPage from "./pages/MapPage";
+import CalculatorsPage from "./pages/CalculatorsPage";
+import ExcelAnalyzerPage from "./pages/ExcelAnalyzerPage";
+import ClientAreaPage from "./pages/ClientAreaPage";
+import HybridValuationPage from "./pages/HybridValuationPage";
+import InvestmentHomePage from "./pages/InvestmentHomePage";
 
 const queryClient = new QueryClient();
 
