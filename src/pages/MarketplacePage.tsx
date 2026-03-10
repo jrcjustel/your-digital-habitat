@@ -41,6 +41,7 @@ const fmt = (n: number) =>
 
 const MarketplacePage = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [coverImages, setCoverImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", propertyType: "all", province: "all" });
