@@ -86,6 +86,7 @@ const Dashboard = () => {
     acepta_marketing: false, lead_score: 0,
   });
   const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [favoriteAssets, setFavoriteAssets] = useState<FavoriteAsset[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [saving, setSaving] = useState(false);
