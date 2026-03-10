@@ -34,15 +34,37 @@ interface NplAsset {
 
 const PAGE_SIZE = 24;
 
-type SortOption = "precio_desc" | "precio_asc" | "descuento" | "recientes" | "superficie";
+type SortOption = "precio_desc" | "precio_asc" | "descuento" | "recientes" | "superficie" | "prioridad";
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: "prioridad", label: "Prioridad" },
   { value: "precio_desc", label: "Mayor precio" },
   { value: "precio_asc", label: "Menor precio" },
   { value: "descuento", label: "Mayor descuento" },
   { value: "recientes", label: "Más recientes" },
   { value: "superficie", label: "Mayor superficie" },
 ];
+
+// Priority scoring for enterprise sort
+function calcPriority(asset: NplAsset): number {
+  let score = 0;
+  const tipo = (asset.tipo_activo || "").toLowerCase();
+  if (tipo.includes("nave") || tipo.includes("industrial")) score += 30;
+  if (tipo.includes("local")) score += 20;
+  if (asset.cesion_remate) score += 15;
+  if (asset.cesion_credito) score += 10;
+  if (asset.created_at) {
+    const days = (Date.now() - new Date(asset.created_at).getTime()) / (1000 * 60 * 60 * 24);
+    if (days <= 7) score += 25;
+    else if (days <= 30) score += 10;
+  }
+  if (asset.valor_mercado > 0 && asset.precio_orientativo > 0) {
+    const discount = (1 - asset.precio_orientativo / asset.valor_mercado) * 100;
+    if (discount >= 50) score += 20;
+    else if (discount >= 30) score += 10;
+  }
+  return score;
+}
 
 const NplListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -150,6 +172,9 @@ const NplListing = () => {
 
     // Sort
     switch (sortBy) {
+      case "prioridad":
+        query = query.order("created_at", { ascending: false });
+        break;
       case "precio_desc":
         query = query.order("precio_orientativo", { ascending: false, nullsFirst: false });
         break;
@@ -163,7 +188,6 @@ const NplListing = () => {
         query = query.order("sqm", { ascending: false, nullsFirst: false });
         break;
       case "descuento":
-        // Sort by price desc as proxy (real discount sort would need a computed column)
         query = query.order("precio_orientativo", { ascending: true, nullsFirst: false });
         break;
     }
@@ -172,7 +196,14 @@ const NplListing = () => {
     query = query.range(from, from + PAGE_SIZE - 1);
 
     const { data, count } = await query;
-    setAssets((data as unknown as NplAsset[]) || []);
+    let results = (data as unknown as NplAsset[]) || [];
+
+    // Client-side priority sort
+    if (sortBy === "prioridad") {
+      results = results.sort((a, b) => calcPriority(b) - calcPriority(a));
+    }
+
+    setAssets(results);
     setTotal(count || 0);
     setLoading(false);
   };
@@ -453,6 +484,33 @@ const NplListing = () => {
           )}
         </div>
 
+        {/* Dashboard summary */}
+        {!loading && assets.length > 0 && (
+          <div className="bg-card rounded-xl border border-border px-5 py-3 mb-4 flex flex-wrap items-center gap-4 text-xs">
+            <span className="font-bold text-foreground">{total.toLocaleString("es-ES")} activos</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 text-accent">
+              <Sparkles className="w-3 h-3" />
+              {assets.filter(a => a.created_at && (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000).length} nuevos
+            </span>
+            <span className="text-muted-foreground">|</span>
+            <span className="flex items-center gap-1 text-blue-600">
+              <Clock className="w-3 h-3" />
+              {assets.filter(a => {
+                if (!a.created_at) return false;
+                const d = (Date.now() - new Date(a.created_at).getTime()) / (1000 * 60 * 60 * 24);
+                return d > 30 && d <= 37;
+              }).length} próximos a vencer
+            </span>
+            {activeFiltersCount > 0 && (
+              <>
+                <span className="text-muted-foreground">|</span>
+                <span className="text-muted-foreground">{activeFiltersCount} filtros activos</span>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Results header */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
@@ -502,7 +560,7 @@ const NplListing = () => {
                 userId={user?.id}
                 onFavoriteToggle={handleFavoriteToggle}
                 isNew={a.created_at ? (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false}
-                priority={i < 4}
+                priority={calcPriority(a) >= 40}
               />
             ))}
           </div>
