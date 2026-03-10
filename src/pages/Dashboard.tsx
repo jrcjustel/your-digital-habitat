@@ -286,27 +286,29 @@ const Dashboard = () => {
                 <Button className="mt-4" onClick={() => navigate("/inmuebles")}>Explorar inmuebles</Button>
               </CardContent></Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {favoriteProperties.map(({ id, property }) => (
+               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {favoriteProperties.map(({ id, asset }) => (
                   <Card key={id} className="overflow-hidden card-elevated">
-                    <div className="relative cursor-pointer" onClick={() => navigate(`/npl/${property!.id}`)}>
-                      <img src={property!.images[0]} alt={property!.title} className="w-full h-48 object-cover" />
+                    <div className="relative cursor-pointer bg-muted h-48 flex items-center justify-center" onClick={() => navigate(`/npl/${asset!.id}`)}>
+                      <MapPin className="w-8 h-8 text-muted-foreground/30" />
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/npl/${property!.id}`)}>
-                        {property!.title}
+                      <h3 className="font-semibold text-foreground line-clamp-1 cursor-pointer hover:text-accent" onClick={() => navigate(`/npl/${asset!.id}`)}>
+                        {asset!.tipo_activo || "Activo"} — {asset!.municipio || "Sin municipio"}
                       </h3>
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{property!.location}</span>
-                        <span className="flex items-center gap-1"><Ruler className="w-3 h-3" />{property!.area} m²</span>
-                        {property!.bedrooms && <span className="flex items-center gap-1"><BedDouble className="w-3 h-3" />{property!.bedrooms}</span>}
+                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{asset!.municipio}, {asset!.provincia}</span>
+                        {asset!.sqm && asset!.sqm > 0 && <span className="flex items-center gap-1"><Ruler className="w-3 h-3" />{asset!.sqm} m²</span>}
                       </div>
                       <div className="flex items-center justify-between mt-3">
-                        <span className="text-lg font-bold text-foreground flex items-center gap-1">
-                          <Euro className="w-4 h-4" />
-                          {property!.price.toLocaleString("es-ES")}
-                          {property!.operation === "alquiler" && <span className="text-sm font-normal">/mes</span>}
-                        </span>
+                        {asset!.precio_orientativo && asset!.precio_orientativo > 0 ? (
+                          <span className="text-lg font-bold text-foreground flex items-center gap-1">
+                            <Euro className="w-4 h-4" />
+                            {asset!.precio_orientativo.toLocaleString("es-ES")}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">Precio bajo consulta</span>
+                        )}
                         <Button variant="ghost" size="icon" onClick={() => removeFavorite(id)}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
