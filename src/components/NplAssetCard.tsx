@@ -67,15 +67,33 @@ const NplAssetCard = memo(({ asset, isFavorited = false, userId, onFavoriteToggl
 
   const isUnavailable = asset.estado === "oferta_gestion" || asset.estado === "cerrado";
 
+  // Priority & recency indicators
+  const isRecent = asset.created_at ? (Date.now() - new Date(asset.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
+  const isExpiring = asset.created_at ? (() => {
+    const diff = (Date.now() - new Date(asset.created_at).getTime()) / (1000 * 60 * 60 * 24);
+    return diff > 30 && diff <= 37;
+  })() : false;
+  const showNew = isNew || isRecent;
+
+  const borderClass = isUnavailable
+    ? "border-l-4 border-l-muted-foreground"
+    : priority
+      ? "border-l-4 border-l-destructive"
+      : isExpiring
+        ? "border-l-4 border-l-blue-500"
+        : showNew
+          ? "border-l-4 border-l-accent"
+          : "";
+
   return (
     <Link to={`/npl/${asset.id}`} className="group block">
-      <div className={`bg-card rounded-2xl border overflow-hidden transition-all duration-300 ${
+      <div className={`bg-card rounded-2xl border overflow-hidden transition-all duration-300 ${borderClass} ${
         isUnavailable
           ? "border-border opacity-75 hover:opacity-90"
-          : "border-border hover:shadow-xl hover:shadow-accent/5 hover:border-accent/30 hover:-translate-y-0.5"
+          : "border-border hover:shadow-xl hover:shadow-accent/5 hover:border-accent/30 hover:-translate-y-1"
       }`}>
         {/* Top colored bar */}
-        <div className={`h-1 ${isUnavailable ? "bg-muted-foreground" : "bg-gradient-to-r from-accent to-primary"}`} />
+        <div className={`h-1 ${isUnavailable ? "bg-muted-foreground" : priority ? "bg-gradient-to-r from-destructive to-destructive/60" : "bg-gradient-to-r from-accent to-primary"}`} />
 
         <div className="p-5">
           {/* Badges row */}
