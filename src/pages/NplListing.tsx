@@ -546,12 +546,6 @@ const NplListing = () => {
               />
             ))}
           </div>
-        ) : viewMode === "map" ? (
-          <div className="bg-card rounded-2xl border border-border p-6 text-center">
-            <MapIcon className="w-10 h-10 text-accent mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground mb-2">Vista de mapa disponible en la página dedicada.</p>
-            <Link to="/mapa" className="text-sm text-accent font-semibold hover:underline">Abrir mapa completo →</Link>
-          </div>
         ) : (
           /* List view */
           <div className="bg-card rounded-2xl border border-border overflow-hidden">
