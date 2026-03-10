@@ -93,6 +93,17 @@ const App = () => (
             <Route path="/canal-denuncias" element={<CanalDenuncias />} />
             <Route path="/valorar" element={<Valorador />} />
             <Route path="/contacto" element={<Contacto />} />
+            {/* Investment & Tools routes */}
+            <Route path="/ai-insights" element={<AIInsightsPage />} />
+            <Route path="/analitica-predictiva" element={<PredictiveAnalyticsPage />} />
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/subastas" element={<AuctionsPage />} />
+            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/calculadoras" element={<CalculatorsPage />} />
+            <Route path="/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
+            <Route path="/area-cliente" element={<ClientAreaPage />} />
+            <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
+            <Route path="/inversion" element={<InvestmentHomePage />} />
             {/* CRM routes */}
             <Route path="/crm/leads" element={<AdminRoute><CrmLeads /></AdminRoute>} />
             <Route path="/crm/propiedad-nueva" element={<AdminRoute><CrmPropertyNew /></AdminRoute>} />
