@@ -315,6 +315,8 @@ const AdminImport = () => {
     return groups;
   }, []);
 
+  const canImport = hasRole("admin") || hasPermission("puede_importar_excel");
+
   // Loading state
   if (authLoading || permLoading) {
     return (
@@ -329,8 +331,6 @@ const AdminImport = () => {
     return null;
   }
 
-  // Permission check
-  const canImport = hasRole("admin") || hasPermission("puede_importar_excel");
   if (!canImport) {
     return (
       <div className="min-h-screen bg-background">
