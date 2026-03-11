@@ -100,9 +100,15 @@ const typeConfig: Record<string, { icon: typeof Gavel; color: string; bg: string
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
-const RealCaseStudies = () => {
+interface RealCaseStudiesProps {
+  filterType?: "npl" | "cesion" | "ocupado";
+}
+
+const RealCaseStudies = ({ filterType }: RealCaseStudiesProps = {}) => {
+  const filteredCases = filterType ? cases.filter(c => c.type === filterType) : cases;
   const [active, setActive] = useState(0);
-  const c = cases[active];
+  const c = filteredCases[active];
+  if (!c) return null;
   const cfg = typeConfig[c.type];
   const Icon = cfg.icon;
 
