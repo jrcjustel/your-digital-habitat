@@ -17,7 +17,8 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
-  Zap, History, Share2, MapPin, Shield,
+  Zap, History, Share2, MapPin, Shield, Gavel, Bot, MonitorCheck,
+  ShieldCheck, FileSpreadsheet, Inbox, Scale, Key, Wrench, LayoutDashboard,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -425,24 +426,43 @@ const AdminPanel = () => {
           <AdminUserDetail userId={selectedUserId} onBack={() => setSelectedUserId(null)} />
         ) : (
         <>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
-            <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => navigate("/admin/oportunidades")} className="gap-2">
-              <TrendingUp className="w-4 h-4" /> Oportunidades
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/admin/importar")} className="gap-2">
-              <FileText className="w-4 h-4" /> Importador Excel
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/admin/roles")} className="gap-2">
-              <Shield className="w-4 h-4" /> Roles y Permisos
-            </Button>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
+              <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
+            </div>
             <Button variant="outline" onClick={loadAll} className="gap-2">
               <Activity className="w-4 h-4" /> Actualizar datos
             </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {([
+              { href: "/admin/oportunidades", label: "Oportunidades", icon: TrendingUp },
+              { href: "/admin/importar", label: "Importador Excel", icon: FileSpreadsheet },
+              { href: "/admin/roles", label: "Roles y Permisos", icon: Shield },
+              { href: "/admin/documentos", label: "Documentos", icon: FileText },
+              { href: "/admin/leads-valoracion", label: "Leads Valoración", icon: Target },
+              { href: "/admin/chats", label: "Chats", icon: MessageCircle },
+              { href: "/admin/documentos-ia", label: "Documentos IA", icon: Bot },
+              { href: "/admin/leads-inbox", label: "Inbox Leads", icon: Inbox },
+              { href: "/admin/demandas", label: "Demandas", icon: Scale },
+              { href: "/admin/tokens", label: "Tokens", icon: Key },
+              { href: "/admin/monitoreo", label: "Monitoreo", icon: MonitorCheck },
+              { href: "/admin/diagnosticos", label: "Diagnósticos", icon: Wrench },
+              { href: "/admin/seguridad", label: "Seguridad", icon: ShieldCheck },
+              { href: "/admin/excel-analyzer", label: "Analizador Excel", icon: FileSpreadsheet },
+              { href: "/admin/agentes", label: "Agentes IA", icon: Bot },
+              { href: "/admin/scraper-boe", label: "Scraper BOE", icon: Gavel },
+              { href: "/crm/leads", label: "CRM Leads", icon: Users },
+              { href: "/crm/pipeline", label: "CRM Pipeline", icon: LayoutDashboard },
+              { href: "/crm/ai/ines", label: "Inés IA", icon: Bot },
+              { href: "/crm/ai/pelayo", label: "Pelayo IA", icon: Bot },
+            ] as const).map(item => (
+              <Button key={item.href} variant="outline" size="sm" onClick={() => navigate(item.href)} className="gap-1.5 text-xs">
+                <item.icon className="w-3.5 h-3.5" /> {item.label}
+              </Button>
+            ))}
           </div>
         </div>
 
