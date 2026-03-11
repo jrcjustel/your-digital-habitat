@@ -168,6 +168,7 @@ const App = () => (
             <Route path="/valoracion-avanzada" element={<HybridValuationPage />} />
             <Route path="/valoracion-hibrida" element={<HybridValuationPage />} />
             <Route path="/calculadoras" element={<CalculatorsPage />} />
+            <Route path="/herramientas/simulador-roi" element={<RoiSimulatorPage />} />
             <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
             <Route path="/mapa" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/comparador" element={<ComparatorPage />} />
