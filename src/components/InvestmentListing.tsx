@@ -124,7 +124,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
       <EducationNudgeBar activeType={opportunityFilter} />
 
       {/* Filters */}
-      <div className="bg-card rounded-2xl border border-border p-5 mb-6">
+      <div className="bg-card rounded-2xl border border-border p-5 mb-6 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -153,6 +153,31 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
           <Button onClick={() => setPage(1)} className="gap-2">
             <Search className="w-4 h-4" /> Buscar
           </Button>
+        </div>
+
+        {/* Price range slider */}
+        <div className="pt-1">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+              <Euro className="w-3 h-3" /> Rango de precio orientativo
+            </span>
+            <span className="text-xs font-bold text-foreground">
+              {priceRange[0].toLocaleString("es-ES")} € — {priceRange[1] >= 2000000 ? "Sin límite" : `${priceRange[1].toLocaleString("es-ES")} €`}
+            </span>
+          </div>
+          <Slider
+            min={0}
+            max={2000000}
+            step={10000}
+            value={priceRange}
+            onValueChange={(v) => setPriceRange(v as [number, number])}
+            onValueCommit={() => setPage(1)}
+            className="w-full"
+          />
+          <div className="flex justify-between mt-1">
+            <span className="text-[10px] text-muted-foreground">0 €</span>
+            <span className="text-[10px] text-muted-foreground">2.000.000 €+</span>
+          </div>
         </div>
       </div>
 
