@@ -427,7 +427,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Province */}
-      <FilterSection title="📍 Provincia" isOpen={openSections.province} onToggle={() => toggleSection("province")}>
+      <FilterSection title="Provincia" isOpen={openSections.province} onToggle={() => toggleSection("province")}>
         {provinciaList.map((p) => (
           <CheckboxFilter
             key={p} label={p}
