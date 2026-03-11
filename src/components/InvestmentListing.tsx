@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, TrendingDown } from "lucide-react";
+import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
 
 interface NplAsset {
   id: string;
@@ -187,6 +188,12 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
+                  <ListingScorePreview
+                    price={a.precio_orientativo}
+                    marketValue={a.valor_mercado}
+                    ocupado={!!a.propiedad_sin_posesion}
+                    provincia={a.provincia}
+                  />
                   {a.sqm > 0 && (
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">Superficie</p>
@@ -202,7 +209,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                   {discount !== null && discount > 0 && (
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">Descuento</p>
-                      <p className="text-sm font-bold text-green-600 flex items-center gap-0.5 justify-end">
+                      <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 justify-end">
                         <TrendingDown className="w-3 h-3" /> {discount}%
                       </p>
                     </div>
