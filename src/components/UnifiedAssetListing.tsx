@@ -390,7 +390,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Price */}
-      <FilterSection title="€ Precio orientativo" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
+      <FilterSection title="Precio orientativo" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
         <div className="flex gap-2">
           <input type="number" placeholder="Min" value={priceMin}
             onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
