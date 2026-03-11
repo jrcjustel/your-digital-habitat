@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
+import GlossaryTooltip from "@/components/GlossaryTooltip";
 import { Home, AlertTriangle, TrendingDown, Scale } from "lucide-react";
 
 const highlights = [
@@ -21,7 +22,7 @@ const InversoresOcupados = () => (
         <h1 className="font-heading text-3xl md:text-4xl font-bold mb-4">Inmuebles Ocupados</h1>
         <p className="text-primary-foreground/80 text-base md:text-lg max-w-2xl mb-8">
           Inmuebles que se transmiten sin posesión. El comprador adquiere la propiedad pero debe
-          llevar a cabo los trámites pertinentes para obtener la posesión efectiva. Los mayores
+          llevar a cabo un <GlossaryTooltip termKey="lanzamiento" showIcon={false}><span className="text-primary-foreground/90">lanzamiento judicial</span></GlossaryTooltip> para obtener la posesión efectiva. Los mayores
           descuentos del mercado para inversores experimentados.
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
