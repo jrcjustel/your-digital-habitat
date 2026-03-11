@@ -1223,7 +1223,15 @@ export type Database = {
       refresh_profile_stats: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "user"
+        | "comercial"
+        | "analista"
+        | "legal"
+        | "finanzas"
+        | "marketing"
       channel_type:
         | "whatsapp"
         | "telegram"
@@ -1358,7 +1366,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: [
+        "admin",
+        "moderator",
+        "user",
+        "comercial",
+        "analista",
+        "legal",
+        "finanzas",
+        "marketing",
+      ],
       channel_type: [
         "whatsapp",
         "telegram",
