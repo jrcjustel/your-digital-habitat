@@ -322,6 +322,8 @@ const InvestorSelfAssessment = () => {
                       </div>
                     </div>
                   </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
 
