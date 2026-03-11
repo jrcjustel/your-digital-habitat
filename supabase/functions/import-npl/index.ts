@@ -549,6 +549,39 @@ Deno.serve(async (req) => {
       },
     });
 
+    // ── Phase 8: Auto-calculate scoring post-import ─────
+    const autoCalculate = body.autoCalculate !== false; // default true
+    let calculated = 0;
+    let calcErrors = 0;
+
+    if (autoCalculate) {
+      const idsToCalc = [...insertedIds, ...updatedIds];
+      if (idsToCalc.length > 0) {
+        const CALC_BATCH = 50;
+        const calcUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/calculate-investment`;
+
+        for (let i = 0; i < idsToCalc.length; i += CALC_BATCH) {
+          const batchIds = idsToCalc.slice(i, i + CALC_BATCH);
+          try {
+            const resp = await fetch(calcUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": authHeader,
+              },
+              body: JSON.stringify({ batch: true, asset_ids: batchIds }),
+            });
+            const result = await resp.json();
+            calculated += result.calculated || 0;
+            calcErrors += result.errors || 0;
+          } catch (e) {
+            console.error("Auto-calc batch error:", e);
+            calcErrors += batchIds.length;
+          }
+        }
+      }
+    }
+
     // ── Response ────────────────────────────────────────
     return json({
       success: true,
@@ -560,6 +593,8 @@ Deno.serve(async (req) => {
         skipped,
         errors: allErrors.filter(e => e.severity === "error").length,
         warnings: allErrors.filter(e => e.severity === "warning").length,
+        calculated,
+        calcErrors,
       },
       errorDetails: allErrors,
     });
