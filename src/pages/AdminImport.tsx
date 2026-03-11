@@ -551,25 +551,24 @@ const AdminImport = () => {
     }
   };
 
-  // ─── VALIDATION STATS ───
+  // ─── VALIDATION STATS (computed inline, no hooks) ───
 
-  const stats = useMemo(() => {
+  const stats = (() => {
     const ok = validations.filter((v) => v.status === "ok").length;
     const warn = validations.filter((v) => v.status === "warning").length;
     const err = validations.filter((v) => v.status === "error").length;
     const dup = validations.filter((v) => v.isDuplicate).length;
     return { ok, warn, err, dup, total: validations.length };
-  }, [validations]);
+  })();
 
-  const filteredValidations = useMemo(() => {
-    if (validationFilter === "all") return validations;
-    return validations.filter((v) => v.status === validationFilter);
-  }, [validations, validationFilter]);
+  const filteredValidations = validationFilter === "all"
+    ? validations
+    : validations.filter((v) => v.status === validationFilter);
 
-  const paginatedValidations = useMemo(() => {
+  const paginatedValidations = (() => {
     const start = previewPage * PREVIEW_PAGE_SIZE;
     return filteredValidations.slice(start, start + PREVIEW_PAGE_SIZE);
-  }, [filteredValidations, previewPage]);
+  })();
 
   const totalPages = Math.ceil(filteredValidations.length / PREVIEW_PAGE_SIZE);
 
