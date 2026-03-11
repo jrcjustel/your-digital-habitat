@@ -309,10 +309,44 @@ const AdminOportunidadesPage = () => {
               <p className="text-sm text-muted-foreground">{filtered.length} activos · Score, ROI, TIR y semáforo de riesgo</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={load} className="gap-2">
-            <RefreshCw className="w-4 h-4" /> Actualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={() => runBatchScoring(true)} disabled={scoring} className="gap-2">
+              <Zap className="w-4 h-4" /> {scoring ? "Scoring..." : "Batch Scoring"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => runBatchScoring(false)} disabled={scoring} className="gap-2" title="Recalcular todos, incluso los ya calculados">
+              <Zap className="w-4 h-4" /> Recalcular todo
+            </Button>
+            <Button variant="outline" size="sm" onClick={load} className="gap-2">
+              <RefreshCw className="w-4 h-4" /> Actualizar
+            </Button>
+          </div>
         </div>
+
+        {/* Batch Scoring Progress */}
+        {scoreProgress && (
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">{scoreProgress.phase}</span>
+                </div>
+                {scoreProgress.done && (
+                  <Button variant="ghost" size="sm" onClick={() => setScoreProgress(null)} className="text-xs h-7">
+                    Cerrar
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <span>Calculados: <strong className="text-foreground">{scoreProgress.calculated}</strong></span>
+                {scoreProgress.errors > 0 && (
+                  <span>Errores: <strong className="text-destructive">{scoreProgress.errors}</strong></span>
+                )}
+              </div>
+              {scoring && <Progress value={undefined} className="h-1.5" />}
+            </CardContent>
+          </Card>
+        )}
 
         {/* KPIs */}
         <KpiSummary data={filtered} />
