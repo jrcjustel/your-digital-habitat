@@ -319,15 +319,14 @@ const NplListing = () => {
 
       <div className="container mx-auto px-4 py-8">
         {/* Filters */}
-        <div className="bg-card rounded-2xl border border-border p-5 mb-6">
+        <div className="bg-card rounded-xl border border-border p-5 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-foreground">Filtros</span>
+              <span className="text-xs font-bold text-foreground uppercase tracking-wider">Filtros</span>
               {activeFiltersCount > 0 && (
-                <Badge variant="secondary" className="text-[10px] h-5">
-                  {activeFiltersCount} activos
-                </Badge>
+                <span className="text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                  {activeFiltersCount}
+                </span>
               )}
             </div>
             <div className="flex items-center gap-2">
