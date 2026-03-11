@@ -416,7 +416,7 @@ const UnifiedAssetListing = ({
       )}
 
       {/* Community */}
-      <FilterSection title="📍 Comunidad autónoma" isOpen={openSections.community} onToggle={() => toggleSection("community")}>
+      <FilterSection title="Comunidad autónoma" isOpen={openSections.community} onToggle={() => toggleSection("community")}>
         {ccaaList.map((c) => (
           <CheckboxFilter
             key={c} label={c}
