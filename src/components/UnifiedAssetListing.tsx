@@ -457,7 +457,7 @@ const UnifiedAssetListing = ({
   );
 
   /* ─── Property Card (Grid) ─── */
-  const PropertyCard = ({ asset }: { asset: NplAsset }) => {
+  const PropertyCard = ({ asset, index = 0 }: { asset: NplAsset; index?: number }) => {
     const st = resolveSaleType(asset);
     const discount = asset.valor_mercado && asset.precio_orientativo && asset.valor_mercado > 0
       ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100) : 0;
@@ -470,81 +470,88 @@ const UnifiedAssetListing = ({
 
     return (
       <TooltipProvider delayDuration={300}>
-        <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
-          <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-            <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {asset.referencia_fencia && (
-                <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
-              )}
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
-                {saleTypeLabel(st)}
-              </span>
-              {asset.tipo_activo && (
-                <span className="bg-card/90 text-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">{asset.tipo_activo}</span>
-              )}
-            </div>
-            {discount > 0 && (
-              <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                -{discount}%
-              </div>
-            )}
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-              <ExitStrategyChips type={oppType} />
-            </div>
-          </div>
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-                <MapPin className="w-3 h-3" />
-                {asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
-              </div>
-              <Heart className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-            </div>
-            <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug text-sm line-clamp-2">
-              {asset.direccion || asset.municipio || "Ubicación no disponible"}
-            </h3>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-              {asset.sqm && asset.sqm > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1 cursor-help"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Superficie</p></TooltipContent>
-                </Tooltip>
-              )}
-              <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
-            </div>
-            <div className="flex items-end justify-between border-t border-border pt-3">
-              <div>
-                {asset.valor_mercado && asset.valor_mercado > 0 && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <p className="text-xs text-muted-foreground line-through cursor-help">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Valor de mercado estimado</p></TooltipContent>
-                  </Tooltip>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18, delay: Math.min(index * 0.05, 0.4) }}
+          whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+        >
+          <Link to={`/npl/${asset.id}`} className="group block bg-card rounded-2xl overflow-hidden card-elevated transition-all duration-300 hover:shadow-xl">
+            <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+              <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" decoding="async" />
+              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                {asset.referencia_fencia && (
+                  <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
                 )}
-                <p className="font-heading text-lg font-bold text-foreground">
-                  {asset.precio_orientativo && asset.precio_orientativo > 0
-                    ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
-                    : "Consultar"}
-                </p>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
+                  {saleTypeLabel(st)}
+                </span>
+                {asset.tipo_activo && (
+                  <span className="bg-card/90 text-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">{asset.tipo_activo}</span>
+                )}
               </div>
               {discount > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 cursor-help">
-                      <TrendingDown className="w-3 h-3" />{discount}%
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Descuento sobre valor de mercado</p></TooltipContent>
-                </Tooltip>
+                <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  -{discount}%
+                </div>
               )}
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                <ExitStrategyChips type={oppType} />
+              </div>
             </div>
-          </div>
-        </Link>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                  <MapPin className="w-3 h-3" />
+                  {asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
+                </div>
+                <Heart className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
+              </div>
+              <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug text-sm line-clamp-2">
+                {asset.direccion || asset.municipio || "Ubicación no disponible"}
+              </h3>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                {asset.sqm && asset.sqm > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex items-center gap-1 cursor-help"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Superficie</p></TooltipContent>
+                  </Tooltip>
+                )}
+                <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
+              </div>
+              <div className="flex items-end justify-between border-t border-border pt-3">
+                <div>
+                  {asset.valor_mercado && asset.valor_mercado > 0 && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-xs text-muted-foreground line-through cursor-help">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Valor de mercado estimado</p></TooltipContent>
+                    </Tooltip>
+                  )}
+                  <p className="font-heading text-lg font-bold text-foreground">
+                    {asset.precio_orientativo && asset.precio_orientativo > 0
+                      ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
+                      : "Consultar"}
+                  </p>
+                </div>
+                {discount > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 cursor-help">
+                        <TrendingDown className="w-3 h-3" />{discount}%
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Descuento sobre valor de mercado</p></TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+          </Link>
+        </motion.div>
       </TooltipProvider>
     );
   };
