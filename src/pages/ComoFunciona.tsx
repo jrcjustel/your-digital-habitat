@@ -546,6 +546,16 @@ const ComoFunciona = () => {
         </div>
       </section>
 
+      {/* Investment Decision Matrix */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <InvestmentDecisionMatrix />
+      </div>
+
+      {/* Opportunity Origin */}
+      <div className="container mx-auto px-4 max-w-5xl">
+        <OpportunityOriginExplainer />
+      </div>
+
       <Footer />
     </div>
   );
