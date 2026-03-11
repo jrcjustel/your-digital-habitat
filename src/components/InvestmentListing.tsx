@@ -9,6 +9,7 @@ import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
 import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
 import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
+import ExitStrategyChips from "@/components/intelligence/ExitStrategyChips";
 
 interface NplAsset {
   id: string;
@@ -205,6 +206,13 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                     <MapPin className="w-3 h-3" />
                     {a.municipio}{a.provincia ? `, ${a.provincia}` : ""}{a.comunidad_autonoma ? ` · ${a.comunidad_autonoma}` : ""}
                   </p>
+                  <ExitStrategyChips
+                    type={resolveOpportunityType({
+                      cesionRemate: a.cesion_remate,
+                      propiedadSinPosesion: a.propiedad_sin_posesion,
+                      posturaSubasta: a.postura_subasta,
+                    })}
+                  />
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
