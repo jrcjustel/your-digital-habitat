@@ -49,6 +49,34 @@ const PropertyDetail = () => {
 
   const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
 
+  // Intelligence layer
+  const opportunityType = useMemo(() => property ? resolveOpportunityType({
+    saleType: property.saleType,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "reo-libre" as const, [property]);
+
+  const riskLevel = useMemo(() => property ? deriveRiskLevel({
+    ocupado: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+    judicializado: property.judicialInfo?.judicializado || false,
+    faseJudicial: property.judicialInfo?.phase,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "bajo" as const, [property]);
+
+  const investScoreData = useMemo(() => property ? calculateInvestScore({
+    price: property.price,
+    marketValue: property.marketValue || property.price,
+    ocupado: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+    judicializado: property.judicialInfo?.judicializado || false,
+    faseJudicial: property.judicialInfo?.phase,
+    provincia: property.province,
+    estadoOcupacional: property.occupancyStatus,
+  }) : { score: 0, factors: { discount: 0, legalComplexity: 0, occupancy: 0, liquidity: 0, timeline: 0 } }, [property]);
+
+  const academyCategory = useMemo(() => property ? resolveAcademyCategory({
+    saleType: property.saleType,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "libre" as const, [property]);
+
   useEffect(() => {
     if (user && id) {
       supabase.from("favorites").select("id").eq("user_id", user.id).eq("property_id", id).maybeSingle().then(({ data }) => {
