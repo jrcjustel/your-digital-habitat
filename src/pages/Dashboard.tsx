@@ -18,6 +18,7 @@ import AlertsCreator from "@/components/AlertsCreator";
 import NdaSigningFlow from "@/components/NdaSigningFlow";
 import WelcomeWizard from "@/components/WelcomeWizard";
 import FirstOperationChecklist from "@/components/FirstOperationChecklist";
+import DashboardWelcomeChecklist from "@/components/DashboardWelcomeChecklist";
 import JourneyStageWidget from "@/components/JourneyStageWidget";
 import InvestmentChecklistGenerator from "@/components/InvestmentChecklistGenerator";
 import InvestmentDiary from "@/components/InvestmentDiary";
@@ -212,6 +213,14 @@ const Dashboard = () => {
         </div>
 
         <WelcomeWizard />
+
+        {/* Dashboard Welcome Checklist */}
+        <DashboardWelcomeChecklist
+          profileComplete={!!(profile.display_name && profile.investor_level)}
+          selfAssessmentDone={!!localStorage.getItem("ikesa_assessment_done")}
+          hasAlerts={alerts.length > 0}
+          hasFavorites={favorites.length > 0}
+        />
 
         {/* Journey Stage Widget */}
         <JourneyStageWidget
