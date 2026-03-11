@@ -770,7 +770,7 @@ const UnifiedAssetListing = ({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {assets.map((a) => <PropertyCard key={a.id} asset={a} />)}
             </div>
-          )
+          )}
 
           <Pagination />
 
