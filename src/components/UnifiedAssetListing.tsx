@@ -403,7 +403,7 @@ const UnifiedAssetListing = ({
 
       {/* Sale type */}
       {!hideSaleTypeFilter && (
-        <FilterSection title="📑 Tipo de inversión" isOpen={openSections.saleType} onToggle={() => toggleSection("saleType")}>
+        <FilterSection title="Tipo de inversión" isOpen={openSections.saleType} onToggle={() => toggleSection("saleType")}>
           {(["compraventa", "npl", "cesion-remate", "ocupado", "subasta"] as const).map((st) => (
             <CheckboxFilter
               key={st}
