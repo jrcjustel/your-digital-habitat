@@ -16,6 +16,8 @@ import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Cl
 import DocumentsPanel from "@/components/DocumentsPanel";
 import AlertsCreator from "@/components/AlertsCreator";
 import NdaSigningFlow from "@/components/NdaSigningFlow";
+import WelcomeWizard from "@/components/WelcomeWizard";
+import FirstOperationChecklist from "@/components/FirstOperationChecklist";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
