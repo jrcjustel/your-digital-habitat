@@ -11,6 +11,7 @@ import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } fr
 import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
 import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
 import ExitStrategyChips from "@/components/intelligence/ExitStrategyChips";
+import ComplexityMeter from "@/components/intelligence/ComplexityMeter";
 
 interface NplAsset {
   id: string;
@@ -247,6 +248,14 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
+                  <ComplexityMeter
+                    type={resolveOpportunityType({
+                      cesionRemate: a.cesion_remate,
+                      propiedadSinPosesion: a.propiedad_sin_posesion,
+                      posturaSubasta: a.postura_subasta,
+                    })}
+                    estadoJudicial={a.estado_judicial}
+                  />
                   <ListingScorePreview
                     price={a.precio_orientativo}
                     marketValue={a.valor_mercado}
