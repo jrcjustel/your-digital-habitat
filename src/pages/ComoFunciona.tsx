@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/accordion";
 import PriceCycleGraph from "@/components/PriceCycleGraph";
 import ProcessTimeline from "@/components/ProcessTimeline";
+import RealCaseStudies from "@/components/RealCaseStudies";
+import InvestorTimeline from "@/components/InvestorTimeline";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -503,6 +505,12 @@ const ComoFunciona = () => {
           )}
         </div>
       </section>
+
+      {/* ── Casos de éxito reales ── */}
+      <RealCaseStudies />
+
+      {/* ── Journey del inversor ── */}
+      <InvestorTimeline />
 
       {/* ── CTA Final ── */}
       <section className="bg-primary py-16">
