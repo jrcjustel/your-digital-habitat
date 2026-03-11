@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -12,10 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft, Search, TrendingUp, TrendingDown, AlertTriangle,
   CheckCircle, XCircle, Activity, Building2, MapPin, BarChart3,
   Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw, Zap,
+  Map, List, Home, Gavel, Key,
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────────────────────
