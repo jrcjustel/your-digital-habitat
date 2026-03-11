@@ -351,7 +351,7 @@ const UnifiedAssetListing = ({
       <ActiveFilterChips />
 
       {/* Search with autocomplete */}
-      <FilterSection title="🔍 Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
+      <FilterSection title="Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
         <div className="relative">
           <input
             type="text"
