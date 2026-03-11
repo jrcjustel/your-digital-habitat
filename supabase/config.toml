@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.bulk-catastro-enrich]
 verify_jwt = false
+
+[functions.calculate-investment]
+verify_jwt = false
+
+[functions.batch-scoring]
+verify_jwt = false
