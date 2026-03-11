@@ -35,6 +35,8 @@ import PriceCycleGraph from "@/components/PriceCycleGraph";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import InvestorTimeline from "@/components/InvestorTimeline";
+import InvestmentDecisionMatrix from "@/components/InvestmentDecisionMatrix";
+import OpportunityOriginExplainer from "@/components/OpportunityOriginExplainer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -543,6 +545,16 @@ const ComoFunciona = () => {
           </div>
         </div>
       </section>
+
+      {/* Investment Decision Matrix */}
+      <div className="container mx-auto px-4 max-w-6xl">
+        <InvestmentDecisionMatrix />
+      </div>
+
+      {/* Opportunity Origin */}
+      <div className="container mx-auto px-4 max-w-5xl">
+        <OpportunityOriginExplainer />
+      </div>
 
       <Footer />
     </div>

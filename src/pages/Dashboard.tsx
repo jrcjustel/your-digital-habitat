@@ -16,6 +16,8 @@ import { Heart, Bell, User, Trash2, MapPin, Ruler, BedDouble, Euro, FileText, Cl
 import DocumentsPanel from "@/components/DocumentsPanel";
 import AlertsCreator from "@/components/AlertsCreator";
 import NdaSigningFlow from "@/components/NdaSigningFlow";
+import WelcomeWizard from "@/components/WelcomeWizard";
+import FirstOperationChecklist from "@/components/FirstOperationChecklist";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -204,6 +206,18 @@ const Dashboard = () => {
             <p className="text-muted-foreground">Bienvenido/a a la democratización de la inversión inmobiliaria</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
+        </div>
+
+        <WelcomeWizard />
+
+        {/* First Operation Checklist */}
+        <div className="mb-8">
+          <FirstOperationChecklist
+            profileComplete={!!(profile.display_name && profile.investor_level)}
+            hasFavorites={favorites.length > 0}
+            hasOffers={offers.length > 0}
+            ndaSigned={!!profile.nda_signed}
+          />
         </div>
 
         {/* Quick Search Section */}
