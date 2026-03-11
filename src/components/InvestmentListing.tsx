@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, TrendingDown } from "lucide-react";
 import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
-import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
+import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
 
 interface NplAsset {
   id: string;
