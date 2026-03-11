@@ -297,9 +297,12 @@ const InvestorSelfAssessment = () => {
                   <span className="text-xs font-bold uppercase tracking-widest text-accent">Tu recomendación principal</span>
                 </div>
                 <CardContent className="pt-5">
+                  {(() => {
+                    const TopIcon = results[0].icon;
+                    return (
                   <div className="flex items-start gap-4">
                     <div className={`p-3 rounded-xl ${results[0].bgColor}`}>
-                      <results[0].icon className={`w-7 h-7 ${results[0].color}`} />
+                      <TopIcon className={`w-7 h-7 ${results[0].color}`} />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-foreground mb-1">{results[0].label}</h3>
