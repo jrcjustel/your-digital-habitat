@@ -11,6 +11,7 @@ import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } fr
 import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
 import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
 import ExitStrategyChips from "@/components/intelligence/ExitStrategyChips";
+import ComplexityMeter from "@/components/intelligence/ComplexityMeter";
 
 interface NplAsset {
   id: string;
