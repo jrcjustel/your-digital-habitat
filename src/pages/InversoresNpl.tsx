@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
+import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import { CreditCard, TrendingDown, Shield, FileText } from "lucide-react";
 
