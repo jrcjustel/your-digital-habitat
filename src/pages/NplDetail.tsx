@@ -326,7 +326,7 @@ const NplDetail = () => {
               </p>
             </div>
             <div className="bg-secondary rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Valor de mercado</p>
+              <p className="text-sm text-muted-foreground mb-1">Valor de subasta</p>
               <p className="text-2xl font-bold text-foreground">
                 {asset.valor_mercado > 0 ? `${asset.valor_mercado.toLocaleString("es-ES")} €` : "A consultar"}
               </p>
@@ -523,7 +523,7 @@ const NplDetail = () => {
                       <InfoRow label="Deuda pendiente" value={asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : null} />
                       <InfoRow label="Rango de deuda" value={asset.rango_deuda} />
                       <InfoRow label="Valor del activo" value={asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : null} />
-                      <InfoRow label="Valor de mercado" value={asset.valor_mercado > 0 ? `${asset.valor_mercado.toLocaleString("es-ES")} €` : null} />
+                      <InfoRow label="Valor de subasta" value={asset.valor_mercado > 0 ? `${asset.valor_mercado.toLocaleString("es-ES")} €` : null} />
                       <InfoRow label="Importe preaprobado" value={asset.importe_preaprobado > 0 ? `${asset.importe_preaprobado.toLocaleString("es-ES")} €` : null} />
                       <InfoRow label="Nº titulares" value={asset.num_titulares} />
                       <InfoRow label="Tipo de persona" value={asset.persona_tipo === "fisica" ? "Persona física" : asset.persona_tipo === "juridica" ? "Persona jurídica" : asset.persona_tipo} />
