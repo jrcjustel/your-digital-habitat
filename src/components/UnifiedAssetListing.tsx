@@ -6,6 +6,7 @@ import {
   LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro, Map,
 } from "lucide-react";
 import { lazy, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 const AssetMapView = lazy(() => import("@/components/AssetMapView"));
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
@@ -456,7 +457,7 @@ const UnifiedAssetListing = ({
   );
 
   /* ─── Property Card (Grid) ─── */
-  const PropertyCard = ({ asset }: { asset: NplAsset }) => {
+  const PropertyCard = ({ asset, index = 0 }: { asset: NplAsset; index?: number }) => {
     const st = resolveSaleType(asset);
     const discount = asset.valor_mercado && asset.precio_orientativo && asset.valor_mercado > 0
       ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100) : 0;
@@ -469,87 +470,94 @@ const UnifiedAssetListing = ({
 
     return (
       <TooltipProvider delayDuration={300}>
-        <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
-          <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-            <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {asset.referencia_fencia && (
-                <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
-              )}
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
-                {saleTypeLabel(st)}
-              </span>
-              {asset.tipo_activo && (
-                <span className="bg-card/90 text-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">{asset.tipo_activo}</span>
-              )}
-            </div>
-            {discount > 0 && (
-              <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                -{discount}%
-              </div>
-            )}
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-              <ExitStrategyChips type={oppType} />
-            </div>
-          </div>
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-                <MapPin className="w-3 h-3" />
-                {asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
-              </div>
-              <Heart className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-            </div>
-            <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug text-sm line-clamp-2">
-              {asset.direccion || asset.municipio || "Ubicación no disponible"}
-            </h3>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-              {asset.sqm && asset.sqm > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex items-center gap-1 cursor-help"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Superficie</p></TooltipContent>
-                </Tooltip>
-              )}
-              <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
-            </div>
-            <div className="flex items-end justify-between border-t border-border pt-3">
-              <div>
-                {asset.valor_mercado && asset.valor_mercado > 0 && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <p className="text-xs text-muted-foreground line-through cursor-help">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
-                    </TooltipTrigger>
-                    <TooltipContent><p>Valor de mercado estimado</p></TooltipContent>
-                  </Tooltip>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18, delay: Math.min(index * 0.05, 0.4) }}
+          whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+        >
+          <Link to={`/npl/${asset.id}`} className="group block bg-card rounded-2xl overflow-hidden card-elevated transition-all duration-300 hover:shadow-xl">
+            <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+              <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" decoding="async" />
+              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                {asset.referencia_fencia && (
+                  <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
                 )}
-                <p className="font-heading text-lg font-bold text-foreground">
-                  {asset.precio_orientativo && asset.precio_orientativo > 0
-                    ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
-                    : "Consultar"}
-                </p>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
+                  {saleTypeLabel(st)}
+                </span>
+                {asset.tipo_activo && (
+                  <span className="bg-card/90 text-foreground text-[10px] font-medium px-2 py-0.5 rounded-full">{asset.tipo_activo}</span>
+                )}
               </div>
               {discount > 0 && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 cursor-help">
-                      <TrendingDown className="w-3 h-3" />{discount}%
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Descuento sobre valor de mercado</p></TooltipContent>
-                </Tooltip>
+                <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  -{discount}%
+                </div>
               )}
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                <ExitStrategyChips type={oppType} />
+              </div>
             </div>
-          </div>
-        </Link>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+                  <MapPin className="w-3 h-3" />
+                  {asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
+                </div>
+                <Heart className="w-4 h-4 text-muted-foreground group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
+              </div>
+              <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 leading-snug text-sm line-clamp-2">
+                {asset.direccion || asset.municipio || "Ubicación no disponible"}
+              </h3>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                {asset.sqm && asset.sqm > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex items-center gap-1 cursor-help"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Superficie</p></TooltipContent>
+                  </Tooltip>
+                )}
+                <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
+              </div>
+              <div className="flex items-end justify-between border-t border-border pt-3">
+                <div>
+                  {asset.valor_mercado && asset.valor_mercado > 0 && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-xs text-muted-foreground line-through cursor-help">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
+                      </TooltipTrigger>
+                      <TooltipContent><p>Valor de mercado estimado</p></TooltipContent>
+                    </Tooltip>
+                  )}
+                  <p className="font-heading text-lg font-bold text-foreground">
+                    {asset.precio_orientativo && asset.precio_orientativo > 0
+                      ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
+                      : "Consultar"}
+                  </p>
+                </div>
+                {discount > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 cursor-help">
+                        <TrendingDown className="w-3 h-3" />{discount}%
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent><p>Descuento sobre valor de mercado</p></TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+          </Link>
+        </motion.div>
       </TooltipProvider>
     );
   };
 
   /* ─── Property List Item ─── */
-  const PropertyListItem = ({ asset }: { asset: NplAsset }) => {
+  const PropertyListItem = ({ asset, index = 0 }: { asset: NplAsset; index?: number }) => {
     const st = resolveSaleType(asset);
     const discount = asset.valor_mercado && asset.precio_orientativo && asset.valor_mercado > 0
       ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100) : 0;
@@ -562,66 +570,73 @@ const UnifiedAssetListing = ({
 
     return (
       <TooltipProvider delayDuration={300}>
-        <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row transition-all duration-300 hover:shadow-xl hover:border-accent/30">
-          <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0 bg-secondary">
-            <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {asset.referencia_fencia && (
-                <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
-              )}
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
-                {saleTypeLabel(st)}
-              </span>
-            </div>
-            {discount > 0 && (
-              <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                -{discount}%
-              </div>
-            )}
-          </div>
-          <div className="p-5 flex-1 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />{asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
-                  {asset.comunidad_autonoma ? ` · ${asset.comunidad_autonoma}` : ""}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18, delay: Math.min(index * 0.05, 0.4) }}
+          whileHover={{ y: -2, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+        >
+          <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row transition-all duration-300 hover:shadow-xl hover:border-accent/30">
+            <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0 bg-secondary">
+              <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" decoding="async" />
+              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                {asset.referencia_fencia && (
+                  <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
+                )}
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
+                  {saleTypeLabel(st)}
                 </span>
-                {asset.tipo_activo && (
-                  <span className="text-[10px] bg-secondary px-2 py-0.5 rounded-full text-muted-foreground">{asset.tipo_activo}</span>
-                )}
-              </div>
-              <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 text-sm">
-                {asset.direccion || asset.municipio || "Ubicación no disponible"}
-              </h3>
-              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                {asset.sqm && asset.sqm > 0 && (
-                  <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
-                )}
-                <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
-                <ListingScorePreview price={asset.precio_orientativo || 0} marketValue={asset.valor_mercado || 0} ocupado={!!asset.propiedad_sin_posesion} provincia={asset.provincia} />
-              </div>
-              <ExitStrategyChips type={oppType} />
-            </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-              <div>
-                {asset.valor_mercado && asset.valor_mercado > 0 && (
-                  <p className="text-xs text-muted-foreground line-through">{asset.valor_mercado.toLocaleString("es-ES")} € mercado</p>
-                )}
-                <p className="font-heading text-lg font-bold text-foreground">
-                  {asset.precio_orientativo && asset.precio_orientativo > 0
-                    ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
-                    : "Consultar"}
-                </p>
               </div>
               {discount > 0 && (
-                <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
-                  <TrendingDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-xs font-bold text-foreground">{discount}% dto.</span>
+                <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  -{discount}%
                 </div>
               )}
             </div>
-          </div>
-        </Link>
+            <div className="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
+                    {asset.comunidad_autonoma ? ` · ${asset.comunidad_autonoma}` : ""}
+                  </span>
+                  {asset.tipo_activo && (
+                    <span className="text-[10px] bg-secondary px-2 py-0.5 rounded-full text-muted-foreground">{asset.tipo_activo}</span>
+                  )}
+                </div>
+                <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 text-sm">
+                  {asset.direccion || asset.municipio || "Ubicación no disponible"}
+                </h3>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                  {asset.sqm && asset.sqm > 0 && (
+                    <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
+                  )}
+                  <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
+                  <ListingScorePreview price={asset.precio_orientativo || 0} marketValue={asset.valor_mercado || 0} ocupado={!!asset.propiedad_sin_posesion} provincia={asset.provincia} />
+                </div>
+                <ExitStrategyChips type={oppType} />
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                <div>
+                  {asset.valor_mercado && asset.valor_mercado > 0 && (
+                    <p className="text-xs text-muted-foreground line-through">{asset.valor_mercado.toLocaleString("es-ES")} € mercado</p>
+                  )}
+                  <p className="font-heading text-lg font-bold text-foreground">
+                    {asset.precio_orientativo && asset.precio_orientativo > 0
+                      ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
+                      : "Consultar"}
+                  </p>
+                </div>
+                {discount > 0 && (
+                  <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
+                    <TrendingDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs font-bold text-foreground">{discount}% dto.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Link>
+        </motion.div>
       </TooltipProvider>
     );
   };
@@ -657,10 +672,15 @@ const UnifiedAssetListing = ({
   return (
     <div>
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        className="flex items-center justify-between gap-4 mb-6 flex-wrap"
+      >
         <div className="flex items-center gap-3">
           <p className="text-sm text-muted-foreground">
-            <strong className="text-foreground">{total.toLocaleString("es-ES")}</strong> oportunidades encontradas
+            <strong className="text-foreground">{total.toLocaleString("es-ES")}</strong> oportunidades disponibles
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -682,7 +702,7 @@ const UnifiedAssetListing = ({
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`p-2.5 transition-colors ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`p-2.5 transition-all duration-200 ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 <Icon className="w-4 h-4" />
               </button>
@@ -703,72 +723,102 @@ const UnifiedAssetListing = ({
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="flex gap-8">
         {/* Sidebar - Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="sticky top-24 bg-card border border-border rounded-2xl p-5 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.2 }}
+            className="sticky top-24 bg-card border border-border rounded-2xl p-5 max-h-[calc(100vh-8rem)] overflow-y-auto"
+          >
             <SidebarFilters />
-          </div>
+          </motion.div>
         </aside>
 
         {/* Mobile filter drawer */}
-        {showMobileFilters && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-foreground/50 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)} />
-            <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card p-5 overflow-y-auto animate-fade-in shadow-2xl">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-foreground">Filtros</h3>
-                <button onClick={() => setShowMobileFilters(false)} className="p-1 rounded-lg hover:bg-secondary"><X className="w-5 h-5" /></button>
-              </div>
-              {/* Mobile sort */}
-              <div className="mb-4 pb-4 border-b border-border">
-                <label className="text-sm font-bold text-foreground mb-2 block">Ordenar por</label>
-                <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-                  className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="recent">Más recientes</option>
-                  <option value="price-asc">Precio ↑</option>
-                  <option value="price-desc">Precio ↓</option>
-                  <option value="area">Mayor superficie</option>
-                  <option value="province">Por provincia</option>
-                  <option value="type">Por tipología</option>
-                </select>
-              </div>
-              <SidebarFilters />
-              <button
+        <AnimatePresence>
+          {showMobileFilters && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-foreground/50 backdrop-blur-sm"
                 onClick={() => setShowMobileFilters(false)}
-                className="w-full mt-4 bg-accent text-accent-foreground font-bold py-3 rounded-xl text-sm active:scale-95 transition-transform"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card p-5 overflow-y-auto shadow-2xl"
               >
-                Ver {total.toLocaleString("es-ES")} resultados
-              </button>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-foreground">Filtros</h3>
+                  <button onClick={() => setShowMobileFilters(false)} className="p-1 rounded-lg hover:bg-secondary"><X className="w-5 h-5" /></button>
+                </div>
+                {/* Mobile sort */}
+                <div className="mb-4 pb-4 border-b border-border">
+                  <label className="text-sm font-bold text-foreground mb-2 block">Ordenar por</label>
+                  <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                    className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                    <option value="recent">Más recientes</option>
+                    <option value="price-asc">Precio ↑</option>
+                    <option value="price-desc">Precio ↓</option>
+                    <option value="area">Mayor superficie</option>
+                    <option value="province">Por provincia</option>
+                    <option value="type">Por tipología</option>
+                  </select>
+                </div>
+                <SidebarFilters />
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="w-full mt-4 bg-accent text-accent-foreground font-bold py-3 rounded-xl text-sm active:scale-95 transition-transform"
+                >
+                  Ver {total.toLocaleString("es-ES")} resultados
+                </button>
+              </motion.div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Results */}
         <div className="flex-1 min-w-0">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-20 gap-3"
+            >
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground">Buscando oportunidades…</p>
+            </motion.div>
           ) : assets.length === 0 ? (
-            <div className="text-center py-20 bg-card rounded-2xl border border-border">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="text-center py-20 bg-card rounded-2xl border border-border"
+            >
               <Building2 className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg mb-2">No se encontraron oportunidades</p>
-              <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
-            </div>
+              <p className="text-muted-foreground text-lg mb-1">No hemos encontrado nada</p>
+              <p className="text-muted-foreground text-sm mb-4">Prueba a ajustar los filtros o ampliar la búsqueda</p>
+              <button onClick={clearFilters} className="text-sm text-accent hover:underline font-semibold">Limpiar filtros</button>
+            </motion.div>
           ) : viewMode === "map" ? (
-            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>}>
+            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-accent" /></div>}>
               <AssetMapView assets={assets} coverImages={coverImages} />
             </Suspense>
           ) : viewMode === "list" ? (
             <div className="space-y-4">
-              {assets.map((a) => <PropertyListItem key={a.id} asset={a} />)}
+              {assets.map((a, i) => <PropertyListItem key={a.id} asset={a} index={i} />)}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {assets.map((a) => <PropertyCard key={a.id} asset={a} />)}
+              {assets.map((a, i) => <PropertyCard key={a.id} asset={a} index={i} />)}
             </div>
           )}
 

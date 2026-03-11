@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 import UnifiedAssetListing from "@/components/UnifiedAssetListing";
+import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 const PropertyListing = () => {
   const [searchParams] = useSearchParams();
@@ -33,15 +35,34 @@ const PropertyListing = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Title */}
-        <div className="mb-6">
-          <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Descubre nuestras oportunidades
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-3xl">
-            Invierte en oportunidades exclusivas: NPLs, cesiones de remate, inmuebles ocupados y compraventa directa.
-            Accede a información verificada y análisis financiero con proyecciones de rentabilidad.
-          </p>
+        {/* Title – humanized */}
+        <div className="mb-8">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-1.5 text-accent text-xs font-bold uppercase tracking-wider mb-3"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Datos reales, actualizados a diario
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
+            className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2"
+          >
+            Encuentra tu próxima inversión
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-sm text-muted-foreground max-w-2xl leading-relaxed"
+          >
+            NPLs, cesiones de remate, ocupados, subastas… Todo en un sitio, con información
+            verificada y análisis financiero para que no vayas a ciegas.
+          </motion.p>
         </div>
 
         <UnifiedAssetListing
