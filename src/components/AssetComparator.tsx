@@ -162,7 +162,7 @@ const ComparatorSlot = ({
           <Row label="Estado judicial" value={asset.estado_judicial || "—"} />
           <Row label="CDR" value={asset.cesion_remate ? "Sí" : "No"} />
           <Row label="Cesión crédito" value={asset.cesion_credito ? "Sí" : "No"} />
-          {asset.cartera && <Row label="Cartera" value={asset.cartera} />}
+          
         </div>
 
         {discount && discount > 0 && (
