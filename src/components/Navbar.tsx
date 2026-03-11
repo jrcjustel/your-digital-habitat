@@ -151,22 +151,29 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <a href="/" className="flex items-center">
+        <motion.a
+          href="/"
+          className="flex items-center"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        >
           <img src={ikesaLogo} alt="ikesa Inmobiliaria / Real Estate" className="h-10" />
-        </a>
+        </motion.a>
 
         <nav className="hidden lg:flex items-center gap-0.5">
           {navEntries.map((entry) =>
             isGroup(entry) ? (
               <DropdownMenu key={entry.label} group={entry} onNavigate={navigate} />
             ) : (
-              <button
+              <motion.button
                 key={entry.label}
                 onClick={() => navigate(entry.href)}
                 className="px-3 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors rounded-lg hover:bg-secondary"
+                whileTap={{ scale: 0.96 }}
               >
                 {entry.label}
-              </button>
+              </motion.button>
             )
           )}
         </nav>
@@ -174,109 +181,135 @@ const Navbar = () => {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <button onClick={() => navigate("/mi-cuenta")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate("/mi-cuenta")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
                 <Heart className="w-4 h-4" />
                 Favoritos
-              </button>
-              <button onClick={() => navigate("/mi-cuenta")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate("/mi-cuenta")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
                 <User className="w-4 h-4" />
                 Mi cuenta
-              </button>
+              </motion.button>
               {isAdmin && (
-                <button onClick={() => navigate("/admin/panel")} className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:text-accent transition-colors">
+                <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate("/admin/panel")} className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm font-medium text-primary hover:text-accent transition-colors">
                   <Shield className="w-4 h-4" />
                   Admin
-                </button>
+                </motion.button>
               )}
-              <button onClick={handleSignOut} className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-destructive transition-colors">
+              <motion.button whileTap={{ scale: 0.9 }} onClick={handleSignOut} className="hidden lg:flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-destructive transition-colors">
                 <LogOut className="w-4 h-4" />
-              </button>
+              </motion.button>
             </>
           ) : (
             <>
-              <button onClick={() => navigate("/auth")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate("/auth")} className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground hover:text-accent transition-colors">
                 <User className="w-4 h-4" />
                 Acceso
-              </button>
-              <a href="#contacto" className="hidden lg:inline-flex btn-search text-sm py-2 px-6">
-                Contáctanos
-              </a>
+              </motion.button>
+              <motion.a
+                href="#contacto"
+                className="hidden lg:inline-flex btn-search text-sm py-2 px-6"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                Hablemos
+              </motion.a>
             </>
           )}
-          <button
+          <motion.button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="lg:hidden p-2 text-foreground"
+            whileTap={{ scale: 0.9, rotate: 90 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="lg:hidden bg-card border-t border-border animate-fade-in max-h-[80vh] overflow-y-auto">
-          <div className="container mx-auto px-4 py-4 space-y-1">
-            {navEntries.map((entry) =>
-              isGroup(entry) ? (
-                <div key={entry.label}>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            className="lg:hidden bg-card border-t border-border max-h-[80vh] overflow-y-auto"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            <div className="container mx-auto px-4 py-4 space-y-1">
+              {navEntries.map((entry) =>
+                isGroup(entry) ? (
+                  <div key={entry.label}>
+                    <button
+                      onClick={() => setMobileExpanded(mobileExpanded === entry.label ? null : entry.label)}
+                      className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
+                    >
+                      {entry.label}
+                      <motion.span animate={{ rotate: mobileExpanded === entry.label ? 180 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                        <ChevronDown className="w-4 h-4" />
+                      </motion.span>
+                    </button>
+                    <AnimatePresence>
+                      {mobileExpanded === entry.label && (
+                        <motion.div
+                          className="ml-4 space-y-0.5 pb-2 overflow-hidden"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        >
+                          <div className="h-px bg-border/40 mx-2 mb-1" />
+                          {entry.items.map((item, i) => (
+                            <div key={item.href}>
+                              <button
+                                onClick={() => nav(item.href)}
+                                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-accent/10 rounded-xl transition-colors duration-150"
+                              >
+                                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent/10 shrink-0">
+                                  <item.icon className="w-3.5 h-3.5 text-accent" />
+                                </div>
+                                {item.label}
+                              </button>
+                              {i < entry.items.length - 1 && (
+                                <div className="h-px bg-border/30 mx-6 my-0.5" />
+                              )}
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
                   <button
-                    onClick={() => setMobileExpanded(mobileExpanded === entry.label ? null : entry.label)}
-                    className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
+                    key={entry.label}
+                    onClick={() => nav(entry.href)}
+                    className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
                   >
                     {entry.label}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileExpanded === entry.label ? "rotate-180" : ""}`} />
                   </button>
-                  {mobileExpanded === entry.label && (
-                    <div className="ml-4 space-y-0.5 pb-2 animate-fade-in">
-                      <div className="h-px bg-border/40 mx-2 mb-1" />
-                      {entry.items.map((item, i) => (
-                        <div key={item.href}>
-                          <button
-                            onClick={() => nav(item.href)}
-                            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-accent/10 rounded-xl transition-colors duration-150"
-                          >
-                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-accent/10 shrink-0">
-                              <item.icon className="w-3.5 h-3.5 text-accent" />
-                            </div>
-                            {item.label}
-                          </button>
-                          {i < entry.items.length - 1 && (
-                            <div className="h-px bg-border/30 mx-6 my-0.5" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                )
+              )}
+              {user ? (
+                <>
+                  <button onClick={() => nav("/mi-cuenta")} className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg">
+                    Mi cuenta
+                  </button>
+                  <button onClick={() => { setMobileOpen(false); handleSignOut(); }} className="block w-full text-left px-4 py-3 text-sm font-medium text-destructive hover:bg-secondary rounded-lg">
+                    Cerrar sesión
+                  </button>
+                </>
               ) : (
-                <button
-                  key={entry.label}
-                  onClick={() => nav(entry.href)}
-                  className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg"
+                <motion.button
+                  onClick={() => nav("/auth")}
+                  className="block w-full text-center btn-search text-sm mt-4"
+                  whileTap={{ scale: 0.97 }}
                 >
-                  {entry.label}
-                </button>
-              )
-            )}
-            {user ? (
-              <>
-                <button onClick={() => nav("/mi-cuenta")} className="block w-full text-left px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary rounded-lg">
-                  Mi cuenta
-                </button>
-                <button onClick={() => { setMobileOpen(false); handleSignOut(); }} className="block w-full text-left px-4 py-3 text-sm font-medium text-destructive hover:bg-secondary rounded-lg">
-                  Cerrar sesión
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => nav("/auth")}
-                className="block w-full text-center btn-search text-sm mt-4"
-              >
-                Acceso / Registro
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+                  Acceso / Registro
+                </motion.button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
