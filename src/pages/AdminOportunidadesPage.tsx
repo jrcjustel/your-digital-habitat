@@ -21,6 +21,9 @@ import {
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────────────────────
+type OpStrategy = "all" | "npl" | "cdr" | "ocupado";
+type ViewMode = "table" | "map";
+
 interface Oportunidad {
   id: string;
   asset_id: string | null;
@@ -39,12 +42,22 @@ interface Oportunidad {
   estado_judicial: string | null;
   publicado: boolean | null;
   sqm: number | null;
+  cesion_remate: boolean | null;
+  cesion_credito: boolean | null;
+  judicializado: boolean | null;
+  codigo_postal: string | null;
   // From oportunidades_extra
   score_inversion: number | null;
   roi_estimado: number | null;
   tir_estimada: number | null;
   liquidez_score: number | null;
   riesgo_judicial: number | null;
+}
+
+function getOpStrategy(op: Oportunidad): string {
+  if (op.cesion_remate || op.cesion_credito) return "cdr";
+  if ((op.estado_ocupacional || "").toLowerCase().includes("ocupado")) return "ocupado";
+  return "npl";
 }
 
 type SortField = "score_inversion" | "roi_estimado" | "tir_estimada" | "precio_orientativo" | "valor_mercado" | "riesgo_judicial";
