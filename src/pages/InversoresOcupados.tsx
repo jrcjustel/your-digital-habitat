@@ -8,6 +8,8 @@ import HowThisWorks from "@/components/HowThisWorks";
 import AssetTypeDeepDive from "@/components/AssetTypeDeepDive";
 import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
+import ListingAcademyBanner from "@/components/ListingAcademyBanner";
+import VerticalConversionCta from "@/components/VerticalConversionCta";
 import { Home, AlertTriangle, TrendingDown, Scale } from "lucide-react";
 
 const highlights = [
