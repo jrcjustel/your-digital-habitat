@@ -371,6 +371,8 @@ const OfferForm = ({
           </TabsContent>
         </Tabs>
       </div>
+
+      {submitted && <PostOfferGuidance mode={submitted} />}
     </div>
   );
 };
