@@ -35,6 +35,17 @@ const navEntries: NavEntry[] = [
     ],
   },
   {
+    label: "Inversores",
+    items: [
+      { label: "NPL — Compra de crédito", href: "/inversores/npl", icon: Store, description: "Deuda hipotecaria con descuento" },
+      { label: "Cesiones de Remate", href: "/inversores/cesiones-remate", icon: Gavel, description: "Adjudicaciones judiciales cedidas" },
+      { label: "Inmuebles Ocupados", href: "/inversores/ocupados", icon: Home, description: "Máximo descuento, sin posesión" },
+      { label: "Test de perfil inversor", href: "/guia-inversion/test-inversor", icon: Brain, description: "Descubre tu perfil" },
+      { label: "Guía: leer una ficha", href: "/guia-inversion/leer-ficha", icon: BookOpen, description: "Interpreta cada campo" },
+      { label: "Comparativa servicers", href: "/guia-inversion/servicers", icon: Wrench, description: "Aliseda, Hipoges y más" },
+    ],
+  },
+  {
     label: "Herramientas",
     items: [
       { label: "Analizar inversión", href: "/analisis-inversion", icon: TrendingUp, description: "ROI, riesgo y precio recomendado" },
