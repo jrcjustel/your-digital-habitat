@@ -94,7 +94,7 @@ const getOperationType = (asset: NplAsset): "npl" | "cesion_remate" | "ocupado" 
   return "npl";
 };
 
-const saleTypeMap: Record<string, string> = {
+const saleTypeMap: Record<string, SaleType> = {
   npl: "npl",
   cesion_remate: "cesion-remate",
   ocupado: "ocupado",
