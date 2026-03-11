@@ -13,6 +13,7 @@ import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intel
 import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
 import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
 import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
+import InvestmentIntelligenceCard from "@/components/intelligence/InvestmentIntelligenceCard";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
 import EnrichedDossierButton from "@/components/EnrichedDossierButton";
@@ -525,6 +526,21 @@ const NplDetail = () => {
               <div className="bg-card rounded-2xl border border-border p-5">
                 <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
               </div>
+
+              {/* Investment Intelligence Panel */}
+              <InvestmentIntelligenceCard
+                input={{
+                  price: asset.precio_orientativo || asset.deuda_ob || 0,
+                  marketValue: asset.valor_mercado || 0,
+                  sqm: asset.sqm || undefined,
+                  occupied: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+                  occupancyStatus: asset.estado_ocupacional,
+                  judicialPhase: asset.fase_judicial,
+                  province: asset.provincia,
+                  commissionPct: asset.comision_porcentaje || 0,
+                }}
+                riskLevel={riskLevel}
+              />
 
               {/* Academy contextual link */}
               <AcademyContextualLink category={academyCategory} variant="card" />

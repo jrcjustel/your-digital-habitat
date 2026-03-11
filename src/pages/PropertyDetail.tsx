@@ -5,6 +5,7 @@ import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intel
 import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
 import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
 import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
+import InvestmentIntelligenceCard from "@/components/intelligence/InvestmentIntelligenceCard";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -756,6 +757,21 @@ const PropertyDetail = () => {
             <div className="bg-card rounded-2xl border border-border p-5">
               <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
             </div>
+
+            {/* Investment Intelligence Panel */}
+            <InvestmentIntelligenceCard
+              input={{
+                price: property.price,
+                marketValue: property.marketValue || property.price,
+                sqm: property.area || undefined,
+                occupied: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+                occupancyStatus: property.occupancyStatus,
+                judicialPhase: property.judicialInfo?.phase,
+                province: property.province,
+                commissionPct: property.comisionPorcentaje || 0,
+              }}
+              riskLevel={riskLevel}
+            />
 
             {/* Academy contextual link */}
             <AcademyContextualLink category={academyCategory} variant="card" />
