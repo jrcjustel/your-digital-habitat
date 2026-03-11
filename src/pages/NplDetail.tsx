@@ -527,9 +527,6 @@ const NplDetail = () => {
                       <InfoRow label="Importe preaprobado" value={asset.importe_preaprobado > 0 ? `${asset.importe_preaprobado.toLocaleString("es-ES")} €` : null} />
                       <InfoRow label="Nº titulares" value={asset.num_titulares} />
                       <InfoRow label="Tipo de persona" value={asset.persona_tipo === "fisica" ? "Persona física" : asset.persona_tipo === "juridica" ? "Persona jurídica" : asset.persona_tipo} />
-                      <InfoRow label="Servicer" value={asset.servicer} />
-                      <InfoRow label="Cartera" value={asset.cartera} />
-                      <InfoRow label="NDG" value={asset.ndg} />
                     </div>
 
                     <div className="mt-6 bg-muted/30 rounded-xl p-5 border border-border/50">
