@@ -29,6 +29,7 @@ import WaitlistButton from "@/components/WaitlistButton";
 import CatastroPanel from "@/components/CatastroPanel";
 import AssetImageGallery from "@/components/AssetImageGallery";
 import SaleTypeBanner from "@/components/SaleTypeBanner";
+import type { SaleType } from "@/data/properties";
 import { toast } from "@/components/ui/sonner";
 
 interface NplAsset {
