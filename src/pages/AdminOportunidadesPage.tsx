@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import {
   ArrowLeft, Search, TrendingUp, TrendingDown, AlertTriangle,
   CheckCircle, XCircle, Activity, Building2, MapPin, BarChart3,
-  Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw,
+  Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw, Zap,
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────────────────────
