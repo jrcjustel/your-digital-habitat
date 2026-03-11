@@ -428,9 +428,14 @@ const AdminPanel = () => {
             <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
             <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
           </div>
-          <Button variant="outline" onClick={loadAll} className="gap-2">
-            <Activity className="w-4 h-4" /> Actualizar datos
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => navigate("/admin/roles")} className="gap-2">
+              <Shield className="w-4 h-4" /> Roles y Permisos
+            </Button>
+            <Button variant="outline" onClick={loadAll} className="gap-2">
+              <Activity className="w-4 h-4" /> Actualizar datos
+            </Button>
+          </div>
         </div>
 
         {/* KPIs Grid */}
