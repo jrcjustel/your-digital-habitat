@@ -313,7 +313,11 @@ const NplDetail = () => {
         <div className="bg-card rounded-2xl border border-border overflow-hidden mb-0">
           <div className="p-5 md:p-6">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <span className="text-sm font-bold text-accent">{opLabel}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-bold text-accent">{opLabel}</span>
+                <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
+                <RiskTrafficLight level={riskLevel} size="sm" />
+              </div>
               <span className="text-xs text-muted-foreground">
                 <span className="font-medium text-foreground">Referencia</span> {reference}
               </span>
