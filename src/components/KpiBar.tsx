@@ -1,10 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Package, Percent, Euro } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
-/* Animated counter */
 const AnimatedNumber = ({ target, suffix = "" }: { target: string; suffix?: string }) => {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
@@ -18,7 +16,7 @@ const AnimatedNumber = ({ target, suffix = "" }: { target: string; suffix?: stri
     const start = performance.now();
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const eased = 1 - Math.pow(1 - progress, 3);
       const current = num * eased;
       setDisplay(
         num >= 1000
@@ -58,54 +56,45 @@ const KpiBar = () => {
         : 42;
 
       const provinces = new Set(assets?.map(a => a.provincia).filter(Boolean)).size || 52;
-
       const totalVolume = assets?.reduce((s, a) => s + (a.valor_mercado || 0), 0) || 0;
       const volumeMillions = (totalVolume / 1_000_000).toFixed(1);
 
-      return {
-        totalAssets: totalAssets || 27000,
-        avgDiscount,
-        provinces,
-        volumeMillions,
-      };
+      return { totalAssets: totalAssets || 27000, avgDiscount, provinces, volumeMillions };
     },
     staleTime: 5 * 60 * 1000,
   });
 
   const kpis = [
-    { icon: Package, value: stats ? `${stats.totalAssets}` : "27000", suffix: "", label: "Activos analizados" },
-    { icon: Percent, value: stats ? `${stats.avgDiscount}` : "42", suffix: "%", label: "Descuento medio" },
-    { icon: MapPin, value: stats ? `${stats.provinces}` : "52", suffix: "", label: "Provincias cubiertas" },
-    { icon: Euro, value: stats ? `${stats.volumeMillions}` : "0", suffix: "M €", label: "Volumen gestionado" },
+    { value: stats ? `${stats.totalAssets}` : "27000", suffix: "", label: "Activos analizados", trend: "+12% este mes" },
+    { value: stats ? `${stats.avgDiscount}` : "42", suffix: "%", label: "Descuento medio s/mercado", trend: "vs. valor mercado" },
+    { value: stats ? `${stats.provinces}` : "52", suffix: "", label: "Provincias cubiertas", trend: "Cobertura nacional" },
+    { value: stats ? `${stats.volumeMillions}` : "0", suffix: "M €", label: "Volumen gestionado", trend: "Cartera activa" },
   ];
 
   return (
-    <section className="relative z-10 -mt-10">
+    <section className="relative z-10 -mt-12">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.9 }}
-          className="bg-card rounded-2xl shadow-xl border border-border p-2"
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="bg-card rounded-2xl border border-border overflow-hidden"
+          style={{ boxShadow: "0 20px 60px -15px hsl(204 93% 16% / 0.15)" }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+          <div className="grid grid-cols-2 md:grid-cols-4">
             {kpis.map((kpi, i) => (
               <motion.div
                 key={kpi.label}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1 + i * 0.1, duration: 0.4 }}
-                className="flex items-center gap-3 px-4 py-5 md:px-6 group"
+                transition={{ delay: 1 + i * 0.1, duration: 0.4 }}
+                className={`px-6 py-6 ${i < 3 ? "border-r border-border" : ""} ${i < 2 ? "border-b md:border-b-0 border-border" : ""}`}
               >
-                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 group-hover:bg-accent/10 transition-colors duration-300">
-                  <kpi.icon className="w-5 h-5 text-accent group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <div>
-                  <p className="text-xl md:text-2xl font-extrabold text-foreground leading-none">
-                    <AnimatedNumber target={kpi.value} suffix={kpi.suffix} />
-                  </p>
-                  <p className="text-xs text-muted-foreground font-medium mt-0.5">{kpi.label}</p>
-                </div>
+                <p className="text-2xl md:text-3xl font-extrabold text-foreground leading-none tracking-tight">
+                  <AnimatedNumber target={kpi.value} suffix={kpi.suffix} />
+                </p>
+                <p className="text-xs font-semibold text-muted-foreground mt-1.5">{kpi.label}</p>
+                <p className="text-[10px] text-accent font-medium mt-1">{kpi.trend}</p>
               </motion.div>
             ))}
           </div>
