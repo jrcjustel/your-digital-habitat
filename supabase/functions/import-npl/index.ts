@@ -5,7 +5,8 @@
  *
  * Soporta .xlsx y .csv con mapeo automático de columnas,
  * validación, detección de duplicados, upsert inteligente,
- * gestión de histórico (activos vendidos) y reporte de errores.
+ * gestión de histórico (activos vendidos), reporte de errores
+ * y cálculo automático post-importación (scoring, ROI, TIR).
  *
  * ENDPOINTS (POST /import-npl):
  *
@@ -14,9 +15,10 @@
  *     → Devuelve mapeo sugerido + validación previa
  *
  *   body.action = "import"  (default)
- *     → Recibe { rows: any[], mapping?: Record<string,string>, markSoldMissing?: boolean }
+ *     → Recibe { rows, mapping?, markSoldMissing?, autoCalculate? }
  *     → Ejecuta upsert, marca vendidos, registra cambios
- *     → Devuelve { inserted, updated, sold, errors, errorDetails[] }
+ *     → Auto-calcula scoring/ROI/TIR para insertados y actualizados
+ *     → Devuelve { inserted, updated, sold, calculated, errors, errorDetails[] }
  *
  * SEGURIDAD: Solo admin con permiso importar_excel
  * ============================================================
