@@ -431,6 +431,9 @@ const AdminPanel = () => {
             <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => navigate("/admin/oportunidades")} className="gap-2">
+              <TrendingUp className="w-4 h-4" /> Oportunidades
+            </Button>
             <Button variant="outline" onClick={() => navigate("/admin/roles")} className="gap-2">
               <Shield className="w-4 h-4" /> Roles y Permisos
             </Button>
