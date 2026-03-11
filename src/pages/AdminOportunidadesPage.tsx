@@ -155,6 +155,50 @@ const AdminOportunidadesPage = () => {
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 30;
 
+  // Batch scoring state
+  const [scoring, setScoring] = useState(false);
+  const [scoreProgress, setScoreProgress] = useState<{
+    phase: string; offset: number; calculated: number; errors: number; done: boolean;
+  } | null>(null);
+
+  const runBatchScoring = async (onlyMissing: boolean) => {
+    setScoring(true);
+    setScoreProgress({ phase: "Iniciando...", offset: 0, calculated: 0, errors: 0, done: false });
+    let offset = 0;
+    const batchLimit = 500;
+    let totalCalc = 0;
+    let totalErr = 0;
+
+    try {
+      while (true) {
+        setScoreProgress(p => ({ ...p!, phase: `Procesando lote desde ${offset}...`, offset }));
+        const { data: result, error } = await supabase.functions.invoke("batch-scoring", {
+          body: { limit: batchLimit, offset, only_missing: onlyMissing },
+        });
+        if (error) throw new Error(error.message);
+        if (!result?.success) throw new Error(result?.error || "Error desconocido");
+
+        totalCalc += result.calculated || 0;
+        totalErr += result.errors || 0;
+        setScoreProgress({ phase: `Calculados: ${totalCalc}`, offset, calculated: totalCalc, errors: totalErr, done: false });
+
+        // If calculated less than batch, we're done
+        if ((result.total_assets || 0) < batchLimit) break;
+        offset += batchLimit;
+      }
+
+      setScoreProgress(p => ({ ...p!, phase: "Completado", done: true }));
+      toast.success(`Scoring completado: ${totalCalc} activos calculados, ${totalErr} errores`);
+      // Reload data to reflect new scores
+      await load();
+    } catch (e: any) {
+      toast.error("Error en batch scoring: " + (e.message || "Error"));
+      setScoreProgress(p => p ? { ...p, phase: "Error: " + (e.message || ""), done: true } : null);
+    } finally {
+      setScoring(false);
+    }
+  };
+
   const load = async () => {
     setLoading(true);
     // Fetch npl_assets
