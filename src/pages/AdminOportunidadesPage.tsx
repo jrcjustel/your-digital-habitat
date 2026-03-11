@@ -448,124 +448,141 @@ const AdminOportunidadesPage = () => {
           </CardContent>
         </Card>
 
-        {/* Table */}
-        <div className="bg-card rounded-xl border border-border overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-secondary/50 text-muted-foreground">
-                <th className="text-left p-3 font-medium">Referencia</th>
-                <th className="text-left p-3 font-medium">Ubicación</th>
-                <th className="text-left p-3 font-medium">Tipo</th>
-                <th className="text-left p-3 font-medium">Servicer</th>
-                <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("precio_orientativo")}>
-                  <span className="inline-flex items-center gap-1">Precio <SortIcon field="precio_orientativo" /></span>
-                </th>
-                <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("valor_mercado")}>
-                  <span className="inline-flex items-center gap-1">V. Mercado <SortIcon field="valor_mercado" /></span>
-                </th>
-                <th className="text-center p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("score_inversion")}>
-                  <span className="inline-flex items-center gap-1">Score <SortIcon field="score_inversion" /></span>
-                </th>
-                <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("roi_estimado")}>
-                  <span className="inline-flex items-center gap-1">ROI <SortIcon field="roi_estimado" /></span>
-                </th>
-                <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("tir_estimada")}>
-                  <span className="inline-flex items-center gap-1">TIR <SortIcon field="tir_estimada" /></span>
-                </th>
-                <th className="text-center p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("riesgo_judicial")}>
-                  <span className="inline-flex items-center gap-1">Riesgo <SortIcon field="riesgo_judicial" /></span>
-                </th>
-                <th className="text-center p-3 font-medium">Estado</th>
-                <th className="p-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.length === 0 ? (
-                <tr>
-                  <td colSpan={12} className="text-center py-12 text-muted-foreground">
-                    <Building2 className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                    <p>No se encontraron oportunidades con esos filtros</p>
-                  </td>
+        {viewMode === "table" ? (
+          <>
+          {/* Table */}
+          <div className="bg-card rounded-xl border border-border overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-secondary/50 text-muted-foreground">
+                  <th className="text-left p-3 font-medium">Referencia</th>
+                  <th className="text-left p-3 font-medium">Ubicación</th>
+                  <th className="text-left p-3 font-medium">Tipo</th>
+                  <th className="text-center p-3 font-medium">Estrategia</th>
+                  <th className="text-left p-3 font-medium">Servicer</th>
+                  <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("precio_orientativo")}>
+                    <span className="inline-flex items-center gap-1">Precio <SortIcon field="precio_orientativo" /></span>
+                  </th>
+                  <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("valor_mercado")}>
+                    <span className="inline-flex items-center gap-1">V. Mercado <SortIcon field="valor_mercado" /></span>
+                  </th>
+                  <th className="text-center p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("score_inversion")}>
+                    <span className="inline-flex items-center gap-1">Score <SortIcon field="score_inversion" /></span>
+                  </th>
+                  <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("roi_estimado")}>
+                    <span className="inline-flex items-center gap-1">ROI <SortIcon field="roi_estimado" /></span>
+                  </th>
+                  <th className="text-right p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("tir_estimada")}>
+                    <span className="inline-flex items-center gap-1">TIR <SortIcon field="tir_estimada" /></span>
+                  </th>
+                  <th className="text-center p-3 font-medium cursor-pointer select-none" onClick={() => toggleSort("riesgo_judicial")}>
+                    <span className="inline-flex items-center gap-1">Riesgo <SortIcon field="riesgo_judicial" /></span>
+                  </th>
+                  <th className="text-center p-3 font-medium">Estado</th>
+                  <th className="p-3"></th>
                 </tr>
-              ) : paged.map(op => {
-                const descuento = (op.valor_mercado && op.precio_orientativo && op.valor_mercado > 0)
-                  ? Math.round((1 - op.precio_orientativo / op.valor_mercado) * 100)
-                  : null;
-
-                return (
-                  <tr key={op.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
-                    <td className="p-3">
-                      <p className="font-mono text-xs font-medium text-foreground">{op.asset_id || op.ref_catastral || op.id.slice(0, 8)}</p>
-                      {descuento != null && descuento > 0 && (
-                        <Badge variant="outline" className="text-[10px] mt-0.5 text-green-700 border-green-300">
-                          -{descuento}%
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-start gap-1">
-                        <MapPin className="w-3 h-3 text-muted-foreground mt-0.5 shrink-0" />
-                        <div>
-                          <p className="text-xs text-foreground">{op.municipio || "—"}</p>
-                          <p className="text-[10px] text-muted-foreground">{op.provincia}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <Badge variant="outline" className="text-[10px]">{op.tipo_activo || "—"}</Badge>
-                    </td>
-                    <td className="p-3 text-xs text-muted-foreground">{op.servicer || "—"}</td>
-                    <td className="p-3 text-right">
-                      <span className="text-xs font-semibold text-foreground tabular-nums">{fmtEur(op.precio_orientativo)}</span>
-                    </td>
-                    <td className="p-3 text-right">
-                      <span className="text-xs text-muted-foreground tabular-nums">{fmtEur(op.valor_mercado)}</span>
-                    </td>
-                    <td className="p-3 text-center">
-                      <ScoreBadge score={op.score_inversion} />
-                    </td>
-                    <td className="p-3 text-right">
-                      <MetricPill label="" value={op.roi_estimado} positive={op.roi_estimado != null && op.roi_estimado > 10} />
-                    </td>
-                    <td className="p-3 text-right">
-                      <MetricPill label="" value={op.tir_estimada} positive={op.tir_estimada != null && op.tir_estimada > 8} />
-                    </td>
-                    <td className="p-3 text-center">
-                      <RiskSemaphore riesgo={op.riesgo_judicial} liquidez={op.liquidez_score} />
-                    </td>
-                    <td className="p-3 text-center">
-                      {op.publicado
-                        ? <CheckCircle className="w-4 h-4 text-green-600 inline-block" />
-                        : <XCircle className="w-4 h-4 text-muted-foreground/40 inline-block" />
-                      }
-                    </td>
-                    <td className="p-3">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/npl/${op.id}`)}>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </Button>
+              </thead>
+              <tbody>
+                {paged.length === 0 ? (
+                  <tr>
+                    <td colSpan={13} className="text-center py-12 text-muted-foreground">
+                      <Building2 className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                      <p>No se encontraron oportunidades con esos filtros</p>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                ) : paged.map(op => {
+                  const descuento = (op.valor_mercado && op.precio_orientativo && op.valor_mercado > 0)
+                    ? Math.round((1 - op.precio_orientativo / op.valor_mercado) * 100)
+                    : null;
+                  const strategy = getOpStrategy(op);
+                  const strategyConfig = {
+                    npl: { label: "NPL", class: "bg-blue-100 text-blue-800 border-blue-200" },
+                    cdr: { label: "CDR", class: "bg-purple-100 text-purple-800 border-purple-200" },
+                    ocupado: { label: "Ocupado", class: "bg-orange-100 text-orange-800 border-orange-200" },
+                  }[strategy] || { label: "NPL", class: "bg-blue-100 text-blue-800 border-blue-200" };
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
-              Mostrando {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} de {filtered.length}
-            </p>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
-                Anterior
-              </Button>
-              <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>
-                Siguiente
-              </Button>
-            </div>
+                  return (
+                    <tr key={op.id} className="border-b border-border/40 hover:bg-secondary/20 transition-colors">
+                      <td className="p-3">
+                        <p className="font-mono text-xs font-medium text-foreground">{op.asset_id || op.ref_catastral || op.id.slice(0, 8)}</p>
+                        {descuento != null && descuento > 0 && (
+                          <Badge variant="outline" className="text-[10px] mt-0.5 text-green-700 border-green-300">
+                            -{descuento}%
+                          </Badge>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-start gap-1">
+                          <MapPin className="w-3 h-3 text-muted-foreground mt-0.5 shrink-0" />
+                          <div>
+                            <p className="text-xs text-foreground">{op.municipio || "—"}</p>
+                            <p className="text-[10px] text-muted-foreground">{op.provincia}{op.codigo_postal ? ` · ${op.codigo_postal}` : ""}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <Badge variant="outline" className="text-[10px]">{op.tipo_activo || "—"}</Badge>
+                      </td>
+                      <td className="p-3 text-center">
+                        <Badge variant="outline" className={`text-[10px] ${strategyConfig.class}`}>{strategyConfig.label}</Badge>
+                      </td>
+                      <td className="p-3 text-xs text-muted-foreground">{op.servicer || "—"}</td>
+                      <td className="p-3 text-right">
+                        <span className="text-xs font-semibold text-foreground tabular-nums">{fmtEur(op.precio_orientativo)}</span>
+                      </td>
+                      <td className="p-3 text-right">
+                        <span className="text-xs text-muted-foreground tabular-nums">{fmtEur(op.valor_mercado)}</span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <ScoreBadge score={op.score_inversion} />
+                      </td>
+                      <td className="p-3 text-right">
+                        <MetricPill label="" value={op.roi_estimado} positive={op.roi_estimado != null && op.roi_estimado > 10} />
+                      </td>
+                      <td className="p-3 text-right">
+                        <MetricPill label="" value={op.tir_estimada} positive={op.tir_estimada != null && op.tir_estimada > 8} />
+                      </td>
+                      <td className="p-3 text-center">
+                        <RiskSemaphore riesgo={op.riesgo_judicial} liquidez={op.liquidez_score} />
+                      </td>
+                      <td className="p-3 text-center">
+                        {op.publicado
+                          ? <CheckCircle className="w-4 h-4 text-green-600 inline-block" />
+                          : <XCircle className="w-4 h-4 text-muted-foreground/40 inline-block" />
+                        }
+                      </td>
+                      <td className="p-3">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(`/npl/${op.id}`)}>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                Mostrando {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} de {filtered.length}
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
+                  Anterior
+                </Button>
+                <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}>
+                  Siguiente
+                </Button>
+              </div>
+            </div>
+          )}
+          </>
+        ) : (
+          /* Map View */
+          <AdminMapView data={filtered} onSelect={(id) => navigate(`/npl/${id}`)} />
         )}
       </main>
       <Footer />
