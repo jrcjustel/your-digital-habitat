@@ -87,6 +87,13 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
     if (provincia !== "all") query = query.eq("provincia", provincia);
     if (tipo !== "all") query = query.eq("tipo_activo", tipo);
 
+    // Opportunity type filter
+    if (opportunityFilter === "cdr") query = query.eq("cesion_remate", true);
+    else if (opportunityFilter === "subasta") query = query.eq("postura_subasta", true);
+    else if (opportunityFilter === "reo-ocupado") query = query.eq("propiedad_sin_posesion", true);
+    else if (opportunityFilter === "reo-libre") query = query.eq("propiedad_sin_posesion", false).eq("cesion_remate", false).eq("postura_subasta", false);
+    else if (opportunityFilter === "npl") query = query.eq("cesion_remate", false).eq("postura_subasta", false).eq("propiedad_sin_posesion", false);
+
     const from = (page - 1) * PAGE_SIZE;
     query = query.range(from, from + PAGE_SIZE - 1).order("provincia").order("municipio");
 
