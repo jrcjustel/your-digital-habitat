@@ -6,6 +6,7 @@ import {
   LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro, Map,
 } from "lucide-react";
 import { lazy, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 const AssetMapView = lazy(() => import("@/components/AssetMapView"));
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
