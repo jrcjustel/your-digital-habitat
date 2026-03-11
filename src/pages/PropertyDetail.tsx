@@ -5,6 +5,7 @@ import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intel
 import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
 import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
 import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
+import InvestmentIntelligenceCard from "@/components/intelligence/InvestmentIntelligenceCard";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
