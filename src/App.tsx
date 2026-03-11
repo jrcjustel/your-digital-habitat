@@ -100,6 +100,8 @@ import PossessionStatusPage from "./pages/PossessionStatusPage";
 import RoiSimulatorPage from "./pages/RoiSimulatorPage";
 import InvestorSelfAssessment from "./pages/InvestorSelfAssessment";
 import MarketIntelligencePage from "./pages/MarketIntelligencePage";
+import ScoreMethodologyPage from "./pages/ScoreMethodologyPage";
+import RegulatoryFrameworkPage from "./pages/RegulatoryFrameworkPage";
 
 const queryClient = new QueryClient();
 
