@@ -71,7 +71,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
 
   useEffect(() => {
     loadAssets();
-  }, [page, provincia, tipo, search]);
+  }, [page, provincia, tipo, search, opportunityFilter]);
 
   const loadAssets = async () => {
     setLoading(true);
