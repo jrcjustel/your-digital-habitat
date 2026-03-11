@@ -43,6 +43,7 @@ const navEntries: NavEntry[] = [
       { label: "Comparador", href: "/comparador", icon: GitCompare, description: "Compara hasta 4 activos" },
     ],
   },
+  { label: "Servicios", href: "/servicios" },
   { label: "Cómo funciona", href: "/como-funciona" },
   { label: "Vendedores", href: "/vendedores" },
   { label: "Academia", href: "/academia" },
