@@ -434,6 +434,9 @@ const AdminPanel = () => {
             <Button variant="outline" onClick={() => navigate("/admin/oportunidades")} className="gap-2">
               <TrendingUp className="w-4 h-4" /> Oportunidades
             </Button>
+            <Button variant="outline" onClick={() => navigate("/admin/importar")} className="gap-2">
+              <FileText className="w-4 h-4" /> Importador Excel
+            </Button>
             <Button variant="outline" onClick={() => navigate("/admin/roles")} className="gap-2">
               <Shield className="w-4 h-4" /> Roles y Permisos
             </Button>
