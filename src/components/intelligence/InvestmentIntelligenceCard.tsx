@@ -159,16 +159,26 @@ const InvestmentIntelligenceCard = ({
               <p className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">Desglose de Costes Estimados</p>
               <div className="space-y-2">
                 {[
-                  { label: "ITP (8%)", value: data.costs.itp },
-                  { label: "Notaría", value: data.costs.notary },
-                  { label: "Registro", value: data.costs.registry },
-                  { label: "Abogado / Procurador", value: data.costs.legal },
-                  ...(data.costs.eviction > 0 ? [{ label: "Desahucio estimado", value: data.costs.eviction }] : []),
-                  { label: "Reforma estimada", value: data.costs.reform },
-                  ...(data.costs.commission > 0 ? [{ label: "Comisión IKESA", value: data.costs.commission }] : []),
+                  { label: "ITP (8%)", value: data.costs.itp, tip: `8% sobre el precio de adquisición (${fmt(input.price)})` },
+                  { label: "Notaría", value: data.costs.notary, tip: `Aprox. 0,5% del precio (mín. 300 €)` },
+                  { label: "Registro", value: data.costs.registry, tip: `Aprox. 0,3% del precio (mín. 200 €)` },
+                  { label: "Abogado / Procurador", value: data.costs.legal, tip: `Aprox. 2% del precio (mín. 1.500 €). Incluye honorarios legales y procurador` },
+                  ...(data.costs.eviction > 0 ? [{ label: "Desahucio estimado", value: data.costs.eviction, tip: `Aprox. 5% del valor de mercado (mín. 3.000 €). Varía según tipo de ocupación` }] : []),
+                  { label: "Reforma estimada", value: data.costs.reform, tip: input.sqm ? `${input.sqm} m² × 200 €/m²` : `Aprox. 8% del valor de mercado (${fmt(input.marketValue)})` },
+                  ...(data.costs.commission > 0 ? [{ label: "Comisión IKESA", value: data.costs.commission, tip: `${input.commissionPct}% sobre el precio de adquisición` }] : []),
                 ].map((c) => (
                   <div key={c.label} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{c.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-muted-foreground">{c.label}</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-3.5 h-3.5 text-muted-foreground/50 cursor-help shrink-0" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[240px] text-xs">{c.tip}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <span className="text-foreground font-medium">{fmt(c.value)}</span>
                   </div>
                 ))}
