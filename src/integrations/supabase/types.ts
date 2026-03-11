@@ -1554,6 +1554,11 @@ export type Database = {
     }
     Functions: {
       calculate_lead_score: { Args: { p_user_id: string }; Returns: number }
+      get_user_permissions: { Args: { _user_id: string }; Returns: Json }
+      has_permission: {
+        Args: { _permission: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
