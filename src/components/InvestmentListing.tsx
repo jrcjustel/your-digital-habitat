@@ -135,7 +135,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
 
       {/* Filters */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-6 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -146,6 +146,13 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
               className="pl-10"
             />
           </div>
+          <Select value={ccaa} onValueChange={(v) => { setCcaa(v); setPage(1); }}>
+            <SelectTrigger><SelectValue placeholder="Comunidad Autónoma" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las CC.AA.</SelectItem>
+              {ccaaList.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
           <Select value={provincia} onValueChange={(v) => { setProvincia(v); setPage(1); }}>
             <SelectTrigger><SelectValue placeholder="Provincia" /></SelectTrigger>
             <SelectContent>
