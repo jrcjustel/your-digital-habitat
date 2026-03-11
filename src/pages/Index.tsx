@@ -35,6 +35,7 @@ const Index = () => {
       <KpiBar />
       <ServicersBar />
       <CategoryShowcase />
+      <CategoryCards />
       <ConversionCtas />
       <WhyInvest />
       <ValuationCta />
