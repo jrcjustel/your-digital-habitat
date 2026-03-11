@@ -73,6 +73,12 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
         setTipos(unique);
       }
     });
+    supabase.from("npl_assets").select("comunidad_autonoma").then(({ data }) => {
+      if (data) {
+        const unique = [...new Set(data.map((d: any) => d.comunidad_autonoma).filter(Boolean))].sort() as string[];
+        setCcaaList(unique);
+      }
+    });
   }, []);
 
   useEffect(() => {
