@@ -438,7 +438,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Property type */}
-      <FilterSection title="🏠 Tipo de activo" isOpen={openSections.propertyType} onToggle={() => toggleSection("propertyType")}>
+      <FilterSection title="Tipo de activo" isOpen={openSections.propertyType} onToggle={() => toggleSection("propertyType")}>
         {tipoList.map((t) => (
           <CheckboxFilter
             key={t} label={t}
