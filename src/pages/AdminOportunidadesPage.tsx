@@ -376,6 +376,38 @@ const AdminOportunidadesPage = () => {
         {/* KPIs */}
         <KpiSummary data={filtered} />
 
+        {/* Strategy tabs + View toggle */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
+            {([
+              { value: "all", label: "Todos", icon: Building2 },
+              { value: "npl", label: "NPL", icon: Home },
+              { value: "cdr", label: "Cesión/Remate", icon: Gavel },
+              { value: "ocupado", label: "Ocupados", icon: Key },
+            ] as const).map(tab => (
+              <Button
+                key={tab.value}
+                variant={filterStrategy === tab.value ? "default" : "ghost"}
+                size="sm"
+                className="gap-1.5 text-xs h-8"
+                onClick={() => { setFilterStrategy(tab.value); setPage(0); }}
+              >
+                <tab.icon className="w-3.5 h-3.5" />
+                {tab.label}
+                <Badge variant="outline" className="text-[10px] ml-1 h-4 px-1">{strategyCounts[tab.value]}</Badge>
+              </Button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-1">
+            <Button variant={viewMode === "table" ? "default" : "ghost"} size="sm" className="h-8 gap-1.5 text-xs" onClick={() => setViewMode("table")}>
+              <List className="w-3.5 h-3.5" /> Tabla
+            </Button>
+            <Button variant={viewMode === "map" ? "default" : "ghost"} size="sm" className="h-8 gap-1.5 text-xs" onClick={() => setViewMode("map")}>
+              <MapIcon className="w-3.5 h-3.5" /> Mapa
+            </Button>
+          </div>
+        </div>
+
         {/* Filters */}
         <Card className="border-border/50">
           <CardContent className="p-4">
@@ -383,7 +415,7 @@ const AdminOportunidadesPage = () => {
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por referencia, municipio, provincia, servicer..."
+                  placeholder="Buscar por referencia, municipio, provincia, CP, servicer..."
                   value={search}
                   onChange={e => { setSearch(e.target.value); setPage(0); }}
                   className="pl-9"
