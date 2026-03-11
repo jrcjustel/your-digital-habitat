@@ -50,6 +50,7 @@ const InversoresOcupados = () => (
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("propiedad_sin_posesion", true)} />
       </div>
+      <VerticalConversionCta assetType="ocupado" />
       <Disclaimer type="ocupados" />
     </div>
     <RealCaseStudies filterType="ocupado" />

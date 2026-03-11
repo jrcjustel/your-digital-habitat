@@ -49,6 +49,7 @@ const InversoresNpl = () => (
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
       </div>
+      <VerticalConversionCta assetType="npl" />
       <Disclaimer type="npl" />
     </div>
     <RealCaseStudies filterType="npl" />

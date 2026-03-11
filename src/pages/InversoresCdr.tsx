@@ -50,6 +50,7 @@ const InversoresCdr = () => (
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
       </div>
+      <VerticalConversionCta assetType="cesion" />
       <Disclaimer type="cesion-remate" />
     </div>
     <RealCaseStudies filterType="cesion" />

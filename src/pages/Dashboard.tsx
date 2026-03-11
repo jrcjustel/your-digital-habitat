@@ -212,6 +212,14 @@ const Dashboard = () => {
 
         <WelcomeWizard />
 
+        {/* Journey Stage Widget */}
+        <JourneyStageWidget
+          profileComplete={!!(profile.display_name && profile.investor_level)}
+          hasFavorites={favorites.length > 0}
+          hasOffers={offers.length > 0}
+          ndaSigned={!!profile.nda_signed}
+        />
+
         {/* First Operation Checklist */}
         <div className="mb-8">
           <FirstOperationChecklist
