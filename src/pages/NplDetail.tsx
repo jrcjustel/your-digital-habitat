@@ -213,6 +213,38 @@ const NplDetail = () => {
     }
   };
 
+  // Intelligence layer (calculated dynamically, no DB changes) — must be before early returns
+  const opportunityType = useMemo(() => asset ? resolveOpportunityType({
+    cesionRemate: asset.cesion_remate,
+    propiedadSinPosesion: asset.propiedad_sin_posesion,
+    estadoOcupacional: asset.estado_ocupacional || undefined,
+    posturaSubasta: asset.postura_subasta,
+  }) : "npl" as const, [asset]);
+
+  const riskLevel = useMemo(() => asset ? deriveRiskLevel({
+    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+    judicializado: asset.judicializado,
+    faseJudicial: asset.fase_judicial,
+    estadoOcupacional: asset.estado_ocupacional,
+  }) : "medio" as const, [asset]);
+
+  const investScoreData = useMemo(() => asset ? calculateInvestScore({
+    price: asset.precio_orientativo || asset.deuda_ob || 0,
+    marketValue: asset.valor_mercado || 0,
+    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+    judicializado: asset.judicializado,
+    faseJudicial: asset.fase_judicial,
+    provincia: asset.provincia,
+    estadoOcupacional: asset.estado_ocupacional,
+  }) : { score: 0, factors: { discount: 0, legalComplexity: 0, occupancy: 0, liquidity: 0, timeline: 0 } }, [asset]);
+
+  const academyCategory = useMemo(() => asset ? resolveAcademyCategory({
+    cesionRemate: asset.cesion_remate,
+    propiedadSinPosesion: asset.propiedad_sin_posesion,
+    estadoOcupacional: asset.estado_ocupacional || undefined,
+    posturaSubasta: asset.postura_subasta,
+  }) : "npl" as const, [asset]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -247,38 +279,6 @@ const NplDetail = () => {
   const discount = asset.valor_mercado > 0 && asset.precio_orientativo > 0
     ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100)
     : null;
-
-  // Intelligence layer (calculated dynamically, no DB changes)
-  const opportunityType = useMemo(() => resolveOpportunityType({
-    cesionRemate: asset.cesion_remate,
-    propiedadSinPosesion: asset.propiedad_sin_posesion,
-    estadoOcupacional: asset.estado_ocupacional || undefined,
-    posturaSubasta: asset.postura_subasta,
-  }), [asset]);
-
-  const riskLevel = useMemo(() => deriveRiskLevel({
-    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
-    judicializado: asset.judicializado,
-    faseJudicial: asset.fase_judicial,
-    estadoOcupacional: asset.estado_ocupacional,
-  }), [asset]);
-
-  const investScoreData = useMemo(() => calculateInvestScore({
-    price: asset.precio_orientativo || asset.deuda_ob || 0,
-    marketValue: asset.valor_mercado || 0,
-    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
-    judicializado: asset.judicializado,
-    faseJudicial: asset.fase_judicial,
-    provincia: asset.provincia,
-    estadoOcupacional: asset.estado_ocupacional,
-  }), [asset]);
-
-  const academyCategory = useMemo(() => resolveAcademyCategory({
-    cesionRemate: asset.cesion_remate,
-    propiedadSinPosesion: asset.propiedad_sin_posesion,
-    estadoOcupacional: asset.estado_ocupacional || undefined,
-    posturaSubasta: asset.postura_subasta,
-  }), [asset]);
 
   const isNpl = opType === "npl";
   const hasTwoPrices = !isNpl; // CDR and Ocupado only show 2 prices
