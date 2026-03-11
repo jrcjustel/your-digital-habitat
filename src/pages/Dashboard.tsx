@@ -728,6 +728,10 @@ const Dashboard = () => {
               </Button>
             </div>
           </TabsContent>
+
+          <TabsContent value="checklist">
+            <InvestmentChecklistGenerator />
+          </TabsContent>
         </Tabs>
       </div>
       <Footer />
