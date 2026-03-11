@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
+import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import { Home, AlertTriangle, TrendingDown, Scale } from "lucide-react";
 
@@ -37,6 +38,7 @@ const InversoresOcupados = () => (
       <InvestmentListing filterFn={(q: any) => q.eq("propiedad_sin_posesion", true)} />
       <Disclaimer type="ocupados" />
     </div>
+    <RealCaseStudies filterType="ocupado" />
     <Footer />
   </div>
 );

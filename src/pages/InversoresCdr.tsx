@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
+import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import { Gavel, Scale, Home, FileText } from "lucide-react";
 
@@ -37,6 +38,7 @@ const InversoresCdr = () => (
       <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
       <Disclaimer type="cesion-remate" />
     </div>
+    <RealCaseStudies filterType="cesion" />
     <Footer />
   </div>
 );

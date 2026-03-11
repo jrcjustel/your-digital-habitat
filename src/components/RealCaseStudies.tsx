@@ -100,9 +100,15 @@ const typeConfig: Record<string, { icon: typeof Gavel; color: string; bg: string
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
-const RealCaseStudies = () => {
+interface RealCaseStudiesProps {
+  filterType?: "npl" | "cesion" | "ocupado";
+}
+
+const RealCaseStudies = ({ filterType }: RealCaseStudiesProps = {}) => {
+  const filteredCases = filterType ? cases.filter(c => c.type === filterType) : cases;
   const [active, setActive] = useState(0);
-  const c = cases[active];
+  const c = filteredCases[active];
+  if (!c) return null;
   const cfg = typeConfig[c.type];
   const Icon = cfg.icon;
 
@@ -122,9 +128,10 @@ const RealCaseStudies = () => {
           </p>
         </div>
 
-        {/* Case selector tabs */}
+        {/* Case selector tabs — hidden when filtered to single type */}
+        {filteredCases.length > 1 && (
         <div className="flex justify-center gap-2 mb-10 flex-wrap">
-          {cases.map((cs, i) => {
+          {filteredCases.map((cs, i) => {
             const tc = typeConfig[cs.type];
             const TIcon = tc.icon;
             return (
@@ -143,6 +150,7 @@ const RealCaseStudies = () => {
             );
           })}
         </div>
+        )}
 
         {/* Case detail */}
         <AnimatePresence mode="wait">
@@ -259,11 +267,11 @@ const RealCaseStudies = () => {
                       >
                         <ChevronLeft className="w-4 h-4" /> Anterior
                       </Button>
-                      <span className="text-xs text-muted-foreground">{active + 1} / {cases.length}</span>
+                      <span className="text-xs text-muted-foreground">{active + 1} / {filteredCases.length}</span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        disabled={active === cases.length - 1}
+                        disabled={active === filteredCases.length - 1}
                         onClick={() => setActive(active + 1)}
                         className="gap-1"
                       >

@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InvestmentListing from "@/components/InvestmentListing";
+import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import { CreditCard, TrendingDown, Shield, FileText } from "lucide-react";
 
@@ -36,6 +37,7 @@ const InversoresNpl = () => (
       <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
       <Disclaimer type="npl" />
     </div>
+    <RealCaseStudies filterType="npl" />
     <Footer />
   </div>
 );
