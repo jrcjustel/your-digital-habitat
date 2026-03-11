@@ -221,7 +221,7 @@ const AdminOportunidadesPage = () => {
     // Fetch npl_assets
     const { data: assets } = await supabase
       .from("npl_assets")
-      .select("id, asset_id, ref_catastral, municipio, provincia, comunidad_autonoma, tipo_activo, servicer, valor_activo, valor_mercado, precio_orientativo, deuda_ob, estado, estado_ocupacional, estado_judicial, publicado, sqm")
+      .select("id, asset_id, ref_catastral, municipio, provincia, comunidad_autonoma, tipo_activo, servicer, valor_activo, valor_mercado, precio_orientativo, deuda_ob, estado, estado_ocupacional, estado_judicial, publicado, sqm, cesion_remate, cesion_credito, judicializado, codigo_postal")
       .order("created_at", { ascending: false })
       .limit(1000);
 
@@ -254,6 +254,12 @@ const AdminOportunidadesPage = () => {
   const provincias = useMemo(() => [...new Set(data.map(d => d.provincia).filter(Boolean))].sort() as string[], [data]);
   const tipos = useMemo(() => [...new Set(data.map(d => d.tipo_activo).filter(Boolean))].sort() as string[], [data]);
 
+  const strategyCounts = useMemo(() => {
+    const counts = { all: data.length, npl: 0, cdr: 0, ocupado: 0 };
+    data.forEach(d => { counts[getOpStrategy(d) as keyof typeof counts]++; });
+    return counts;
+  }, [data]);
+
   const filtered = useMemo(() => {
     let result = data;
 
@@ -264,7 +270,8 @@ const AdminOportunidadesPage = () => {
         (d.ref_catastral || "").toLowerCase().includes(q) ||
         (d.municipio || "").toLowerCase().includes(q) ||
         (d.provincia || "").toLowerCase().includes(q) ||
-        (d.servicer || "").toLowerCase().includes(q)
+        (d.servicer || "").toLowerCase().includes(q) ||
+        (d.codigo_postal || "").includes(q)
       );
     }
     if (filterProvincia !== "all") result = result.filter(d => d.provincia === filterProvincia);
@@ -272,6 +279,7 @@ const AdminOportunidadesPage = () => {
     if (filterRisk === "low") result = result.filter(d => (d.riesgo_judicial ?? 0) <= 35);
     if (filterRisk === "medium") result = result.filter(d => { const r = d.riesgo_judicial ?? 0; return r > 35 && r <= 65; });
     if (filterRisk === "high") result = result.filter(d => (d.riesgo_judicial ?? 0) > 65);
+    if (filterStrategy !== "all") result = result.filter(d => getOpStrategy(d) === filterStrategy);
 
     // Sort
     result = [...result].sort((a, b) => {
@@ -281,7 +289,7 @@ const AdminOportunidadesPage = () => {
     });
 
     return result;
-  }, [data, search, filterProvincia, filterTipo, filterRisk, sortField, sortDir]);
+  }, [data, search, filterProvincia, filterTipo, filterRisk, filterStrategy, sortField, sortDir]);
 
   const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
