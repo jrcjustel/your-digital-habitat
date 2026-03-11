@@ -10,6 +10,7 @@ import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
 import ListingAcademyBanner from "@/components/ListingAcademyBanner";
 import VerticalConversionCta from "@/components/VerticalConversionCta";
+import VerticalFaq from "@/components/VerticalFaq";
 import { Home, AlertTriangle, TrendingDown, Scale } from "lucide-react";
 
 const highlights = [
@@ -51,6 +52,7 @@ const InversoresOcupados = () => (
         <InvestmentListing filterFn={(q: any) => q.eq("propiedad_sin_posesion", true)} />
       </div>
       <VerticalConversionCta assetType="ocupado" />
+      <VerticalFaq assetType="ocupado" />
       <Disclaimer type="ocupados" />
     </div>
     <RealCaseStudies filterType="ocupado" />

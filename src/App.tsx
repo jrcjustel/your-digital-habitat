@@ -102,6 +102,8 @@ import InvestorSelfAssessment from "./pages/InvestorSelfAssessment";
 import MarketIntelligencePage from "./pages/MarketIntelligencePage";
 import ScoreMethodologyPage from "./pages/ScoreMethodologyPage";
 import RegulatoryFrameworkPage from "./pages/RegulatoryFrameworkPage";
+import HowToReadListingPage from "./pages/HowToReadListingPage";
+import ServicerComparisonPage from "./pages/ServicerComparisonPage";
 
 const queryClient = new QueryClient();
 
@@ -177,6 +179,8 @@ const App = () => (
             <Route path="/inteligencia-mercado" element={<MarketIntelligencePage />} />
             <Route path="/guia-inversion/scoring" element={<ScoreMethodologyPage />} />
             <Route path="/guia-inversion/marco-legal" element={<RegulatoryFrameworkPage />} />
+            <Route path="/guia-inversion/leer-ficha" element={<HowToReadListingPage />} />
+            <Route path="/guia-inversion/servicers" element={<ServicerComparisonPage />} />
             <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
             <Route path="/mapa" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/comparador" element={<ComparatorPage />} />

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PostOfferGuidance from "@/components/PostOfferGuidance";
 
 interface OfferFormProps {
   propertyId: string;
@@ -39,6 +40,7 @@ const OfferForm = ({
   const [personaTipo, setPersonaTipo] = useState<"fisica" | "juridica">("fisica");
   const [alertas, setAlertas] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  const [submitted, setSubmitted] = useState<"offer" | "contact" | null>(null);
 
   const [form, setForm] = useState({
     nombre: defaultName.split(" ")[0] || "",
@@ -141,6 +143,7 @@ const OfferForm = ({
       setForm({ nombre: "", apellidos: "", telefono: "", email: "", sociedad: "", nif: "", offerAmount: "", representedName: "", empresa: "", cif: "", mensaje: "" });
       setAlertas(false);
       setMarketing(false);
+      setSubmitted(mode);
 
       window.dispatchEvent(new CustomEvent("ikesa-proactive-chat", {
         detail: {
@@ -368,6 +371,8 @@ const OfferForm = ({
           </TabsContent>
         </Tabs>
       </div>
+
+      {submitted && <PostOfferGuidance mode={submitted} />}
     </div>
   );
 };

@@ -20,6 +20,7 @@ import WelcomeWizard from "@/components/WelcomeWizard";
 import FirstOperationChecklist from "@/components/FirstOperationChecklist";
 import JourneyStageWidget from "@/components/JourneyStageWidget";
 import InvestmentChecklistGenerator from "@/components/InvestmentChecklistGenerator";
+import InvestmentDiary from "@/components/InvestmentDiary";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -279,6 +280,7 @@ const Dashboard = () => {
             <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Mis documentos</TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Mis alertas</TabsTrigger>
             <TabsTrigger value="checklist" className="gap-2"><CheckCircle className="w-4 h-4" /> Checklist</TabsTrigger>
+            <TabsTrigger value="diary" className="gap-2"><Activity className="w-4 h-4" /> Diario</TabsTrigger>
           </TabsList>
 
           <TabsContent value="favorites">
@@ -731,6 +733,10 @@ const Dashboard = () => {
 
           <TabsContent value="checklist">
             <InvestmentChecklistGenerator />
+          </TabsContent>
+
+          <TabsContent value="diary">
+            <InvestmentDiary />
           </TabsContent>
         </Tabs>
       </div>

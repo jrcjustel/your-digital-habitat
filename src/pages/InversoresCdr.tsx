@@ -10,6 +10,7 @@ import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
 import ListingAcademyBanner from "@/components/ListingAcademyBanner";
 import VerticalConversionCta from "@/components/VerticalConversionCta";
+import VerticalFaq from "@/components/VerticalFaq";
 import { Gavel, Scale, Home, FileText } from "lucide-react";
 
 const highlights = [
@@ -51,6 +52,7 @@ const InversoresCdr = () => (
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
       </div>
       <VerticalConversionCta assetType="cesion" />
+      <VerticalFaq assetType="cesion" />
       <Disclaimer type="cesion-remate" />
     </div>
     <RealCaseStudies filterType="cesion" />

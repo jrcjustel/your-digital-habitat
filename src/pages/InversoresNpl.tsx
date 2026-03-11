@@ -10,6 +10,7 @@ import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
 import ListingAcademyBanner from "@/components/ListingAcademyBanner";
 import VerticalConversionCta from "@/components/VerticalConversionCta";
+import VerticalFaq from "@/components/VerticalFaq";
 import { CreditCard, TrendingDown, Shield, FileText } from "lucide-react";
 
 const highlights = [
@@ -50,6 +51,7 @@ const InversoresNpl = () => (
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
       </div>
       <VerticalConversionCta assetType="npl" />
+      <VerticalFaq assetType="npl" />
       <Disclaimer type="npl" />
     </div>
     <RealCaseStudies filterType="npl" />
