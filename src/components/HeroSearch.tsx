@@ -1,117 +1,135 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BarChart3, Phone, Shield, Users, Zap } from "lucide-react";
+import { ArrowRight, BarChart3, Phone, Shield, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import HeroSearchPanel from "./HeroSearchPanel";
+import heroPremium from "@/assets/hero-premium.jpg";
 
 const HeroSearch = () => {
   return (
-    <section className="relative overflow-hidden min-h-[90vh] flex items-center">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-[hsl(200,60%,18%)]" />
+    <section className="relative overflow-hidden min-h-[92vh] flex items-center">
+      {/* Premium photo background */}
+      <div className="absolute inset-0">
+        <img
+          src={heroPremium}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 to-primary/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-primary/20" />
+      </div>
 
-      {/* Organic blobs */}
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 -right-32 w-[600px] h-[600px] rounded-full bg-accent/8 blur-3xl"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], x: [0, -15, 0], y: [0, 25, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full bg-accent/5 blur-3xl"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/3 w-[200px] h-[200px] rounded-full bg-accent/4 blur-3xl"
-      />
+      {/* Subtle grain texture */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
 
-      <div className="relative container mx-auto px-4 py-16 md:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left – Copy + CTAs */}
+      <div className="relative container mx-auto px-4 py-20 md:py-28">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left – Premium copy */}
           <div>
-            <motion.span
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
-              className="inline-flex items-center gap-1.5 bg-accent/15 text-accent border border-accent/20 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-6"
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="inline-flex items-center gap-2 border border-accent/30 rounded-full px-4 py-1.5 mb-8"
             >
-              <Zap className="w-3.5 h-3.5" /> Inversión inmobiliaria sin barreras
-            </motion.span>
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <span className="text-xs font-semibold text-accent tracking-wide uppercase">Plataforma de inversión inmobiliaria</span>
+            </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 25 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.25 }}
-              className="font-heading text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-primary-foreground leading-[1.1] mb-5"
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="font-heading text-4xl md:text-5xl lg:text-[3.6rem] font-extrabold text-primary-foreground leading-[1.08] mb-6 tracking-tight"
             >
-              Las mejores oportunidades,
+              Accede a oportunidades
               <br />
-              <motion.span
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ type: "spring", stiffness: 120, damping: 15, delay: 0.55 }}
-                className="text-accent"
-              >
-                ahora también para ti.
-              </motion.span>
+              que antes solo veían
+              <br />
+              <span className="text-accent">los grandes fondos.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.65 }}
-              className="text-primary-foreground/70 text-lg leading-relaxed mb-8 max-w-lg"
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-primary-foreground/65 text-lg leading-relaxed mb-10 max-w-lg"
             >
-              Subastas, NPLs, cesiones de remate… hasta ahora solo los grandes fondos
-              accedían a estas oportunidades. Nosotros abrimos la puerta —&nbsp;con datos reales
-              y sin letra pequeña.
+              Subastas judiciales, carteras NPL, cesiones de remate e inmuebles
+              ocupados —&nbsp;analizados con datos reales y listos para invertir.
             </motion.p>
 
-            {/* Dual CTAs */}
+            {/* Bloomberg-style metrics strip */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.55 }}
+              className="flex items-center gap-6 mb-10 border-l-2 border-accent/40 pl-5"
+            >
+              <div>
+                <p className="text-2xl font-extrabold text-primary-foreground tracking-tight">+27.000</p>
+                <p className="text-[11px] text-primary-foreground/45 font-medium">activos analizados</p>
+              </div>
+              <div className="w-px h-10 bg-primary-foreground/15" />
+              <div>
+                <p className="text-2xl font-extrabold text-accent tracking-tight">42%</p>
+                <p className="text-[11px] text-primary-foreground/45 font-medium">descuento medio</p>
+              </div>
+              <div className="w-px h-10 bg-primary-foreground/15" />
+              <div>
+                <p className="text-2xl font-extrabold text-primary-foreground tracking-tight">52</p>
+                <p className="text-[11px] text-primary-foreground/45 font-medium">provincias</p>
+              </div>
+            </motion.div>
+
+            {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-3 mb-6"
+              transition={{ duration: 0.5, delay: 0.65 }}
+              className="flex flex-col sm:flex-row gap-3 mb-8"
             >
               <Link
                 to="/inmuebles"
-                className="group inline-flex items-center justify-center gap-2.5 bg-accent text-accent-foreground font-bold px-7 py-3.5 rounded-xl text-sm hover:brightness-110 transition-all shadow-lg shadow-accent/25 active:scale-[0.97]"
+                className="group inline-flex items-center justify-center gap-2.5 bg-accent text-accent-foreground font-bold px-8 py-4 rounded-xl text-sm hover:brightness-110 transition-all shadow-lg shadow-accent/25 active:scale-[0.97]"
               >
-                <BarChart3 className="w-4 h-4" />
-                Ver oportunidades
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <TrendingUp className="w-4 h-4" />
+                Explorar oportunidades
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/contacto"
-                className="group inline-flex items-center justify-center gap-2.5 border border-primary-foreground/20 text-primary-foreground font-semibold px-7 py-3.5 rounded-xl text-sm hover:border-accent/50 hover:text-accent transition-all active:scale-[0.97]"
+                className="group inline-flex items-center justify-center gap-2.5 bg-primary-foreground/8 backdrop-blur-sm border border-primary-foreground/15 text-primary-foreground font-semibold px-8 py-4 rounded-xl text-sm hover:bg-primary-foreground/12 hover:border-primary-foreground/25 transition-all active:scale-[0.97]"
               >
                 <Phone className="w-4 h-4" />
-                Hablar con alguien del equipo
+                Hablar con el equipo
               </Link>
             </motion.div>
 
-            {/* Trust signals */}
+            {/* Trust */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1 }}
-              className="flex items-center gap-6 text-primary-foreground/50 text-xs"
+              transition={{ duration: 0.6, delay: 0.85 }}
+              className="flex items-center gap-5 text-primary-foreground/40 text-xs"
             >
-              <span className="flex items-center gap-1.5"><Shield className="w-4 h-4" /> Sin comisiones ocultas</span>
-              <span className="flex items-center gap-1.5"><Users className="w-4 h-4" /> Para cualquier perfil inversor</span>
-              <span>Alta gratuita</span>
+              <span className="flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> Sin comisiones ocultas</span>
+              <span className="flex items-center gap-1.5"><BarChart3 className="w-3.5 h-3.5" /> Datos verificados</span>
+              <span>Registro gratuito</span>
             </motion.div>
           </div>
 
-          {/* Right – Search panel */}
+          {/* Right – Search panel with premium frame */}
           <motion.div
-            initial={{ opacity: 0, y: 30, rotate: 1 }}
-            animate={{ opacity: 1, y: 0, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.4 }}
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="relative"
           >
-            <HeroSearchPanel />
+            {/* Glow effect behind panel */}
+            <div className="absolute -inset-4 bg-accent/10 rounded-3xl blur-2xl" />
+            <div className="relative">
+              <HeroSearchPanel />
+            </div>
           </motion.div>
         </div>
       </div>

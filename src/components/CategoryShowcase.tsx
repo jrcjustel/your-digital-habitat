@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Gavel, FileText, Home, Key, Map } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import rutaNpl from "@/assets/ruta-deuda-npl.jpg";
 import rutaCdr from "@/assets/ruta-cesiones-remate.jpg";
@@ -8,40 +8,36 @@ import rutaSubastas from "@/assets/ruta-subastas-boe.jpg";
 
 const categories = [
   {
-    icon: Gavel,
     title: "Subastas BOE",
-    desc: "Subastas judiciales en directo. Las analizamos y te decimos cuáles merecen la pena.",
+    desc: "Subastas judiciales activas, analizadas y con scoring de oportunidad. Actualización diaria.",
     image: rutaSubastas,
     href: "/subastas",
     tag: "En vivo",
-    stats: "Actualización diaria",
+    metric: "Actualización diaria",
   },
   {
-    icon: FileText,
     title: "NPL — Compra de deuda",
-    desc: "Carteras de créditos impagados con descuentos reales. El segmento más rentable del mercado.",
+    desc: "Carteras de créditos impagados. Adquiere la posición acreedora con descuentos reales sobre deuda.",
     image: rutaNpl,
     href: "/npl",
     tag: "Alta rentabilidad",
-    stats: "Descuento medio 42%",
+    metric: "Descuento medio 42%",
   },
   {
-    icon: Key,
     title: "Cesiones de remate",
-    desc: "Te cedes la adjudicación. Tú adquieres el inmueble a precio de subasta, sin subastar.",
+    desc: "Compra de adjudicaciones judiciales cedidas. Precio de subasta, sin subastar.",
     image: rutaCdr,
     href: "/inmuebles?saleType=cesion-remate",
     tag: "Acceso directo",
-    stats: "ROI medio 28%",
+    metric: "ROI medio 28%",
   },
   {
-    icon: Home,
     title: "Inmuebles ocupados",
-    desc: "Precios muy por debajo de mercado. Te acompañamos en todo el proceso de recuperación.",
+    desc: "Máximo descuento sobre mercado. Análisis legal y de recuperación incluido en la ficha.",
     image: rutaOcupados,
     href: "/inmuebles?saleType=ocupado",
     tag: "Precio reducido",
-    stats: "Hasta -55% mercado",
+    metric: "Hasta -55% mercado",
   },
 ];
 
@@ -49,124 +45,127 @@ const CategoryShowcase = () => {
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4">
-        {/* Header – left-aligned for organic feel */}
-        <div className="max-w-2xl mb-14">
-          <motion.span
-            initial={{ opacity: 0, x: -10 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="section-label"
-          >
-            Tipos de inversión
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
-            className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-3"
-          >
-            Cuatro caminos,{" "}
-            <span className="text-accent">un mismo objetivo</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-muted-foreground mt-4 text-lg leading-relaxed"
-          >
-            Cada tipo de activo tiene su lógica, su perfil de riesgo y su momento.
-            Elige el que encaje con tu estrategia —&nbsp;o explóralos todos.
-          </motion.p>
-        </div>
-
-        {/* Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {categories.map((cat, i) => (
-            <motion.div
-              key={cat.title}
-              initial={{ opacity: 0, y: 25 }}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+          <div className="max-w-xl">
+            <motion.span
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="section-label"
+            >
+              Verticales de inversión
+            </motion.span>
+            <motion.h2
+              initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 100, damping: 18, delay: i * 0.1 }}
-              whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mt-3 tracking-tight"
             >
-              <Link
-                to={cat.href}
-                className="group flex flex-col sm:flex-row bg-card rounded-2xl overflow-hidden border border-border hover:border-accent/40 transition-all duration-300 card-elevated h-full"
-              >
-                {/* Image */}
-                <div className="relative w-full sm:w-48 h-48 sm:h-auto shrink-0 overflow-hidden">
-                  <img
-                    src={cat.image}
-                    alt={cat.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <span className="absolute top-3 left-3 bg-accent text-accent-foreground text-[11px] font-bold px-2.5 py-1 rounded-full">
-                    {cat.tag}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="group-hover:rotate-6 transition-transform duration-300">
-                        <cat.icon className="w-5 h-5 text-accent" />
-                      </div>
-                      <h3 className="font-heading text-lg font-bold text-foreground group-hover:text-accent transition-colors">
-                        {cat.title}
-                      </h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                      {cat.desc}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full">
-                      {cat.stats}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-accent group-hover:gap-2 transition-all">
-                      Explorar <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+              Cuatro estrategias. Un mismo rigor.
+            </motion.h2>
+          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <Link
+              to="/inmuebles"
+              className="inline-flex items-center gap-2 text-sm font-bold text-accent hover:text-accent/80 transition-colors group"
+            >
+              Ver todas las oportunidades
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Map CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.3 }}
-          className="mt-8"
-        >
-          <Link
-            to="/mapa"
-            className="group flex items-center justify-between bg-secondary rounded-2xl px-8 py-5 border border-border hover:border-accent/30 transition-all active:scale-[0.995]"
+        {/* Premium grid: 1 large + 3 stacked */}
+        <div className="grid lg:grid-cols-2 gap-5">
+          {/* Featured card */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center group-hover:rotate-6 transition-transform duration-300">
-                <Map className="w-6 h-6 text-accent" />
-              </div>
-              <div>
-                <h4 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors">
-                  Explorar por mapa
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Busca oportunidades cerca de donde te interesa invertir
+            <Link
+              to={categories[0].href}
+              className="group relative block h-full rounded-2xl overflow-hidden"
+              style={{ minHeight: 420 }}
+            >
+              <img
+                src={categories[0].image}
+                alt={categories[0].title}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <span className="inline-flex w-fit items-center gap-1.5 bg-accent text-accent-foreground text-[11px] font-bold px-3 py-1 rounded-full mb-3">
+                  {categories[0].tag}
+                </span>
+                <h3 className="font-heading text-2xl font-extrabold text-primary-foreground mb-2 tracking-tight">
+                  {categories[0].title}
+                </h3>
+                <p className="text-sm text-primary-foreground/70 leading-relaxed max-w-md mb-4">
+                  {categories[0].desc}
                 </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-accent">{categories[0].metric}</span>
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary-foreground group-hover:text-accent transition-colors">
+                    Explorar <ArrowUpRight className="w-4 h-4" />
+                  </span>
+                </div>
               </div>
-            </div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-accent group-hover:translate-x-1 transition-all" />
-          </Link>
-        </motion.div>
+            </Link>
+          </motion.div>
+
+          {/* Right column — 3 horizontal cards */}
+          <div className="flex flex-col gap-5">
+            {categories.slice(1).map((cat, i) => (
+              <motion.div
+                key={cat.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
+              >
+                <Link
+                  to={cat.href}
+                  className="group flex bg-card rounded-2xl overflow-hidden border border-border hover:border-accent/30 transition-all duration-300 h-full"
+                  style={{ boxShadow: "var(--card-shadow)" }}
+                >
+                  <div className="relative w-36 shrink-0 overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/10" />
+                  </div>
+                  <div className="flex-1 p-5 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">{cat.tag}</span>
+                      </div>
+                      <h3 className="font-heading text-base font-bold text-foreground group-hover:text-accent transition-colors tracking-tight">
+                        {cat.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed mt-1 line-clamp-2">
+                        {cat.desc}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-[11px] font-semibold text-accent">{cat.metric}</span>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

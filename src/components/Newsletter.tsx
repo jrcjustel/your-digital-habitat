@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Mail } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
@@ -14,51 +14,57 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="py-16 md:py-20 hero-section" id="newsletter">
-      <div className="container mx-auto px-4 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ type: "spring", stiffness: 100, damping: 18 }}
-        >
-          <Mail className="w-10 h-10 text-accent mx-auto mb-4" />
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-primary-foreground mb-3">
-            No te pierdas nada
-          </h2>
-          <p className="text-primary-foreground/60 mb-8 max-w-lg mx-auto leading-relaxed">
-            Cada semana te enviamos las oportunidades más interesantes: cesiones de remate,
-            ocupados con margen y carteras NPL antes de que salgan al mercado general.
-          </p>
-        </motion.div>
+    <section className="py-16 md:py-24 bg-primary relative overflow-hidden" id="newsletter">
+      {/* Subtle texture */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
 
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="max-w-md mx-auto flex flex-col sm:flex-row gap-3"
-        >
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Tu email de trabajo"
-            required
-            className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/40 rounded-xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-          <button
-            type="submit"
-            className="bg-accent text-accent-foreground font-semibold px-6 py-3 rounded-xl text-sm hover:opacity-90 transition-opacity active:scale-[0.97]"
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            Suscribirme
-          </button>
-        </motion.form>
+            <span className="text-xs font-bold uppercase tracking-widest text-accent mb-4 block">Briefing semanal</span>
+            <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-primary-foreground mb-3 tracking-tight">
+              Las oportunidades que no salen en portada.
+            </h2>
+            <p className="text-primary-foreground/55 mb-8 leading-relaxed">
+              Cada viernes, un resumen con las cesiones de remate, carteras NPL
+              y activos ocupados más relevantes de la semana. Sin ruido.
+            </p>
+          </motion.div>
 
-        <p className="text-primary-foreground/30 text-xs mt-4 max-w-sm mx-auto">
-          Sin spam. Puedes darte de baja cuando quieras.
-        </p>
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="flex flex-col sm:flex-row gap-3"
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+              className="flex-1 bg-primary-foreground/8 border border-primary-foreground/15 text-primary-foreground placeholder:text-primary-foreground/35 rounded-xl px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent/50 transition-all"
+            />
+            <button
+              type="submit"
+              className="group inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground font-bold px-7 py-3.5 rounded-xl text-sm hover:brightness-110 transition-all active:scale-[0.97]"
+            >
+              Suscribirme
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </motion.form>
+
+          <p className="text-primary-foreground/25 text-xs mt-4">
+            Sin spam. Cancelación inmediata. Solo contenido relevante para inversores.
+          </p>
+        </div>
       </div>
     </section>
   );

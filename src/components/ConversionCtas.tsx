@@ -1,30 +1,26 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BarChart3, Phone, BookOpen, Building2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const actions = [
   {
-    icon: BarChart3,
-    title: "Quiero analizar una inversión",
-    desc: "Nuestro motor calcula ROI, riesgo y estrategia de salida en segundos.",
+    title: "Analizar inversión",
+    desc: "ROI estimado, nivel de riesgo y estrategia de salida. En segundos.",
     href: "/analisis-inversion",
     primary: true,
   },
   {
-    icon: Phone,
-    title: "Necesito hablar con alguien",
-    desc: "Llámanos o escríbenos. Sin compromiso, sin presión.",
+    title: "Hablar con el equipo",
+    desc: "Sin compromiso. Te escuchamos y orientamos según tu perfil.",
     href: "/contacto",
   },
   {
-    icon: BookOpen,
-    title: "Prefiero aprender primero",
-    desc: "Guías prácticas y casos reales para empezar con buen pie.",
+    title: "Formación para inversores",
+    desc: "Guías prácticas, casos reales y rutas formativas por tipología.",
     href: "/academia",
   },
   {
-    icon: Building2,
-    title: "Quiero vender activos",
+    title: "Vender activos",
     desc: "¿Eres banco, fondo o gestor? Hablemos de distribución.",
     href: "/vendedores",
   },
@@ -32,9 +28,9 @@ const actions = [
 
 const ConversionCtas = () => {
   return (
-    <section className="py-16 md:py-24 bg-secondary/50">
+    <section className="py-16 md:py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto text-center mb-12">
+        <div className="max-w-xl mb-12">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -47,50 +43,46 @@ const ConversionCtas = () => {
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
-            className="font-heading text-3xl md:text-4xl font-bold text-foreground mt-3"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mt-3 tracking-tight"
           >
             ¿Por dónde quieres empezar?
           </motion.h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-2xl overflow-hidden">
           {actions.map((action, i) => (
             <motion.div
               key={action.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 120, damping: 18, delay: i * 0.08 }}
-              whileHover={{ y: -5, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+              transition={{ delay: i * 0.06, duration: 0.4 }}
             >
               <Link
                 to={action.href}
-                className={`group block h-full rounded-2xl p-6 border transition-all duration-300 active:scale-[0.98] ${
+                className={`group flex flex-col justify-between h-full p-7 transition-all duration-300 ${
                   action.primary
-                    ? "bg-accent text-accent-foreground border-accent hover:brightness-110 shadow-lg shadow-accent/20"
-                    : "bg-card border-border hover:border-accent/40 card-elevated"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-card hover:bg-secondary/50"
                 }`}
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:rotate-6 transition-transform duration-300 ${
-                  action.primary ? "bg-accent-foreground/15" : "bg-secondary"
-                }`}>
-                  <action.icon className={`w-6 h-6 ${action.primary ? "text-accent-foreground" : "text-accent"}`} />
+                <div>
+                  <h3 className={`font-heading text-lg font-bold mb-2 tracking-tight ${
+                    action.primary ? "" : "text-foreground group-hover:text-accent transition-colors"
+                  }`}>
+                    {action.title}
+                  </h3>
+                  <p className={`text-sm leading-relaxed mb-6 ${
+                    action.primary ? "text-primary-foreground/65" : "text-muted-foreground"
+                  }`}>
+                    {action.desc}
+                  </p>
                 </div>
-                <h3 className={`font-heading text-lg font-bold mb-1.5 ${
-                  action.primary ? "" : "text-foreground group-hover:text-accent transition-colors"
+                <span className={`inline-flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all ${
+                  action.primary ? "text-accent" : "text-accent"
                 }`}>
-                  {action.title}
-                </h3>
-                <p className={`text-sm mb-4 leading-relaxed ${
-                  action.primary ? "text-accent-foreground/70" : "text-muted-foreground"
-                }`}>
-                  {action.desc}
-                </p>
-                <span className={`inline-flex items-center gap-1 text-sm font-semibold group-hover:gap-2 transition-all ${
-                  action.primary ? "" : "text-accent"
-                }`}>
-                  Vamos <ArrowRight className="w-3.5 h-3.5" />
+                  Ir <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </Link>
             </motion.div>
