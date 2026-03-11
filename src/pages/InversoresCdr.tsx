@@ -43,6 +43,7 @@ const InversoresCdr = () => (
     </section>
     <div className="container mx-auto px-4 py-8">
       <NewInvestorBanner />
+      <ListingAcademyBanner assetType="cesion" />
       <HowThisWorks assetType="cesion" />
       <AssetTypeDeepDive assetType="cesion" />
       <LegalSafetyBanner />
