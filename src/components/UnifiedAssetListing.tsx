@@ -677,6 +677,7 @@ const UnifiedAssetListing = ({
             {([
               { mode: "grid" as ViewMode, icon: LayoutGrid },
               { mode: "list" as ViewMode, icon: List },
+              { mode: "map" as ViewMode, icon: Map },
             ]).map(({ mode, icon: Icon }) => (
               <button
                 key={mode}
