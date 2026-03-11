@@ -7,8 +7,9 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Loader2, MapPin, Building2, Scale, FileText, Maximize, FolderOpen,
   Gavel, Home, TrendingDown, Euro, Calendar, Download, Mail, Heart,
-  ShieldAlert, Share2, Lock, CreditCard
+  ShieldAlert, Share2, Lock, CreditCard, ArrowLeft, ArrowUpRight
 } from "lucide-react";
+import { motion } from "framer-motion";
 import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
 import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
@@ -80,9 +81,9 @@ interface NplAsset {
 const InfoRow = ({ label, value }: { label: string; value: string | number | null | undefined }) => {
   if (value === undefined || value === null || value === "") return null;
   return (
-    <div className="flex justify-between py-2.5 border-b border-border last:border-0">
+    <div className="flex justify-between py-3 border-b border-border/60 last:border-0">
       <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="text-sm font-medium text-foreground">{value}</span>
+      <span className="text-sm font-semibold text-foreground">{value}</span>
     </div>
   );
 };
@@ -193,7 +194,6 @@ const NplDetail = () => {
     }
   };
 
-  // Intelligence layer
   const opportunityType = useMemo(() => asset ? resolveOpportunityType({
     cesionRemate: asset.cesion_remate,
     propiedadSinPosesion: asset.propiedad_sin_posesion,
@@ -229,7 +229,12 @@ const NplDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
+        <div className="flex items-center justify-center py-32">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-accent mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">Cargando oportunidad…</p>
+          </div>
+        </div>
         <Footer />
       </div>
     );
@@ -239,9 +244,9 @@ const NplDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="font-heading text-2xl font-bold text-foreground mb-4">Oportunidad no encontrada</h1>
-          <Link to="/inmuebles" className="text-accent hover:underline">← Volver al listado</Link>
+        <div className="container mx-auto px-4 py-24 text-center">
+          <h1 className="font-heading text-2xl font-extrabold text-foreground mb-4 tracking-tight">Oportunidad no encontrada</h1>
+          <Link to="/inmuebles" className="text-sm font-bold text-accent hover:text-accent/80 transition-colors">← Volver al listado</Link>
         </div>
         <Footer />
       </div>
@@ -267,118 +272,108 @@ const NplDetail = () => {
     return `${tipo} en subasta${loc ? ` en ${loc}` : ""} ${sqm}`.trim();
   })();
 
+  const priceBlocks = [
+    { label: "Precio orientativo", value: asset.precio_orientativo, accent: true },
+    { label: "Deuda aproximada", value: asset.deuda_ob },
+    { label: "Valor de subasta", value: asset.valor_mercado },
+    { label: "Valor de tasación", value: asset.valor_activo },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/20">
       <Navbar />
 
-      {/* Breadcrumb */}
-      <div className="bg-secondary border-b border-border">
+      {/* Premium breadcrumb bar */}
+      <div className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
-            <span>/</span>
-            <Link to="/inmuebles" className="hover:text-accent transition-colors">Oportunidades</Link>
-            <span>/</span>
-            <span className="text-foreground font-medium truncate max-w-[200px]">{reference}</span>
+          <div className="flex items-center gap-3 text-sm">
+            <Link to="/inmuebles" className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors font-medium">
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Oportunidades
+            </Link>
+            <span className="text-border">/</span>
+            <span className="text-foreground font-semibold truncate max-w-[250px]">{reference}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleFavorite} className="p-2 rounded-lg border border-border hover:border-accent/30 hover:bg-secondary transition-all">
+              <Heart className={`w-4 h-4 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
+            </button>
+            <button className="p-2 rounded-lg border border-border hover:border-accent/30 hover:bg-secondary transition-all">
+              <Share2 className="w-4 h-4 text-muted-foreground" />
+            </button>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header card - reference + prices */}
-        <div className="bg-card rounded-2xl border border-border p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-              <div className="flex items-center flex-wrap gap-2">
-                <h2 className="font-heading text-xl font-bold text-foreground">Referencia {reference}</h2>
-                <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
-                <RiskTrafficLight level={riskLevel} size="sm" />
-                <Badge variant="outline" className="text-[11px]">{opLabel}</Badge>
-                {asset.tipo_activo && (
-                  <span className="bg-secondary text-xs font-medium px-2.5 py-1 rounded-full text-muted-foreground flex items-center gap-1">
-                    <Building2 className="w-3 h-3" />
-                    {asset.tipo_activo}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button onClick={toggleFavorite} className="p-2.5 rounded-full border border-border hover:bg-secondary transition-colors">
-                <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
-              </button>
-              <button className="p-2.5 rounded-full border border-border hover:bg-secondary transition-colors">
-                <Share2 className="w-5 h-5 text-muted-foreground" />
-              </button>
-            </div>
+        {/* Header — Title + Badge Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-6"
+        >
+          <div className="flex items-center flex-wrap gap-2 mb-2">
+            <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
+            <RiskTrafficLight level={riskLevel} size="sm" />
+            <Badge variant="outline" className="text-[10px] font-bold tracking-wide">{opLabel}</Badge>
           </div>
+          <h1 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight leading-tight">{title}</h1>
+          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5" />
+            {[asset.direccion, asset.municipio, asset.provincia].filter(Boolean).join(", ")}
+          </p>
+        </motion.div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-accent/10 border-2 border-accent rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Precio orientativo</p>
-              <p className="text-2xl font-bold text-accent">
-                {asset.precio_orientativo > 0 ? `${asset.precio_orientativo.toLocaleString("es-ES")} €` : "A consultar"}
+        {/* Price strip — Bloomberg style */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-2xl overflow-hidden mb-8"
+        >
+          {priceBlocks.map((block) => (
+            <div
+              key={block.label}
+              className={`p-5 ${block.accent ? "bg-primary text-primary-foreground" : "bg-card"}`}
+            >
+              <p className={`text-xs font-semibold mb-1 ${block.accent ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                {block.label}
               </p>
-            </div>
-            <div className="bg-secondary rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Deuda aproximada</p>
-              <p className="text-2xl font-bold text-foreground">
-                {asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : "A consultar"}
+              <p className={`text-xl md:text-2xl font-extrabold tracking-tight ${block.accent ? "text-accent" : "text-foreground"}`}>
+                {block.value > 0 ? `${block.value.toLocaleString("es-ES")} €` : "A consultar"}
               </p>
+              {block.accent && discount && discount > 0 && (
+                <span className="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-accent">
+                  <TrendingDown className="w-3 h-3" /> -{discount}% s/mercado
+                </span>
+              )}
             </div>
-            <div className="bg-secondary rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Valor de subasta</p>
-              <p className="text-2xl font-bold text-foreground">
-                {asset.valor_mercado > 0 ? `${asset.valor_mercado.toLocaleString("es-ES")} €` : "A consultar"}
-              </p>
-            </div>
-            <div className="bg-secondary rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Valor de tasación</p>
-              <p className="text-2xl font-bold text-foreground">
-                {asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : "A consultar"}
-              </p>
-            </div>
-          </div>
-        </div>
+          ))}
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main content */}
+          {/* Main content — 2/3 */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Property card with location */}
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-heading text-lg font-bold text-foreground">Inmueble</h3>
-                <div className="flex items-center gap-2">
-                  <button onClick={toggleFavorite}>
-                    <Heart className={`w-5 h-5 ${isFav ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
-                  </button>
-                  <MapPin className="w-5 h-5 text-accent" />
+            {/* Status alerts */}
+            {asset.estado === "oferta_gestion" && (
+              <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 flex items-start gap-3">
+                <ShieldAlert className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-destructive">Oportunidad no disponible</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Ya cuenta con una oferta en gestión.</p>
                 </div>
               </div>
-              <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-2">{title}</h1>
-              <p className="text-sm text-muted-foreground mb-1">
-                {[asset.municipio, asset.provincia].filter(Boolean).join(", ")}
-              </p>
-
-              {/* Status banners */}
-              {asset.estado === "oferta_gestion" && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mt-4 flex items-start gap-2">
-                  <ShieldAlert className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-destructive">Oportunidad no disponible</p>
-                    <p className="text-xs text-muted-foreground">Ya cuenta con una oferta en gestión.</p>
-                  </div>
+            )}
+            {opType === "ocupado" && (
+              <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4 flex items-start gap-3">
+                <ShieldAlert className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-bold text-destructive">Inmueble transmitido sin posesión</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Estado: {asset.estado_ocupacional || "Ocupado"}</p>
                 </div>
-              )}
-              {opType === "ocupado" && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mt-4 flex items-start gap-2">
-                  <ShieldAlert className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold text-destructive">Inmueble transmitido sin posesión</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Estado: {asset.estado_ocupacional || "Ocupado"}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Image gallery */}
             <AssetImageGallery
@@ -389,13 +384,22 @@ const NplDetail = () => {
               provincia={asset.provincia}
             />
 
-            {/* Analysis + Tabs - gated by NDA */}
+            {/* Analysis — NDA gated */}
             <NdaGate user={user} ndaSigned={ndaSigned} onNdaSigned={() => setNdaSigned(true)}>
-              <div className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-heading text-xl font-bold text-foreground">Análisis de la Oportunidad</h2>
+              {/* Quick metrics */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-card rounded-2xl border border-border p-6"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="font-heading text-lg font-extrabold text-foreground tracking-tight">Análisis de la oportunidad</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">Datos verificados del activo para tu análisis.</p>
+                  </div>
                   <div className="flex gap-2">
-                    <button onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))} className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-medium transition-colors">
+                    <button onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))} className="flex items-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 text-xs py-2 px-4 rounded-lg font-bold transition-colors">
                       <FileText className="w-3.5 h-3.5" />
                       Dossier
                     </button>
@@ -403,87 +407,79 @@ const NplDetail = () => {
                     <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)} />
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-6">La operación detallada para entender su potencialidad.</p>
+
                 {asset.descripcion && (
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6">{asset.descripcion}</p>
                 )}
 
-                {/* Quick stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                {/* Quick stats — clean grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border rounded-xl overflow-hidden mb-6">
                   {asset.sqm > 0 && (
-                    <div className="bg-secondary rounded-xl p-3 text-center">
-                      <Maximize className="w-4 h-4 text-accent mx-auto mb-1" />
-                      <p className="text-sm font-bold text-foreground">{asset.sqm.toLocaleString("es-ES")} m²</p>
-                      <p className="text-[10px] text-muted-foreground">Superficie</p>
+                    <div className="bg-card p-4 text-center">
+                      <p className="text-lg font-extrabold text-foreground tracking-tight">{asset.sqm.toLocaleString("es-ES")} m²</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">Superficie</p>
                     </div>
                   )}
                   {asset.anio_construccion && (
-                    <div className="bg-secondary rounded-xl p-3 text-center">
-                      <Calendar className="w-4 h-4 text-accent mx-auto mb-1" />
-                      <p className="text-sm font-bold text-foreground">{asset.anio_construccion}</p>
-                      <p className="text-[10px] text-muted-foreground">Año const.</p>
+                    <div className="bg-card p-4 text-center">
+                      <p className="text-lg font-extrabold text-foreground tracking-tight">{asset.anio_construccion}</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">Año const.</p>
                     </div>
                   )}
                   {discount && discount > 0 && (
-                    <div className="bg-secondary rounded-xl p-3 text-center">
-                      <TrendingDown className="w-4 h-4 text-accent mx-auto mb-1" />
-                      <p className="text-sm font-bold text-foreground">-{discount}%</p>
-                      <p className="text-[10px] text-muted-foreground">Descuento</p>
+                    <div className="bg-card p-4 text-center">
+                      <p className="text-lg font-extrabold text-accent tracking-tight">-{discount}%</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">Descuento</p>
                     </div>
                   )}
                   {asset.num_titulares > 0 && (
-                    <div className="bg-secondary rounded-xl p-3 text-center">
-                      <Building2 className="w-4 h-4 text-accent mx-auto mb-1" />
-                      <p className="text-sm font-bold text-foreground">{asset.num_titulares}</p>
-                      <p className="text-[10px] text-muted-foreground">Titular(es)</p>
+                    <div className="bg-card p-4 text-center">
+                      <p className="text-lg font-extrabold text-foreground tracking-tight">{asset.num_titulares}</p>
+                      <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">Titular(es)</p>
                     </div>
                   )}
                 </div>
 
-                {/* Type badges */}
-                <div className="flex flex-wrap gap-2 mb-2">
+                {/* Type badges — minimal */}
+                <div className="flex flex-wrap gap-2">
                   {asset.cesion_remate && (
-                    <span className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1">
-                      <Gavel className="w-3 h-3" /> Cesión de remate
-                    </span>
+                    <span className="text-[11px] font-bold text-foreground bg-secondary px-3 py-1.5 rounded-full">Cesión de remate</span>
                   )}
                   {asset.cesion_credito && (
-                    <span className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full flex items-center gap-1">
-                      <CreditCard className="w-3 h-3" /> Cesión de crédito
-                    </span>
+                    <span className="text-[11px] font-bold text-foreground bg-secondary px-3 py-1.5 rounded-full">Cesión de crédito</span>
                   )}
                   {asset.vpo && (
-                    <span className="bg-secondary text-foreground text-xs px-3 py-1.5 rounded-full">VPO</span>
+                    <span className="text-[11px] font-bold text-foreground bg-secondary px-3 py-1.5 rounded-full">VPO</span>
                   )}
                   {asset.propiedad_sin_posesion && (
-                    <span className="bg-destructive/10 text-destructive text-xs px-3 py-1.5 rounded-full">Sin posesión</span>
+                    <span className="text-[11px] font-bold text-destructive bg-destructive/10 px-3 py-1.5 rounded-full">Sin posesión</span>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
-              {/* Tabs: Inmueble / Judicial / Deuda / Documentos */}
-              <div className="bg-card rounded-2xl border border-border overflow-hidden mt-6">
+              {/* Tabs — premium style */}
+              <div className="bg-card rounded-2xl border border-border overflow-hidden">
                 <Tabs defaultValue="inmueble">
-                  <TabsList className="w-full justify-start rounded-none border-b border-border bg-secondary/50 p-0 h-auto">
-                    <TabsTrigger value="inmueble" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                      <Home className="w-4 h-4" /> Inmueble
+                  <TabsList className="w-full justify-start rounded-none border-b border-border bg-card p-0 h-auto">
+                    <TabsTrigger value="inmueble" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3.5 gap-2 text-xs font-bold uppercase tracking-wide">
+                      Inmueble
                     </TabsTrigger>
-                    <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                      <Scale className="w-4 h-4" /> Judicial
+                    <TabsTrigger value="judicial" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3.5 gap-2 text-xs font-bold uppercase tracking-wide">
+                      Judicial
                     </TabsTrigger>
-                    <TabsTrigger value="deuda" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                      <FileText className="w-4 h-4" /> Deuda
+                    <TabsTrigger value="deuda" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3.5 gap-2 text-xs font-bold uppercase tracking-wide">
+                      Deuda
                     </TabsTrigger>
-                    <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent px-6 py-3 gap-2">
-                      <FolderOpen className="w-4 h-4" /> Documentos
+                    <TabsTrigger value="documentos" className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3.5 gap-2 text-xs font-bold uppercase tracking-wide">
+                      Documentos
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="inmueble" className="p-6 mt-0">
-                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-accent" /> Colateral / Inmueble Principal
+                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-4">
+                      Colateral / Inmueble principal
                     </h3>
-                    <div className="divide-y divide-border">
+                    <div>
                       <InfoRow label="Comunidad autónoma" value={asset.comunidad_autonoma} />
                       <InfoRow label="Provincia" value={asset.provincia} />
                       <InfoRow label="Municipio" value={asset.municipio} />
@@ -499,8 +495,6 @@ const NplDetail = () => {
                       <InfoRow label="Estado ocupacional" value={asset.estado_ocupacional ? (occupancyLabels[asset.estado_ocupacional] || asset.estado_ocupacional) : null} />
                       <InfoRow label="Propiedad sin posesión" value={asset.propiedad_sin_posesion ? "SÍ" : "NO"} />
                     </div>
-
-                    {/* Catastro panel */}
                     {asset.ref_catastral && (
                       <div className="mt-6">
                         <CatastroPanel refCatastral={asset.ref_catastral} assetId={asset.id} />
@@ -509,10 +503,10 @@ const NplDetail = () => {
                   </TabsContent>
 
                   <TabsContent value="judicial" className="p-6 mt-0">
-                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      <Gavel className="w-4 h-4 text-accent" /> Información judicial
+                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-4">
+                      Información judicial
                     </h3>
-                    <div className="divide-y divide-border">
+                    <div>
                       <InfoRow label="Judicializado" value={asset.judicializado ? "SÍ" : "NO"} />
                       <InfoRow label="Fase judicial" value={asset.fase_judicial ? (judicialPhaseLabels[asset.fase_judicial] || asset.fase_judicial) : null} />
                       <InfoRow label="Estado judicial" value={asset.estado_judicial} />
@@ -522,10 +516,10 @@ const NplDetail = () => {
                   </TabsContent>
 
                   <TabsContent value="deuda" className="p-6 mt-0">
-                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-accent" /> Información de la deuda
+                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-4">
+                      Información de la deuda
                     </h3>
-                    <div className="divide-y divide-border">
+                    <div>
                       <InfoRow label="Deuda pendiente" value={asset.deuda_ob > 0 ? `${asset.deuda_ob.toLocaleString("es-ES")} €` : null} />
                       <InfoRow label="Rango de deuda" value={asset.rango_deuda} />
                       <InfoRow label="Valor del activo" value={asset.valor_activo > 0 ? `${asset.valor_activo.toLocaleString("es-ES")} €` : null} />
@@ -538,12 +532,11 @@ const NplDetail = () => {
                       <InfoRow label="NDG" value={asset.ndg} />
                     </div>
 
-                    {/* Commercial conditions */}
-                    <div className="mt-6 p-4 bg-secondary rounded-xl">
-                      <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                        <Euro className="w-4 h-4 text-accent" /> Condiciones comerciales
+                    <div className="mt-6 bg-muted/30 rounded-xl p-5 border border-border/50">
+                      <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">
+                        Condiciones comerciales
                       </h4>
-                      <div className="divide-y divide-border">
+                      <div>
                         <InfoRow label="Comisión IKESA" value={asset.comision_porcentaje > 0 ? `${asset.comision_porcentaje}% (a cargo del comprador)` : "Exenta (asumida por el fondo)"} />
                         <InfoRow label="Depósito" value={asset.deposito_porcentaje > 0 ? `${asset.deposito_porcentaje}%` : "n.a."} />
                       </div>
@@ -551,8 +544,8 @@ const NplDetail = () => {
                   </TabsContent>
 
                   <TabsContent value="documentos" className="p-6 mt-0">
-                    <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                      <FolderOpen className="w-4 h-4 text-accent" /> Documentación del activo
+                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-4">
+                      Documentación del activo
                     </h3>
                     <DocumentsPanel nplAssetId={asset.id} compact showFilters />
                   </TabsContent>
@@ -563,66 +556,64 @@ const NplDetail = () => {
             </NdaGate>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar — 1/3 */}
+          <div className="space-y-5">
             {/* Offer CTA / Bidding */}
             {asset.estado === "oferta_gestion" ? (
               <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
-                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
-                  <p className="text-sm font-semibold text-destructive">Actualmente no disponible</p>
+                <div className="bg-destructive/5 border border-destructive/15 rounded-xl p-4">
+                  <p className="text-sm font-bold text-destructive">Actualmente no disponible</p>
                   <p className="text-xs text-muted-foreground mt-1">Este activo tiene una oferta en gestión.</p>
                 </div>
                 <WaitlistButton assetId={asset.id} userId={user?.id} userEmail={userEmail} userName={userName} />
               </div>
             ) : asset.estado === "cerrado" ? (
               <div className="bg-card rounded-2xl border border-border p-6">
-                <div className="bg-muted rounded-xl p-3">
-                  <p className="text-sm font-semibold text-muted-foreground">Operación cerrada</p>
+                <div className="bg-muted rounded-xl p-4">
+                  <p className="text-sm font-bold text-muted-foreground">Operación cerrada</p>
                   <p className="text-xs text-muted-foreground mt-1">Este activo ya no acepta ofertas.</p>
                 </div>
               </div>
             ) : !user || !ndaSigned ? (
-              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 text-center">
-                <Lock className="w-8 h-8 text-muted-foreground/50 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Regístrate y firma el NDA para enviar ofertas.</p>
+              <div className="bg-card border border-border rounded-2xl p-8 text-center">
+                <Lock className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm font-bold text-foreground mb-1">Acceso restringido</p>
+                <p className="text-xs text-muted-foreground">Regístrate y firma el NDA para enviar ofertas.</p>
+                <Link to="/auth" className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-accent hover:text-accent/80 transition-colors">
+                  Crear cuenta <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             ) : (
-              <div className="bg-card rounded-2xl border border-border overflow-hidden">
-                <div className="p-5 border-b border-border">
-                  <p className="text-sm font-bold text-foreground mb-3">¡Haz tu oferta!</p>
-                  {asset.descripcion && (
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-2">{asset.descripcion}</p>
-                  )}
-                </div>
-                <div className="p-5">
-                  <BiddingPanel
-                    assetId={asset.id}
-                    precioOrientativo={asset.precio_orientativo}
-                    depositoPorcentaje={asset.deposito_porcentaje}
-                    comisionPorcentaje={asset.comision_porcentaje}
-                    userId={user?.id}
-                    userName={userName}
-                    userEmail={userEmail}
-                  />
-                </div>
-              </div>
+              <BiddingPanel
+                assetId={asset.id}
+                precioOrientativo={asset.precio_orientativo}
+                depositoPorcentaje={asset.deposito_porcentaje}
+                comisionPorcentaje={asset.comision_porcentaje}
+                userId={user?.id}
+                userName={userName}
+                userEmail={userEmail}
+              />
             )}
 
             {/* Reference card */}
-            <div className="bg-card border border-border rounded-2xl p-5 text-center">
-              <p className="text-xs text-muted-foreground mb-1">Referencia</p>
-              <p className="font-heading text-lg font-bold text-foreground">{reference}</p>
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-1">Referencia</p>
+              <p className="font-heading text-lg font-extrabold text-foreground tracking-tight">{reference}</p>
+              {asset.servicer && (
+                <p className="text-xs text-muted-foreground mt-1">Servicer: <span className="font-semibold text-foreground">{asset.servicer}</span></p>
+              )}
             </div>
 
-            {/* Action buttons */}
-            <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
-              <Button variant="outline" className="w-full gap-2" onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}>
-                <Download className="w-4 h-4" /> Descargar Dossier
+            {/* Dossier actions */}
+            <div className="bg-card rounded-2xl border border-border p-5 space-y-2.5">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-2">Herramientas</p>
+              <Button variant="outline" size="sm" className="w-full gap-2 justify-start text-xs font-bold" onClick={() => generateInvestmentDossier(nplAssetToDossier(asset as any))}>
+                <Download className="w-3.5 h-3.5" /> Descargar dossier PDF
               </Button>
-              <EnrichedDossierButton dossierData={nplAssetToDossier(asset as any)} variant="outline" className="w-full" />
+              <EnrichedDossierButton dossierData={nplAssetToDossier(asset as any)} variant="outline" className="w-full justify-start text-xs font-bold" />
               <ShareDossierDialog dossierData={nplAssetToDossier(asset as any)}>
-                <Button variant="outline" className="w-full gap-2">
-                  <Mail className="w-4 h-4" /> Enviar Dossier por Email
+                <Button variant="outline" size="sm" className="w-full gap-2 justify-start text-xs font-bold">
+                  <Mail className="w-3.5 h-3.5" /> Enviar por email
                 </Button>
               </ShareDossierDialog>
             </div>
@@ -632,7 +623,7 @@ const NplDetail = () => {
               <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
             </div>
 
-            {/* Investment Intelligence Panel */}
+            {/* Investment Intelligence */}
             <InvestmentIntelligenceCard
               input={{
                 price: asset.precio_orientativo || asset.deuda_ob || 0,
@@ -647,19 +638,18 @@ const NplDetail = () => {
               riskLevel={riskLevel}
             />
 
-            {/* Academy contextual link */}
+            {/* Academy */}
             <AcademyContextualLink category={academyCategory} variant="card" />
           </div>
         </div>
 
-        {/* Related assets */}
+        {/* Related */}
         <RelatedAssets
           currentAssetId={asset.id}
           tipoActivo={asset.tipo_activo}
           provincia={asset.provincia}
           comunidadAutonoma={asset.comunidad_autonoma}
         />
-
       </div>
 
       <Footer />
