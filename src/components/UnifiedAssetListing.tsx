@@ -97,9 +97,9 @@ const FilterSection = ({ title, isOpen, onToggle, children }: {
   title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode;
 }) => (
   <div className="border-b border-border pb-4">
-    <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-sm font-bold text-foreground">
+    <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
       {title}
-      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
     </button>
     {isOpen && <div className="mt-2 space-y-1.5">{children}</div>}
   </div>
@@ -351,7 +351,7 @@ const UnifiedAssetListing = ({
       <ActiveFilterChips />
 
       {/* Search with autocomplete */}
-      <FilterSection title="🔍 Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
+      <FilterSection title="Referencia" isOpen={openSections.reference} onToggle={() => toggleSection("reference")}>
         <div className="relative">
           <input
             type="text"
@@ -390,7 +390,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Price */}
-      <FilterSection title="€ Precio orientativo" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
+      <FilterSection title="Precio orientativo" isOpen={openSections.price} onToggle={() => toggleSection("price")}>
         <div className="flex gap-2">
           <input type="number" placeholder="Min" value={priceMin}
             onChange={(e) => { setPriceMin(e.target.value); setPage(1); }}
@@ -403,7 +403,7 @@ const UnifiedAssetListing = ({
 
       {/* Sale type */}
       {!hideSaleTypeFilter && (
-        <FilterSection title="📑 Tipo de inversión" isOpen={openSections.saleType} onToggle={() => toggleSection("saleType")}>
+        <FilterSection title="Tipo de inversión" isOpen={openSections.saleType} onToggle={() => toggleSection("saleType")}>
           {(["compraventa", "npl", "cesion-remate", "ocupado", "subasta"] as const).map((st) => (
             <CheckboxFilter
               key={st}
@@ -416,7 +416,7 @@ const UnifiedAssetListing = ({
       )}
 
       {/* Community */}
-      <FilterSection title="📍 Comunidad autónoma" isOpen={openSections.community} onToggle={() => toggleSection("community")}>
+      <FilterSection title="Comunidad autónoma" isOpen={openSections.community} onToggle={() => toggleSection("community")}>
         {ccaaList.map((c) => (
           <CheckboxFilter
             key={c} label={c}
@@ -427,7 +427,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Province */}
-      <FilterSection title="📍 Provincia" isOpen={openSections.province} onToggle={() => toggleSection("province")}>
+      <FilterSection title="Provincia" isOpen={openSections.province} onToggle={() => toggleSection("province")}>
         {provinciaList.map((p) => (
           <CheckboxFilter
             key={p} label={p}
@@ -438,7 +438,7 @@ const UnifiedAssetListing = ({
       </FilterSection>
 
       {/* Property type */}
-      <FilterSection title="🏠 Tipo de activo" isOpen={openSections.propertyType} onToggle={() => toggleSection("propertyType")}>
+      <FilterSection title="Tipo de activo" isOpen={openSections.propertyType} onToggle={() => toggleSection("propertyType")}>
         {tipoList.map((t) => (
           <CheckboxFilter
             key={t} label={t}

@@ -276,24 +276,57 @@ const NplListing = () => {
       />
       <Navbar />
 
-      <div className="bg-primary text-primary-foreground py-10">
-        <div className="container mx-auto px-4">
-          <h1 className="font-heading text-3xl font-bold mb-2">Oportunidades de Inversión</h1>
-          <p className="text-primary-foreground/70">Explora activos NPL, cesiones de remate, inmuebles ocupados y compraventa directa. Accede a oportunidades con proyecciones de rentabilidad.</p>
+      {/* Premium editorial header */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+            <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
+            <span>/</span>
+            <span className="text-foreground font-medium">Oportunidades de Inversión</span>
+          </div>
+          <h1 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mb-2">
+            Oportunidades de Inversión
+          </h1>
+          <p className="text-sm text-muted-foreground max-w-2xl">
+            Activos NPL, cesiones de remate, inmuebles ocupados y compraventa directa — con análisis financiero y proyecciones de rentabilidad.
+          </p>
         </div>
       </div>
 
+      {/* Financial metrics strip */}
+      {!loading && total > 0 && (
+        <div className="border-b border-border bg-muted/30">
+          <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-6 text-xs">
+            <div>
+              <span className="text-muted-foreground uppercase tracking-wider">Activos</span>
+              <span className="ml-2 font-bold text-foreground text-sm">{total.toLocaleString("es-ES")}</span>
+            </div>
+            <div className="w-px h-4 bg-border" />
+            <div>
+              <span className="text-muted-foreground uppercase tracking-wider">Nuevos 7d</span>
+              <span className="ml-2 font-bold text-accent text-sm">
+                {assets.filter(a => a.created_at && (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000).length}
+              </span>
+            </div>
+            <div className="w-px h-4 bg-border" />
+            <div>
+              <span className="text-muted-foreground uppercase tracking-wider">Filtros activos</span>
+              <span className="ml-2 font-bold text-foreground text-sm">{activeFiltersCount}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 py-8">
         {/* Filters */}
-        <div className="bg-card rounded-2xl border border-border p-5 mb-6">
+        <div className="bg-card rounded-xl border border-border p-5 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-semibold text-foreground">Filtros</span>
+              <span className="text-xs font-bold text-foreground uppercase tracking-wider">Filtros</span>
               {activeFiltersCount > 0 && (
-                <Badge variant="secondary" className="text-[10px] h-5">
-                  {activeFiltersCount} activos
-                </Badge>
+                <span className="text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+                  {activeFiltersCount}
+                </span>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -468,32 +501,7 @@ const NplListing = () => {
           )}
         </div>
 
-        {/* Dashboard summary */}
-        {!loading && assets.length > 0 && (
-          <div className="bg-card rounded-xl border border-border px-5 py-3 mb-4 flex flex-wrap items-center gap-4 text-xs">
-            <span className="font-bold text-foreground">{total.toLocaleString("es-ES")} activos</span>
-            <span className="text-muted-foreground">|</span>
-            <span className="flex items-center gap-1 text-accent">
-              <Sparkles className="w-3 h-3" />
-              {assets.filter(a => a.created_at && (Date.now() - new Date(a.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000).length} nuevos
-            </span>
-            <span className="text-muted-foreground">|</span>
-            <span className="flex items-center gap-1 text-blue-600">
-              <Clock className="w-3 h-3" />
-              {assets.filter(a => {
-                if (!a.created_at) return false;
-                const d = (Date.now() - new Date(a.created_at).getTime()) / (1000 * 60 * 60 * 24);
-                return d > 30 && d <= 37;
-              }).length} próximos a vencer
-            </span>
-            {activeFiltersCount > 0 && (
-              <>
-                <span className="text-muted-foreground">|</span>
-                <span className="text-muted-foreground">{activeFiltersCount} filtros activos</span>
-              </>
-            )}
-          </div>
-        )}
+        {/* Removed — metrics now in header strip */}
 
         {/* Results header */}
         <div className="flex items-center justify-between mb-4">
