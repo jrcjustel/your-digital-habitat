@@ -552,7 +552,10 @@ const ComoFunciona = () => {
         <InvestmentDecisionMatrix />
       </div>
 
-      {/* Opportunity Origin */}
+      {/* Sourcing Transparency */}
+      <SourcingTransparencyPanel />
+
+      {/* Opportunity Origin (legacy) */}
       <div className="container mx-auto px-4 max-w-5xl">
         <OpportunityOriginExplainer />
       </div>
