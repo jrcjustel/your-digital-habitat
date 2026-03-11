@@ -596,9 +596,6 @@ const NplDetail = () => {
             <div className="bg-card border border-border rounded-2xl p-5">
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-1">Referencia</p>
               <p className="font-heading text-lg font-extrabold text-foreground tracking-tight">{reference}</p>
-              {asset.servicer && (
-                <p className="text-xs text-muted-foreground mt-1">Servicer: <span className="font-semibold text-foreground">{asset.servicer}</span></p>
-              )}
             </div>
 
             {/* Dossier actions */}
