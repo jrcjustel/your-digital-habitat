@@ -264,6 +264,8 @@ const PropertyDetail = () => {
             <div>
               <div className="flex items-center flex-wrap gap-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
+                <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
+                <RiskTrafficLight level={riskLevel} size="sm" />
                 <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
                   {operationLabels[property.operation]}
                 </span>
