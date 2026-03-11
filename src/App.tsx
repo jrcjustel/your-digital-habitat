@@ -39,6 +39,7 @@ import Contacto from "./pages/Contacto";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import AdminPanel from "./pages/AdminPanel";
+import AdminRolesPanel from "./pages/AdminRolesPanel";
 import Academia from "./pages/Academia";
 import AcademiaArticle from "./pages/AcademiaArticle";
 import AcademiaRuta from "./pages/AcademiaRuta";
