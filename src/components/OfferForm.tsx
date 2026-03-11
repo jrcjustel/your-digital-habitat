@@ -40,6 +40,7 @@ const OfferForm = ({
   const [personaTipo, setPersonaTipo] = useState<"fisica" | "juridica">("fisica");
   const [alertas, setAlertas] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  const [submitted, setSubmitted] = useState<"offer" | "contact" | null>(null);
 
   const [form, setForm] = useState({
     nombre: defaultName.split(" ")[0] || "",
