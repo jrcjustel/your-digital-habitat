@@ -42,6 +42,7 @@ const InversoresNpl = () => (
     </section>
     <div className="container mx-auto px-4 py-8">
       <NewInvestorBanner />
+      <ListingAcademyBanner assetType="npl" />
       <HowThisWorks assetType="npl" />
       <AssetTypeDeepDive assetType="npl" />
       <LegalSafetyBanner />
