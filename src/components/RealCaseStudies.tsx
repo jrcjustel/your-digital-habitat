@@ -267,11 +267,11 @@ const RealCaseStudies = ({ filterType }: RealCaseStudiesProps = {}) => {
                       >
                         <ChevronLeft className="w-4 h-4" /> Anterior
                       </Button>
-                      <span className="text-xs text-muted-foreground">{active + 1} / {cases.length}</span>
+                      <span className="text-xs text-muted-foreground">{active + 1} / {filteredCases.length}</span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        disabled={active === cases.length - 1}
+                        disabled={active === filteredCases.length - 1}
                         onClick={() => setActive(active + 1)}
                         className="gap-1"
                       >
