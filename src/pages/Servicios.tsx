@@ -1,208 +1,237 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { ArrowRight, Mail, Sparkles, Gavel, ClipboardList } from "lucide-react";
+import { ArrowRight, Mail, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-
-import AnimatedCounter from "@/components/servicios/AnimatedCounter";
-import ColumnCard from "@/components/servicios/ColumnCard";
-import ExpandableSection from "@/components/servicios/ExpandableSection";
+import { motion } from "framer-motion";
 import { incluidoItems, gestoriaItems, legalItems } from "@/data/servicios-data";
 
-const Servicios = () => {
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.3]);
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
+const PriceRow = ({ service, price }: { service: string; price: string }) => (
+  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/40 last:border-b-0">
+    <span className="text-sm text-foreground">{service}</span>
+    <span className="text-sm font-bold text-foreground whitespace-nowrap tabular-nums">{price}</span>
+  </div>
+);
+
+const Servicios = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
         title="Servicios y Honorarios | IKESA"
-        description="Servicios incluidos en cada operación y tarifas de gestoría y mediación legal. Acompañamiento experto de principio a fin."
+        description="Servicios incluidos en cada operación y tarifas de gestoría y mediación legal. Transparencia total, cero sorpresas."
         canonical="/servicios"
       />
       <Navbar />
 
-      {/* Hero */}
-      <section ref={heroRef} className="relative overflow-hidden bg-primary">
-        <motion.div className="absolute inset-0 opacity-10" style={{ y: bgY }}>
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-accent blur-[120px] translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent blur-[100px] -translate-x-1/3 translate-y-1/3" />
-        </motion.div>
-        <motion.div className="container mx-auto px-4 py-12 md:py-16 relative z-10" style={{ y: textY, opacity: heroOpacity }}>
-          <div className="max-w-3xl">
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-accent font-medium text-sm tracking-widest uppercase mb-4"
-            >
-              Transparencia total
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-5 leading-tight"
-            >
-              Servicios & Honorarios
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-primary-foreground/75 text-lg md:text-xl max-w-2xl leading-relaxed"
-            >
-              Todo claro desde el primer día. Tres columnas, cero sorpresas.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-8"
-            >
-              <Link to="/contacto">
-                <Button size="lg" variant="secondary" className="gap-2 font-semibold">
-                  <Mail className="w-4 h-4" />
-                  Solicitar presupuesto
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Three columns */}
-      <section className="py-16 md:py-24">
+      {/* Hero — compact & clear */}
+      <section className="bg-primary py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 gap-6">
-
-            {/* INCLUIDO */}
-            <ColumnCard
-              color="bg-gradient-to-br from-accent to-accent/80"
-              icon={Sparkles}
-              title="Incluido"
-              subtitle="En cada operación, sin coste adicional"
-              badge="Gratis"
-              delay={0}
-            >
-              <AnimatedCounter target={incluidoItems.length} label="servicios incluidos sin coste adicional en cada operación" />
-              <div className="p-5 pt-0 space-y-1">
-                {incluidoItems.map((item, i) => (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
-                    className="flex items-start gap-3 py-3 border-b border-border/40 last:border-b-0 group"
-                  >
-                    <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
-                      <item.icon className="w-4 h-4 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <div className="px-5 pb-5">
-                <div className="bg-accent/10 rounded-xl p-4 text-center">
-                  <p className="text-xs text-accent font-bold uppercase tracking-wider mb-1">Sin coste adicional</p>
-                  <p className="text-[11px] text-muted-foreground">Incluido en los honorarios del producto</p>
-                </div>
-              </div>
-            </ColumnCard>
-
-            {/* GESTORÍA */}
-            <ColumnCard
-              color="bg-gradient-to-br from-primary to-primary/80"
-              icon={ClipboardList}
-              title="Gestoría"
-              subtitle="Trámites administrativos y fiscales"
-              delay={0.1}
-            >
-              <AnimatedCounter target={gestoriaItems.reduce((acc, g) => acc + g.items.length, 0)} label="trámites administrativos y fiscales disponibles" />
-              {gestoriaItems.map((grupo, i) => (
-                <ExpandableSection
-                  key={grupo.cat}
-                  emoji={grupo.emoji}
-                  title={grupo.cat}
-                  items={grupo.items}
-                  defaultOpen={i === 0}
-                />
-              ))}
-              <div className="px-5 py-4">
-                <Link to="/contacto">
-                  <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
-                    <Mail className="w-3.5 h-3.5" /> Pedir presupuesto
-                  </Button>
-                </Link>
-              </div>
-            </ColumnCard>
-
-            {/* LEGAL */}
-            <ColumnCard
-              color="bg-gradient-to-br from-foreground to-foreground/80"
-              icon={Gavel}
-              title="Legal"
-              subtitle="Mediación, procedimientos y comercialización"
-              delay={0.2}
-            >
-              <AnimatedCounter target={legalItems.reduce((acc, g) => acc + g.items.length, 0)} label="servicios legales y de mediación disponibles" />
-              {legalItems.map((grupo, i) => (
-                <ExpandableSection
-                  key={grupo.cat}
-                  icon={grupo.icon}
-                  title={grupo.cat}
-                  items={grupo.items}
-                  defaultOpen={i === 0}
-                />
-              ))}
-              <div className="px-5 py-4">
-                <Link to="/contacto">
-                  <Button variant="outline" size="sm" className="w-full gap-1.5 text-xs">
-                    <Mail className="w-3.5 h-3.5" /> Pedir presupuesto
-                  </Button>
-                </Link>
-              </div>
-            </ColumnCard>
-
-          </div>
-
-          <p className="text-xs text-muted-foreground text-center mt-10 max-w-2xl mx-auto">
-            * Importes orientativos, IVA no incluido. Solicita presupuesto personalizado.
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-accent font-semibold text-xs tracking-[0.2em] uppercase mb-4"
+          >
+            Transparencia total
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="font-heading text-3xl md:text-5xl font-extrabold text-primary-foreground tracking-tight mb-4"
+          >
+            Servicios & Honorarios
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-primary-foreground/70 text-lg max-w-xl"
+          >
+            Tres bloques, precios claros, sin sorpresas.
+          </motion.p>
         </div>
       </section>
+
+      <main className="container mx-auto px-4 py-16 md:py-24 space-y-20">
+
+        {/* ─── BLOQUE 1: INCLUIDO ─── */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"
+          >
+            <div>
+              <span className="inline-block bg-accent/10 text-accent text-xs font-bold px-3 py-1 rounded-full mb-3">
+                Sin coste adicional
+              </span>
+              <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
+                Incluido en cada operación
+              </h2>
+              <p className="text-muted-foreground mt-1 max-w-lg">
+                Estos servicios están cubiertos en los honorarios de la operación. No pagas nada extra.
+              </p>
+            </div>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {incluidoItems.map((item, i) => (
+              <motion.div
+                key={item.title}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="bg-card border border-border rounded-2xl p-5 hover:border-accent/30 transition-colors"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                    <Check className="w-4 h-4 text-accent" />
+                  </div>
+                  <h3 className="text-sm font-bold text-foreground">{item.title}</h3>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── BLOQUE 2: GESTORÍA ─── */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8"
+          >
+            <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
+              Gestoría
+            </h2>
+            <p className="text-muted-foreground mt-1 max-w-lg">
+              Trámites administrativos y fiscales. Precios orientativos, IVA no incluido.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {gestoriaItems.map((grupo, gi) => (
+              <motion.div
+                key={grupo.cat}
+                custom={gi}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="bg-card border border-border rounded-2xl overflow-hidden"
+              >
+                <div className="px-5 py-4 border-b border-border bg-muted/30">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <span>{grupo.emoji}</span> {grupo.cat}
+                  </h3>
+                </div>
+                <div className="px-5">
+                  {grupo.items.map((item, i) => (
+                    <PriceRow key={i} service={item.s} price={item.p} />
+                  ))}
+                </div>
+                <div className="px-5 py-3">
+                  <Link
+                    to={`/contacto?servicio=${encodeURIComponent(grupo.cat)}`}
+                    className="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1"
+                  >
+                    Solicitar <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── BLOQUE 3: LEGAL ─── */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8"
+          >
+            <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
+              Legal & Mediación
+            </h2>
+            <p className="text-muted-foreground mt-1 max-w-lg">
+              Servicios jurídicos, mediación y comercialización. Precios orientativos, IVA no incluido.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {legalItems.map((grupo, gi) => (
+              <motion.div
+                key={grupo.cat}
+                custom={gi}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                className="bg-card border border-border rounded-2xl overflow-hidden"
+              >
+                <div className="px-5 py-4 border-b border-border bg-muted/30">
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    {grupo.icon && <grupo.icon className="w-4 h-4 text-accent" />}
+                    {grupo.cat}
+                  </h3>
+                </div>
+                <div className="px-5">
+                  {grupo.items.map((item, i) => (
+                    <PriceRow key={i} service={item.s} price={item.p} />
+                  ))}
+                </div>
+                <div className="px-5 py-3">
+                  <Link
+                    to={`/contacto?servicio=${encodeURIComponent(grupo.cat)}`}
+                    className="text-[11px] font-semibold text-accent hover:underline flex items-center gap-1"
+                  >
+                    Solicitar <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <p className="text-xs text-muted-foreground text-center max-w-2xl mx-auto">
+          * Importes orientativos, IVA no incluido. Solicita presupuesto personalizado.
+        </p>
+      </main>
 
       {/* CTA */}
       <section className="py-16 bg-secondary">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-3">
-            ¿Necesitas asesoramiento personalizado?
+            ¿Hablamos?
           </h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            Nuestro equipo está disponible para resolver tus dudas y acompañarte en todo el proceso.
+            Nuestro equipo te prepara un presupuesto a medida sin compromiso.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/inmuebles">
+            <Link to="/contacto">
               <Button size="lg" className="gap-2">
-                Ver oportunidades <ArrowRight className="w-4 h-4" />
+                <Mail className="w-4 h-4" /> Pedir presupuesto
               </Button>
             </Link>
-            <Link to="/como-funciona">
-              <Button size="lg" variant="outline">
-                Cómo funciona
+            <Link to="/inmuebles">
+              <Button size="lg" variant="outline" className="gap-2">
+                Ver oportunidades <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
