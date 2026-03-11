@@ -10,6 +10,7 @@ import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
 import ListingAcademyBanner from "@/components/ListingAcademyBanner";
 import VerticalConversionCta from "@/components/VerticalConversionCta";
+import VerticalFaq from "@/components/VerticalFaq";
 import { Gavel, Scale, Home, FileText } from "lucide-react";
 
 const highlights = [
