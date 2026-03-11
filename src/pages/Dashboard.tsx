@@ -18,6 +18,8 @@ import AlertsCreator from "@/components/AlertsCreator";
 import NdaSigningFlow from "@/components/NdaSigningFlow";
 import WelcomeWizard from "@/components/WelcomeWizard";
 import FirstOperationChecklist from "@/components/FirstOperationChecklist";
+import JourneyStageWidget from "@/components/JourneyStageWidget";
+import InvestmentChecklistGenerator from "@/components/InvestmentChecklistGenerator";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
