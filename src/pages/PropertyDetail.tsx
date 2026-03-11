@@ -1,6 +1,10 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
+import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
+import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
