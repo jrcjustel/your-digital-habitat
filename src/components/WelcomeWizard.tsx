@@ -53,7 +53,7 @@ const WelcomeWizard = () => {
   const [step, setStep] = useState(0);
   const [level, setLevel] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [budget, setBudget] = useState<{ min: number; max: number } | null>(null);
+  const [budget, setBudget] = useState<(typeof budgets)[number] | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
