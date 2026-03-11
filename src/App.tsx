@@ -24,6 +24,9 @@ import CookieConsent from "./components/CookieConsent";
 import ScrollToTop from "./components/ScrollToTop";
 import NplDetail from "./pages/NplDetail";
 import ComoFunciona from "./pages/ComoFunciona";
+import InversoresNpl from "./pages/InversoresNpl";
+import InversoresCdr from "./pages/InversoresCdr";
+import InversoresOcupados from "./pages/InversoresOcupados";
 import AvisoLegal from "./pages/AvisoLegal";
 import AvisoLegalNpl from "./pages/AvisoLegalNpl";
 import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
@@ -129,11 +132,11 @@ const App = () => (
             <Route path="/admin/excel-analyzer" element={<AdminRoute><ExcelAnalyzerPage /></AdminRoute>} />
             <Route path="/admin/agentes" element={<AdminRoute><SpecializedAgentsPage /></AdminRoute>} />
             <Route path="/admin/scraper-boe" element={<AdminRoute><BoeScraperPage /></AdminRoute>} />
-            {/* Redirects from old investor routes */}
+            {/* Investor vertical pages */}
             <Route path="/inversores" element={<Navigate to="/inmuebles" replace />} />
-            <Route path="/inversores/npl" element={<Navigate to="/inmuebles?saleType=npl" replace />} />
-            <Route path="/inversores/cesiones-remate" element={<Navigate to="/inmuebles?saleType=cesion-remate" replace />} />
-            <Route path="/inversores/ocupados" element={<Navigate to="/inmuebles?saleType=ocupado" replace />} />
+            <Route path="/inversores/npl" element={<InversoresNpl />} />
+            <Route path="/inversores/cesiones-remate" element={<InversoresCdr />} />
+            <Route path="/inversores/ocupados" element={<InversoresOcupados />} />
             {/* Content pages */}
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/servicios" element={<Servicios />} />
