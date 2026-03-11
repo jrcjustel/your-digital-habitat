@@ -35,7 +35,7 @@ interface NplAsset {
   cartera: string | null;
 }
 
-type ViewMode = "grid" | "list";
+type ViewMode = "grid" | "list" | "map";
 
 export interface UnifiedAssetListingProps {
   initialSearch?: string;
