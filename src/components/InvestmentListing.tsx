@@ -107,6 +107,15 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
 
   return (
     <div>
+      {/* Opportunity Type Legend */}
+      <OpportunityTypeLegend
+        activeType={opportunityFilter}
+        onTypeChange={(t) => { setOpportunityFilter(t); setPage(1); }}
+      />
+
+      {/* Education Nudge */}
+      <EducationNudgeBar activeType={opportunityFilter} />
+
       {/* Filters */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
