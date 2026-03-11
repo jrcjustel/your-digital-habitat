@@ -1004,6 +1004,54 @@ export type Database = {
         }
         Relationships: []
       }
+      roles_ikesa: {
+        Row: {
+          created_at: string
+          descripcion: string | null
+          id: string
+          nombre_rol: string
+          puede_administrar_usuarios: boolean
+          puede_escribir: boolean
+          puede_exportar: boolean
+          puede_generar_pdf: boolean
+          puede_importar_excel: boolean
+          puede_leer: boolean
+          puede_ver_financiero: boolean
+          puede_ver_legal: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          descripcion?: string | null
+          id?: string
+          nombre_rol: string
+          puede_administrar_usuarios?: boolean
+          puede_escribir?: boolean
+          puede_exportar?: boolean
+          puede_generar_pdf?: boolean
+          puede_importar_excel?: boolean
+          puede_leer?: boolean
+          puede_ver_financiero?: boolean
+          puede_ver_legal?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          descripcion?: string | null
+          id?: string
+          nombre_rol?: string
+          puede_administrar_usuarios?: boolean
+          puede_escribir?: boolean
+          puede_exportar?: boolean
+          puede_generar_pdf?: boolean
+          puede_importar_excel?: boolean
+          puede_leer?: boolean
+          puede_ver_financiero?: boolean
+          puede_ver_legal?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       social_posts: {
         Row: {
           ai_generated: boolean | null
