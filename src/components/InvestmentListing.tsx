@@ -55,6 +55,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
   const [provincias, setProvincias] = useState<string[]>([]);
   const [tipos, setTipos] = useState<string[]>([]);
   const [opportunityFilter, setOpportunityFilter] = useState<OpportunityType | "all">("all");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000000]);
 
   useEffect(() => {
     supabase.from("npl_assets").select("provincia").then(({ data }) => {
