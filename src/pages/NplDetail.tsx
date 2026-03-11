@@ -98,7 +98,7 @@ const saleTypeMap: Record<string, SaleType> = {
   npl: "npl",
   cesion_remate: "cesion-remate",
   ocupado: "ocupado",
-  subasta: "subasta",
+  subasta: "compraventa",
 };
 
 const operationLabels: Record<string, string> = {
