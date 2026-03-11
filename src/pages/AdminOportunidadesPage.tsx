@@ -11,10 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 import {
   ArrowLeft, Search, TrendingUp, TrendingDown, AlertTriangle,
   CheckCircle, XCircle, Activity, Building2, MapPin, BarChart3,
-  Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw,
+  Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw, Zap,
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────────────────────
@@ -154,6 +155,50 @@ const AdminOportunidadesPage = () => {
   const [page, setPage] = useState(0);
   const PAGE_SIZE = 30;
 
+  // Batch scoring state
+  const [scoring, setScoring] = useState(false);
+  const [scoreProgress, setScoreProgress] = useState<{
+    phase: string; offset: number; calculated: number; errors: number; done: boolean;
+  } | null>(null);
+
+  const runBatchScoring = async (onlyMissing: boolean) => {
+    setScoring(true);
+    setScoreProgress({ phase: "Iniciando...", offset: 0, calculated: 0, errors: 0, done: false });
+    let offset = 0;
+    const batchLimit = 500;
+    let totalCalc = 0;
+    let totalErr = 0;
+
+    try {
+      while (true) {
+        setScoreProgress(p => ({ ...p!, phase: `Procesando lote desde ${offset}...`, offset }));
+        const { data: result, error } = await supabase.functions.invoke("batch-scoring", {
+          body: { limit: batchLimit, offset, only_missing: onlyMissing },
+        });
+        if (error) throw new Error(error.message);
+        if (!result?.success) throw new Error(result?.error || "Error desconocido");
+
+        totalCalc += result.calculated || 0;
+        totalErr += result.errors || 0;
+        setScoreProgress({ phase: `Calculados: ${totalCalc}`, offset, calculated: totalCalc, errors: totalErr, done: false });
+
+        // If calculated less than batch, we're done
+        if ((result.total_assets || 0) < batchLimit) break;
+        offset += batchLimit;
+      }
+
+      setScoreProgress(p => ({ ...p!, phase: "Completado", done: true }));
+      toast.success(`Scoring completado: ${totalCalc} activos calculados, ${totalErr} errores`);
+      // Reload data to reflect new scores
+      await load();
+    } catch (e: any) {
+      toast.error("Error en batch scoring: " + (e.message || "Error"));
+      setScoreProgress(p => p ? { ...p, phase: "Error: " + (e.message || ""), done: true } : null);
+    } finally {
+      setScoring(false);
+    }
+  };
+
   const load = async () => {
     setLoading(true);
     // Fetch npl_assets
@@ -264,10 +309,44 @@ const AdminOportunidadesPage = () => {
               <p className="text-sm text-muted-foreground">{filtered.length} activos · Score, ROI, TIR y semáforo de riesgo</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={load} className="gap-2">
-            <RefreshCw className="w-4 h-4" /> Actualizar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={() => runBatchScoring(true)} disabled={scoring} className="gap-2">
+              <Zap className="w-4 h-4" /> {scoring ? "Scoring..." : "Batch Scoring"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => runBatchScoring(false)} disabled={scoring} className="gap-2" title="Recalcular todos, incluso los ya calculados">
+              <Zap className="w-4 h-4" /> Recalcular todo
+            </Button>
+            <Button variant="outline" size="sm" onClick={load} className="gap-2">
+              <RefreshCw className="w-4 h-4" /> Actualizar
+            </Button>
+          </div>
         </div>
+
+        {/* Batch Scoring Progress */}
+        {scoreProgress && (
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">{scoreProgress.phase}</span>
+                </div>
+                {scoreProgress.done && (
+                  <Button variant="ghost" size="sm" onClick={() => setScoreProgress(null)} className="text-xs h-7">
+                    Cerrar
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <span>Calculados: <strong className="text-foreground">{scoreProgress.calculated}</strong></span>
+                {scoreProgress.errors > 0 && (
+                  <span>Errores: <strong className="text-destructive">{scoreProgress.errors}</strong></span>
+                )}
+              </div>
+              {scoring && <Progress value={undefined} className="h-1.5" />}
+            </CardContent>
+          </Card>
+        )}
 
         {/* KPIs */}
         <KpiSummary data={filtered} />
