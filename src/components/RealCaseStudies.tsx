@@ -128,9 +128,10 @@ const RealCaseStudies = ({ filterType }: RealCaseStudiesProps = {}) => {
           </p>
         </div>
 
-        {/* Case selector tabs */}
+        {/* Case selector tabs — hidden when filtered to single type */}
+        {filteredCases.length > 1 && (
         <div className="flex justify-center gap-2 mb-10 flex-wrap">
-          {cases.map((cs, i) => {
+          {filteredCases.map((cs, i) => {
             const tc = typeConfig[cs.type];
             const TIcon = tc.icon;
             return (
@@ -149,6 +150,7 @@ const RealCaseStudies = ({ filterType }: RealCaseStudiesProps = {}) => {
             );
           })}
         </div>
+        )}
 
         {/* Case detail */}
         <AnimatePresence mode="wait">
