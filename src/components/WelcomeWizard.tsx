@@ -37,7 +37,7 @@ const budgets = [
   { min: 50000, max: 150000, label: "50.000 – 150.000 €" },
   { min: 150000, max: 500000, label: "150.000 – 500.000 €" },
   { min: 500000, max: 10000000, label: "> 500.000 €" },
-];
+] as const;
 
 const routeMap: Record<string, { path: string; label: string }> = {
   npl: { path: "/academia/ruta/deuda-npl", label: "Ruta NPL" },
