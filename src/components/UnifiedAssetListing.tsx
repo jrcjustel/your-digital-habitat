@@ -97,9 +97,9 @@ const FilterSection = ({ title, isOpen, onToggle, children }: {
   title: string; isOpen: boolean; onToggle: () => void; children: React.ReactNode;
 }) => (
   <div className="border-b border-border pb-4">
-    <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-sm font-bold text-foreground">
+    <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
       {title}
-      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+      {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
     </button>
     {isOpen && <div className="mt-2 space-y-1.5">{children}</div>}
   </div>

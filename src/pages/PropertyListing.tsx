@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 import SEOHead, { createBreadcrumbSchema } from "@/components/SEOHead";
 import UnifiedAssetListing from "@/components/UnifiedAssetListing";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 
 const PropertyListing = () => {
   const [searchParams] = useSearchParams();
@@ -23,48 +22,34 @@ const PropertyListing = () => {
       />
       <Navbar />
 
-      {/* Breadcrumb */}
-      <div className="bg-secondary border-b border-border">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      {/* Premium editorial header */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
             <Link to="/" className="hover:text-accent transition-colors">Inicio</Link>
             <span>/</span>
             <span className="text-foreground font-medium">Oportunidades</span>
           </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        {/* Title – humanized */}
-        <div className="mb-8">
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-1.5 text-accent text-xs font-bold uppercase tracking-wider mb-3"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            Datos reales, actualizados a diario
-          </motion.div>
           <motion.h1
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
-            className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2"
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
+            className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mb-2"
           >
             Encuentra tu próxima inversión
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-sm text-muted-foreground max-w-2xl leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15 }}
+            className="text-sm text-muted-foreground max-w-2xl"
           >
-            NPLs, cesiones de remate, ocupados, subastas… Todo en un sitio, con información
-            verificada y análisis financiero para que no vayas a ciegas.
+            NPLs, cesiones de remate, ocupados, subastas — información verificada y análisis financiero en cada oportunidad.
           </motion.p>
         </div>
+      </div>
 
+      <div className="container mx-auto px-4 py-8">
         <UnifiedAssetListing
           initialSearch={searchParams.get("q") || ""}
           initialSaleType={searchParams.get("saleType") || ""}

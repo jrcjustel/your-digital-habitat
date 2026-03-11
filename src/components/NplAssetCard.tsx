@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, memo } from "react";
-import { Heart, MapPin, Maximize, TrendingDown, CreditCard, Gavel, Building2, Sparkles, Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Heart, MapPin, TrendingDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
@@ -38,10 +37,6 @@ const NplAssetCard = memo(({ asset, isFavorited = false, userId, onFavoriteToggl
     ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100)
     : null;
 
-  const eurPerSqm = asset.valor_mercado && asset.sqm > 0
-    ? Math.round(asset.valor_mercado / asset.sqm)
-    : null;
-
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -66,161 +61,104 @@ const NplAssetCard = memo(({ asset, isFavorited = false, userId, onFavoriteToggl
   };
 
   const isUnavailable = asset.estado === "oferta_gestion" || asset.estado === "cerrado";
-
-  // Priority & recency indicators
   const isRecent = asset.created_at ? (Date.now() - new Date(asset.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000 : false;
-  const isExpiring = asset.created_at ? (() => {
-    const diff = (Date.now() - new Date(asset.created_at).getTime()) / (1000 * 60 * 60 * 24);
-    return diff > 30 && diff <= 37;
-  })() : false;
   const showNew = isNew || isRecent;
 
-  const borderClass = isUnavailable
-    ? "border-l-4 border-l-muted-foreground"
-    : priority
-      ? "border-l-4 border-l-destructive"
-      : isExpiring
-        ? "border-l-4 border-l-blue-500"
-        : showNew
-          ? "border-l-4 border-l-accent"
-          : "";
+  // Sale type label
+  const saleLabel = asset.cesion_remate ? "CDR" : asset.cesion_credito ? "NPL" : "REO";
 
   return (
     <Link to={`/npl/${asset.id}`} className="group block">
-      <div className={`bg-card rounded-2xl border overflow-hidden transition-all duration-300 ${borderClass} ${
+      <div className={`bg-card rounded-xl border border-border overflow-hidden transition-all duration-300 ${
         isUnavailable
-          ? "border-border opacity-75 hover:opacity-90"
-          : "border-border hover:shadow-xl hover:shadow-accent/5 hover:border-accent/30 hover:-translate-y-1"
+          ? "opacity-60 hover:opacity-80"
+          : "hover:shadow-lg hover:border-accent/20 hover:-translate-y-0.5"
       }`}>
-        {/* Top colored bar */}
-        <div className={`h-1 ${isUnavailable ? "bg-muted-foreground" : priority ? "bg-gradient-to-r from-destructive to-destructive/60" : "bg-gradient-to-r from-accent to-primary"}`} />
+        {/* Minimal top accent */}
+        <div className={`h-0.5 ${isUnavailable ? "bg-muted-foreground/30" : "bg-accent"}`} />
 
-        <div className="p-5">
-          {/* Badges row */}
+        <div className="p-4">
+          {/* Row 1: Type tags + fav */}
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge variant="default" className="text-[10px]">
-                      {asset.tipo_activo || "Activo"}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-xs">Tipo de inmueble</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              {asset.cesion_remate && (
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="text-[10px] gap-1">
-                        <Gavel className="w-3 h-3" /> CDR
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-xs max-w-[200px]">Cesión de remate: adquiere la posición del adjudicatario en subasta</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              {asset.cesion_credito && (
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="text-[10px] gap-1">
-                        <CreditCard className="w-3 h-3" /> CC
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-xs max-w-[200px]">Cesión de crédito: compra del préstamo hipotecario</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-bold text-foreground bg-secondary px-2 py-0.5 rounded">
+                {asset.tipo_activo || "Activo"}
+              </span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                saleLabel === "CDR" ? "bg-accent/15 text-accent" : saleLabel === "NPL" ? "bg-amber-500/15 text-amber-600" : "bg-primary/10 text-primary"
+              }`}>
+                {saleLabel}
+              </span>
               {showNew && !isUnavailable && (
-                <Badge className="text-[10px] gap-0.5 bg-accent/15 text-accent border-accent/30 hover:bg-accent/20">
-                  <Sparkles className="w-3 h-3" /> Nuevo
-                </Badge>
-              )}
-              {priority && !isUnavailable && (
-                <Badge className="text-[10px] gap-0.5 bg-destructive/15 text-destructive border-destructive/30">
-                  Alta
-                </Badge>
-              )}
-              {isExpiring && !isUnavailable && (
-                <Badge className="text-[10px] gap-0.5 bg-blue-500/15 text-blue-600 border-blue-500/30">
-                  <Clock className="w-3 h-3" /> Vence
-                </Badge>
+                <span className="text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded">
+                  Nuevo
+                </span>
               )}
               {isUnavailable && (
-                <Badge variant="destructive" className="text-[10px]">
+                <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
                   {asset.estado === "cerrado" ? "Cerrado" : "En gestión"}
-                </Badge>
+                </span>
               )}
             </div>
             <button
               onClick={handleFavorite}
               disabled={toggling}
-              className="p-1.5 rounded-full hover:bg-accent/10 transition-all hover:scale-110"
+              className="p-1 rounded-full hover:bg-secondary transition-colors"
             >
-              <Heart className={`w-4 h-4 transition-all ${fav ? "fill-destructive text-destructive scale-110" : "text-muted-foreground group-hover:text-accent"}`} />
+              <Heart className={`w-3.5 h-3.5 transition-all ${fav ? "fill-destructive text-destructive" : "text-muted-foreground group-hover:text-accent"}`} />
             </button>
           </div>
 
-          {/* Location */}
-          <p className="text-sm font-semibold text-foreground mb-1 line-clamp-1 group-hover:text-accent transition-colors">
-            {asset.tipo_activo} — {asset.municipio || "Sin municipio"}
+          {/* Row 2: Title & location */}
+          <p className="text-sm font-bold text-foreground mb-1 line-clamp-1 group-hover:text-accent transition-colors tracking-tight">
+            {asset.municipio || "Sin municipio"}
           </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1 mb-4 line-clamp-1">
-            <MapPin className="w-3 h-3 text-accent shrink-0" />
-            {asset.direccion || `${asset.municipio || ""}, ${asset.provincia || ""}`}
+            <MapPin className="w-3 h-3 shrink-0" />
+            {asset.direccion || `${asset.provincia || ""}`}
           </p>
 
-          {/* Prices */}
+          {/* Row 3: Price block */}
           <div className="grid grid-cols-2 gap-2 mb-3">
-            {asset.valor_mercado && asset.valor_mercado > 0 ? (
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-secondary rounded-lg p-2.5 cursor-help transition-colors hover:bg-secondary/80">
-                      <p className="text-[10px] text-muted-foreground">Valor mercado</p>
-                      <p className="text-sm font-bold text-foreground">{asset.valor_mercado.toLocaleString("es-ES")} €</p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-xs">Valor de mercado estimado del inmueble</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : null}
             {asset.precio_orientativo && asset.precio_orientativo > 0 ? (
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="bg-accent/10 border border-accent/20 rounded-lg p-2.5 cursor-help transition-colors hover:bg-accent/15">
-                      <p className="text-[10px] text-accent">Precio orient.</p>
-                      <p className="text-sm font-bold text-accent">{asset.precio_orientativo.toLocaleString("es-ES")} €</p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent className="text-xs max-w-[220px]">Precio orientativo recomendado para la operación (sujeto a aprobación)</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="bg-primary/5 border border-primary/10 rounded-lg p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Precio</p>
+                <p className="text-sm font-extrabold text-foreground tracking-tight">
+                  {asset.precio_orientativo.toLocaleString("es-ES")} €
+                </p>
+              </div>
+            ) : (
+              <div className="bg-secondary rounded-lg p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Precio</p>
+                <p className="text-sm font-bold text-muted-foreground">Consultar</p>
+              </div>
+            )}
+            {asset.valor_mercado && asset.valor_mercado > 0 ? (
+              <div className="bg-secondary rounded-lg p-2.5">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Mercado</p>
+                <p className="text-sm font-bold text-muted-foreground">
+                  {asset.valor_mercado.toLocaleString("es-ES")} €
+                </p>
+              </div>
             ) : null}
           </div>
 
-          {/* Bottom row */}
+          {/* Row 4: Bottom metrics */}
           <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border">
             <div className="flex items-center gap-3">
               {asset.sqm > 0 && (
-                <span className="flex items-center gap-1">
-                  <Maximize className="w-3 h-3" /> {asset.sqm.toLocaleString("es-ES")} m²
-                </span>
+                <span>{asset.sqm.toLocaleString("es-ES")} m²</span>
               )}
-              {eurPerSqm && (
-                <span>{eurPerSqm.toLocaleString("es-ES")} €/m²</span>
+              {asset.sqm > 0 && asset.valor_mercado && asset.valor_mercado > 0 && (
+                <span>{Math.round(asset.valor_mercado / asset.sqm).toLocaleString("es-ES")} €/m²</span>
               )}
             </div>
             {discount && discount > 0 && (
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="flex items-center gap-0.5 text-green-600 font-bold cursor-help">
-                      <TrendingDown className="w-3 h-3" /> -{discount}%
+                    <span className="flex items-center gap-0.5 font-bold text-accent cursor-help">
+                      <TrendingDown className="w-3 h-3" /> −{discount}%
                     </span>
                   </TooltipTrigger>
                   <TooltipContent className="text-xs">Descuento sobre valor de mercado</TooltipContent>
