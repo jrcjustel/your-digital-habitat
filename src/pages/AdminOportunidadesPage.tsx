@@ -17,7 +17,7 @@ import {
   ArrowLeft, Search, TrendingUp, TrendingDown, AlertTriangle,
   CheckCircle, XCircle, Activity, Building2, MapPin, BarChart3,
   Filter, ChevronUp, ChevronDown, ExternalLink, RefreshCw, Zap,
-  Map, List, Home, Gavel, Key,
+  Map as MapIcon, List, Home, Gavel, Key,
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────────────────────
