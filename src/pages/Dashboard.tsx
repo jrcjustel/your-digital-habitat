@@ -214,6 +214,14 @@ const Dashboard = () => {
 
         <WelcomeWizard />
 
+        {/* Dashboard Welcome Checklist */}
+        <DashboardWelcomeChecklist
+          profileComplete={!!(profile.display_name && profile.investor_level)}
+          selfAssessmentDone={!!localStorage.getItem("ikesa_assessment_done")}
+          hasAlerts={alerts.length > 0}
+          hasFavorites={favorites.length > 0}
+        />
+
         {/* Journey Stage Widget */}
         <JourneyStageWidget
           profileComplete={!!(profile.display_name && profile.investor_level)}
