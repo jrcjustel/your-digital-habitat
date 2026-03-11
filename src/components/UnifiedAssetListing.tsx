@@ -672,10 +672,15 @@ const UnifiedAssetListing = ({
   return (
     <div>
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        className="flex items-center justify-between gap-4 mb-6 flex-wrap"
+      >
         <div className="flex items-center gap-3">
           <p className="text-sm text-muted-foreground">
-            <strong className="text-foreground">{total.toLocaleString("es-ES")}</strong> oportunidades encontradas
+            <strong className="text-foreground">{total.toLocaleString("es-ES")}</strong> oportunidades disponibles
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -697,7 +702,7 @@ const UnifiedAssetListing = ({
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className={`p-2.5 transition-colors ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`p-2.5 transition-all duration-200 ${viewMode === mode ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 <Icon className="w-4 h-4" />
               </button>
@@ -718,72 +723,102 @@ const UnifiedAssetListing = ({
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="flex gap-8">
         {/* Sidebar - Desktop */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="sticky top-24 bg-card border border-border rounded-2xl p-5 max-h-[calc(100vh-8rem)] overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 18, delay: 0.2 }}
+            className="sticky top-24 bg-card border border-border rounded-2xl p-5 max-h-[calc(100vh-8rem)] overflow-y-auto"
+          >
             <SidebarFilters />
-          </div>
+          </motion.div>
         </aside>
 
         {/* Mobile filter drawer */}
-        {showMobileFilters && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-foreground/50 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)} />
-            <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card p-5 overflow-y-auto animate-fade-in shadow-2xl">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-foreground">Filtros</h3>
-                <button onClick={() => setShowMobileFilters(false)} className="p-1 rounded-lg hover:bg-secondary"><X className="w-5 h-5" /></button>
-              </div>
-              {/* Mobile sort */}
-              <div className="mb-4 pb-4 border-b border-border">
-                <label className="text-sm font-bold text-foreground mb-2 block">Ordenar por</label>
-                <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-                  className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
-                  <option value="recent">Más recientes</option>
-                  <option value="price-asc">Precio ↑</option>
-                  <option value="price-desc">Precio ↓</option>
-                  <option value="area">Mayor superficie</option>
-                  <option value="province">Por provincia</option>
-                  <option value="type">Por tipología</option>
-                </select>
-              </div>
-              <SidebarFilters />
-              <button
+        <AnimatePresence>
+          {showMobileFilters && (
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-foreground/50 backdrop-blur-sm"
                 onClick={() => setShowMobileFilters(false)}
-                className="w-full mt-4 bg-accent text-accent-foreground font-bold py-3 rounded-xl text-sm active:scale-95 transition-transform"
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-card p-5 overflow-y-auto shadow-2xl"
               >
-                Ver {total.toLocaleString("es-ES")} resultados
-              </button>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-foreground">Filtros</h3>
+                  <button onClick={() => setShowMobileFilters(false)} className="p-1 rounded-lg hover:bg-secondary"><X className="w-5 h-5" /></button>
+                </div>
+                {/* Mobile sort */}
+                <div className="mb-4 pb-4 border-b border-border">
+                  <label className="text-sm font-bold text-foreground mb-2 block">Ordenar por</label>
+                  <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                    className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                    <option value="recent">Más recientes</option>
+                    <option value="price-asc">Precio ↑</option>
+                    <option value="price-desc">Precio ↓</option>
+                    <option value="area">Mayor superficie</option>
+                    <option value="province">Por provincia</option>
+                    <option value="type">Por tipología</option>
+                  </select>
+                </div>
+                <SidebarFilters />
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="w-full mt-4 bg-accent text-accent-foreground font-bold py-3 rounded-xl text-sm active:scale-95 transition-transform"
+                >
+                  Ver {total.toLocaleString("es-ES")} resultados
+                </button>
+              </motion.div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Results */}
         <div className="flex-1 min-w-0">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-20 gap-3"
+            >
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+              <p className="text-sm text-muted-foreground">Buscando oportunidades…</p>
+            </motion.div>
           ) : assets.length === 0 ? (
-            <div className="text-center py-20 bg-card rounded-2xl border border-border">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="text-center py-20 bg-card rounded-2xl border border-border"
+            >
               <Building2 className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg mb-2">No se encontraron oportunidades</p>
-              <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
-            </div>
+              <p className="text-muted-foreground text-lg mb-1">No hemos encontrado nada</p>
+              <p className="text-muted-foreground text-sm mb-4">Prueba a ajustar los filtros o ampliar la búsqueda</p>
+              <button onClick={clearFilters} className="text-sm text-accent hover:underline font-semibold">Limpiar filtros</button>
+            </motion.div>
           ) : viewMode === "map" ? (
-            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>}>
+            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-accent" /></div>}>
               <AssetMapView assets={assets} coverImages={coverImages} />
             </Suspense>
           ) : viewMode === "list" ? (
             <div className="space-y-4">
-              {assets.map((a) => <PropertyListItem key={a.id} asset={a} />)}
+              {assets.map((a, i) => <PropertyListItem key={a.id} asset={a} index={i} />)}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {assets.map((a) => <PropertyCard key={a.id} asset={a} />)}
+              {assets.map((a, i) => <PropertyCard key={a.id} asset={a} index={i} />)}
             </div>
           )}
 
