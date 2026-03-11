@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, TrendingDown } from "lucide-react";
 import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
-import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
+import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
 
 interface NplAsset {
   id: string;
@@ -50,6 +52,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
   const [page, setPage] = useState(1);
   const [provincias, setProvincias] = useState<string[]>([]);
   const [tipos, setTipos] = useState<string[]>([]);
+  const [opportunityFilter, setOpportunityFilter] = useState<OpportunityType | "all">("all");
 
   useEffect(() => {
     supabase.from("npl_assets").select("provincia").then(({ data }) => {
@@ -68,7 +71,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
 
   useEffect(() => {
     loadAssets();
-  }, [page, provincia, tipo, search]);
+  }, [page, provincia, tipo, search, opportunityFilter]);
 
   const loadAssets = async () => {
     setLoading(true);
@@ -84,6 +87,13 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
     if (provincia !== "all") query = query.eq("provincia", provincia);
     if (tipo !== "all") query = query.eq("tipo_activo", tipo);
 
+    // Opportunity type filter
+    if (opportunityFilter === "cdr") query = query.eq("cesion_remate", true);
+    else if (opportunityFilter === "subasta") query = query.eq("postura_subasta", true);
+    else if (opportunityFilter === "reo-ocupado") query = query.eq("propiedad_sin_posesion", true);
+    else if (opportunityFilter === "reo-libre") query = query.eq("propiedad_sin_posesion", false).eq("cesion_remate", false).eq("postura_subasta", false);
+    else if (opportunityFilter === "npl") query = query.eq("cesion_remate", false).eq("postura_subasta", false).eq("propiedad_sin_posesion", false);
+
     const from = (page - 1) * PAGE_SIZE;
     query = query.range(from, from + PAGE_SIZE - 1).order("provincia").order("municipio");
 
@@ -97,6 +107,15 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
 
   return (
     <div>
+      {/* Opportunity Type Legend */}
+      <OpportunityTypeLegend
+        activeType={opportunityFilter}
+        onTypeChange={(t) => { setOpportunityFilter(t); setPage(1); }}
+      />
+
+      {/* Education Nudge */}
+      <EducationNudgeBar activeType={opportunityFilter} />
+
       {/* Filters */}
       <div className="bg-card rounded-2xl border border-border p-5 mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
