@@ -49,7 +49,7 @@ const PropertyListing = () => {
           initialSaleType={searchParams.get("saleType") || ""}
           initialProvince={searchParams.get("province") || ""}
           initialType={searchParams.get("type") || ""}
-          initialView={(searchParams.get("view") as "grid" | "list") || "grid"}
+          initialView={(searchParams.get("view") as "grid" | "list" | "map") || "grid"}
         />
       </div>
 

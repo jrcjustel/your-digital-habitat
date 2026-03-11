@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Search, MapPin, Maximize, TrendingDown, ChevronDown, ChevronUp,
-  LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro,
+  LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro, Map,
 } from "lucide-react";
+import { lazy, Suspense } from "react";
+const AssetMapView = lazy(() => import("@/components/AssetMapView"));
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 import ComplexityMeter from "@/components/intelligence/ComplexityMeter";
@@ -33,7 +35,7 @@ interface NplAsset {
   cartera: string | null;
 }
 
-type ViewMode = "grid" | "list";
+type ViewMode = "grid" | "list" | "map";
 
 export interface UnifiedAssetListingProps {
   initialSearch?: string;
@@ -675,6 +677,7 @@ const UnifiedAssetListing = ({
             {([
               { mode: "grid" as ViewMode, icon: LayoutGrid },
               { mode: "list" as ViewMode, icon: List },
+              { mode: "map" as ViewMode, icon: Map },
             ]).map(({ mode, icon: Icon }) => (
               <button
                 key={mode}
@@ -755,6 +758,10 @@ const UnifiedAssetListing = ({
               <p className="text-muted-foreground text-lg mb-2">No se encontraron oportunidades</p>
               <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
             </div>
+          ) : viewMode === "map" ? (
+            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>}>
+              <AssetMapView assets={assets} coverImages={coverImages} />
+            </Suspense>
           ) : viewMode === "list" ? (
             <div className="space-y-4">
               {assets.map((a) => <PropertyListItem key={a.id} asset={a} />)}
