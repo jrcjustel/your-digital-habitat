@@ -1149,6 +1149,90 @@ export type Database = {
           },
         ]
       }
+      oportunidades_historico: {
+        Row: {
+          asset_id: string | null
+          cartera: string | null
+          comunidad_autonoma: string | null
+          created_at: string
+          deuda_ob: number | null
+          direccion: string | null
+          estado_judicial: string | null
+          estado_ocupacional: string | null
+          fase_judicial: string | null
+          fecha_cierre: string
+          id: string
+          imported_by: string | null
+          motivo: string
+          municipio: string | null
+          npl_asset_id: string
+          precio_orientativo: number | null
+          provincia: string | null
+          ref_catastral: string | null
+          servicer: string | null
+          snapshot_data: Json | null
+          sqm: number | null
+          tipo_activo: string | null
+          tipo_procedimiento: string | null
+          valor_activo: number | null
+          valor_mercado: number | null
+        }
+        Insert: {
+          asset_id?: string | null
+          cartera?: string | null
+          comunidad_autonoma?: string | null
+          created_at?: string
+          deuda_ob?: number | null
+          direccion?: string | null
+          estado_judicial?: string | null
+          estado_ocupacional?: string | null
+          fase_judicial?: string | null
+          fecha_cierre?: string
+          id?: string
+          imported_by?: string | null
+          motivo?: string
+          municipio?: string | null
+          npl_asset_id: string
+          precio_orientativo?: number | null
+          provincia?: string | null
+          ref_catastral?: string | null
+          servicer?: string | null
+          snapshot_data?: Json | null
+          sqm?: number | null
+          tipo_activo?: string | null
+          tipo_procedimiento?: string | null
+          valor_activo?: number | null
+          valor_mercado?: number | null
+        }
+        Update: {
+          asset_id?: string | null
+          cartera?: string | null
+          comunidad_autonoma?: string | null
+          created_at?: string
+          deuda_ob?: number | null
+          direccion?: string | null
+          estado_judicial?: string | null
+          estado_ocupacional?: string | null
+          fase_judicial?: string | null
+          fecha_cierre?: string
+          id?: string
+          imported_by?: string | null
+          motivo?: string
+          municipio?: string | null
+          npl_asset_id?: string
+          precio_orientativo?: number | null
+          provincia?: string | null
+          ref_catastral?: string | null
+          servicer?: string | null
+          snapshot_data?: Json | null
+          sqm?: number | null
+          tipo_activo?: string | null
+          tipo_procedimiento?: string | null
+          valor_activo?: number | null
+          valor_mercado?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           acepta_marketing: boolean | null
