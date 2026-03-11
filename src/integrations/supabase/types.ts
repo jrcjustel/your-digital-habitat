@@ -738,6 +738,120 @@ export type Database = {
         }
         Relationships: []
       }
+      historial_cambios: {
+        Row: {
+          campo_modificado: string
+          created_at: string
+          entidad_id: string
+          entidad_tipo: string
+          id: string
+          ip_address: string | null
+          usuario_id: string | null
+          usuario_nombre: string | null
+          valor_anterior: string | null
+          valor_nuevo: string | null
+        }
+        Insert: {
+          campo_modificado: string
+          created_at?: string
+          entidad_id: string
+          entidad_tipo: string
+          id?: string
+          ip_address?: string | null
+          usuario_id?: string | null
+          usuario_nombre?: string | null
+          valor_anterior?: string | null
+          valor_nuevo?: string | null
+        }
+        Update: {
+          campo_modificado?: string
+          created_at?: string
+          entidad_id?: string
+          entidad_tipo?: string
+          id?: string
+          ip_address?: string | null
+          usuario_id?: string | null
+          usuario_nombre?: string | null
+          valor_anterior?: string | null
+          valor_nuevo?: string | null
+        }
+        Relationships: []
+      }
+      inversiones: {
+        Row: {
+          creado_por: string | null
+          created_at: string
+          duracion_meses: number | null
+          estado: string
+          fecha_cierre: string | null
+          fecha_inversion: string
+          gastos_totales: number
+          id: string
+          inversion_total: number
+          margen_neto: number | null
+          notas: string | null
+          oportunidad_id: string
+          precio_compra: number
+          roi: number | null
+          tir: number | null
+          updated_at: string
+          valor_venta_estimado: number | null
+        }
+        Insert: {
+          creado_por?: string | null
+          created_at?: string
+          duracion_meses?: number | null
+          estado?: string
+          fecha_cierre?: string | null
+          fecha_inversion?: string
+          gastos_totales?: number
+          id?: string
+          inversion_total?: number
+          margen_neto?: number | null
+          notas?: string | null
+          oportunidad_id: string
+          precio_compra?: number
+          roi?: number | null
+          tir?: number | null
+          updated_at?: string
+          valor_venta_estimado?: number | null
+        }
+        Update: {
+          creado_por?: string | null
+          created_at?: string
+          duracion_meses?: number | null
+          estado?: string
+          fecha_cierre?: string | null
+          fecha_inversion?: string
+          gastos_totales?: number
+          id?: string
+          inversion_total?: number
+          margen_neto?: number | null
+          notas?: string | null
+          oportunidad_id?: string
+          precio_compra?: number
+          roi?: number | null
+          tir?: number | null
+          updated_at?: string
+          valor_venta_estimado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inversiones_oportunidad_id_fkey"
+            columns: ["oportunidad_id"]
+            isOneToOne: false
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inversiones_oportunidad_id_fkey"
+            columns: ["oportunidad_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_asset_matches: {
         Row: {
           asset_id: string
