@@ -231,7 +231,7 @@ const MapContainer = ({ data, clusters, onSelect }: {
   clusters: [string, { coords: [number, number]; items: Oportunidad[] }][];
   onSelect: (id: string) => void;
 }) => {
-  const mapRef = useState<HTMLDivElement | null>(null);
+  const mapRef = useRef<HTMLDivElement | null>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
 
   useEffect(() => {
