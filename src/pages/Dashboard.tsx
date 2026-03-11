@@ -20,6 +20,7 @@ import WelcomeWizard from "@/components/WelcomeWizard";
 import FirstOperationChecklist from "@/components/FirstOperationChecklist";
 import JourneyStageWidget from "@/components/JourneyStageWidget";
 import InvestmentChecklistGenerator from "@/components/InvestmentChecklistGenerator";
+import InvestmentDiary from "@/components/InvestmentDiary";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
