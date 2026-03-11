@@ -5,7 +5,8 @@
  *
  * Soporta .xlsx y .csv con mapeo automático de columnas,
  * validación, detección de duplicados, upsert inteligente,
- * gestión de histórico (activos vendidos) y reporte de errores.
+ * gestión de histórico (activos vendidos), reporte de errores
+ * y cálculo automático post-importación (scoring, ROI, TIR).
  *
  * ENDPOINTS (POST /import-npl):
  *
@@ -14,9 +15,10 @@
  *     → Devuelve mapeo sugerido + validación previa
  *
  *   body.action = "import"  (default)
- *     → Recibe { rows: any[], mapping?: Record<string,string>, markSoldMissing?: boolean }
+ *     → Recibe { rows, mapping?, markSoldMissing?, autoCalculate? }
  *     → Ejecuta upsert, marca vendidos, registra cambios
- *     → Devuelve { inserted, updated, sold, errors, errorDetails[] }
+ *     → Auto-calcula scoring/ROI/TIR para insertados y actualizados
+ *     → Devuelve { inserted, updated, sold, calculated, errors, errorDetails[] }
  *
  * SEGURIDAD: Solo admin con permiso importar_excel
  * ============================================================
@@ -429,9 +431,12 @@ Deno.serve(async (req) => {
     }
 
     // ── Phase 4: Execute inserts in batches ─────────────
+    const insertedIds: string[] = [];
+    const updatedIds: string[] = toUpdate.map(u => u.id);
+
     for (let i = 0; i < toInsert.length; i += BATCH_SIZE) {
       const batch = toInsert.slice(i, i + BATCH_SIZE);
-      const { error } = await supabaseAdmin.from("npl_assets").insert(batch);
+      const { data: insertedData, error } = await supabaseAdmin.from("npl_assets").insert(batch).select("id");
       if (error) {
         console.error("Insert batch error:", error);
         for (let j = 0; j < batch.length; j++) {
@@ -439,6 +444,7 @@ Deno.serve(async (req) => {
         }
       } else {
         inserted += batch.length;
+        if (insertedData) insertedIds.push(...insertedData.map((r: any) => r.id));
       }
     }
 
@@ -545,6 +551,39 @@ Deno.serve(async (req) => {
       },
     });
 
+    // ── Phase 8: Auto-calculate scoring post-import ─────
+    const autoCalculate = body.autoCalculate !== false; // default true
+    let calculated = 0;
+    let calcErrors = 0;
+
+    if (autoCalculate) {
+      const idsToCalc = [...insertedIds, ...updatedIds];
+      if (idsToCalc.length > 0) {
+        const CALC_BATCH = 50;
+        const calcUrl = `${Deno.env.get("SUPABASE_URL")}/functions/v1/calculate-investment`;
+
+        for (let i = 0; i < idsToCalc.length; i += CALC_BATCH) {
+          const batchIds = idsToCalc.slice(i, i + CALC_BATCH);
+          try {
+            const resp = await fetch(calcUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": authHeader,
+              },
+              body: JSON.stringify({ batch: true, asset_ids: batchIds }),
+            });
+            const result = await resp.json();
+            calculated += result.calculated || 0;
+            calcErrors += result.errors || 0;
+          } catch (e) {
+            console.error("Auto-calc batch error:", e);
+            calcErrors += batchIds.length;
+          }
+        }
+      }
+    }
+
     // ── Response ────────────────────────────────────────
     return json({
       success: true,
@@ -556,6 +595,8 @@ Deno.serve(async (req) => {
         skipped,
         errors: allErrors.filter(e => e.severity === "error").length,
         warnings: allErrors.filter(e => e.severity === "warning").length,
+        calculated,
+        calcErrors,
       },
       errorDetails: allErrors,
     });
