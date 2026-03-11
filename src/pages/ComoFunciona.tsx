@@ -506,6 +506,12 @@ const ComoFunciona = () => {
         </div>
       </section>
 
+      {/* ── Casos de éxito reales ── */}
+      <RealCaseStudies />
+
+      {/* ── Journey del inversor ── */}
+      <InvestorTimeline />
+
       {/* ── CTA Final ── */}
       <section className="bg-primary py-16">
         <div className="container mx-auto px-4 text-center max-w-2xl">
