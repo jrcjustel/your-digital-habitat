@@ -98,6 +98,7 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
     }
     if (provincia !== "all") query = query.eq("provincia", provincia);
     if (tipo !== "all") query = query.eq("tipo_activo", tipo);
+    if (ccaa !== "all") query = query.eq("comunidad_autonoma", ccaa);
 
     // Opportunity type filter
     if (opportunityFilter === "cdr") query = query.eq("cesion_remate", true);
