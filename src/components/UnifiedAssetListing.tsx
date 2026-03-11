@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Search, MapPin, Maximize, TrendingDown, ChevronDown, ChevronUp,
-  LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro,
+  LayoutGrid, List, X, Heart, Sparkles, Loader2, Building2, Euro, Map,
 } from "lucide-react";
+import { lazy, Suspense } from "react";
+const AssetMapView = lazy(() => import("@/components/AssetMapView"));
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 import ComplexityMeter from "@/components/intelligence/ComplexityMeter";
