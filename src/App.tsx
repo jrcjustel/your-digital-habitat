@@ -98,6 +98,7 @@ import LinkedInProfessionalPage from "./pages/LinkedInProfessionalPage";
 import EducationPage from "./pages/EducationPage";
 import PossessionStatusPage from "./pages/PossessionStatusPage";
 import RoiSimulatorPage from "./pages/RoiSimulatorPage";
+import InvestorSelfAssessment from "./pages/InvestorSelfAssessment";
 
 const queryClient = new QueryClient();
 
