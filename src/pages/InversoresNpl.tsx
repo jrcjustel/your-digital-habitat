@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import InvestmentListing from "@/components/InvestmentListing";
+import UnifiedAssetListing from "@/components/UnifiedAssetListing";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import GlossaryTooltip from "@/components/GlossaryTooltip";
@@ -48,7 +48,7 @@ const InversoresNpl = () => (
       <AssetTypeDeepDive assetType="npl" />
       <LegalSafetyBanner />
       <div className="mt-8">
-        <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
+        <UnifiedAssetListing defaultSaleType="npl" hideSaleTypeFilter />
       </div>
       <VerticalConversionCta assetType="npl" />
       <VerticalFaq assetType="npl" />
