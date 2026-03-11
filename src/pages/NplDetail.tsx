@@ -520,6 +520,14 @@ const NplDetail = () => {
                   </Button>
                 </ShareDossierDialog>
               </div>
+
+              {/* IKESA Invest Score */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
+              </div>
+
+              {/* Academy contextual link */}
+              <AcademyContextualLink category={academyCategory} variant="card" />
             </div>
           </div>
         </div>
