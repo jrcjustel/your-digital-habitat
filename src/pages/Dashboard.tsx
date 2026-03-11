@@ -208,6 +208,18 @@ const Dashboard = () => {
           <Button variant="outline" onClick={handleSignOut}>Cerrar sesión</Button>
         </div>
 
+        <WelcomeWizard />
+
+        {/* First Operation Checklist */}
+        <div className="mb-8">
+          <FirstOperationChecklist
+            profileComplete={!!(profile.display_name && profile.investor_level)}
+            hasFavorites={favorites.length > 0}
+            hasOffers={offers.length > 0}
+            ndaSigned={!!profile.nda_signed}
+          />
+        </div>
+
         {/* Quick Search Section */}
         <Card className="mb-8 border-accent/20 bg-gradient-to-r from-secondary to-card">
           <CardContent className="p-6">
