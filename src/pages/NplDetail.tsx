@@ -326,7 +326,7 @@ const NplDetail = () => {
               </p>
             </div>
             <div className="bg-secondary rounded-xl p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Valor de mercado</p>
+              <p className="text-sm text-muted-foreground mb-1">Valor de subasta</p>
               <p className="text-2xl font-bold text-foreground">
                 {asset.valor_mercado > 0 ? `${asset.valor_mercado.toLocaleString("es-ES")} €` : "A consultar"}
               </p>
