@@ -557,7 +557,7 @@ const UnifiedAssetListing = ({
   };
 
   /* ─── Property List Item ─── */
-  const PropertyListItem = ({ asset }: { asset: NplAsset }) => {
+  const PropertyListItem = ({ asset, index = 0 }: { asset: NplAsset; index?: number }) => {
     const st = resolveSaleType(asset);
     const discount = asset.valor_mercado && asset.precio_orientativo && asset.valor_mercado > 0
       ? Math.round((1 - asset.precio_orientativo / asset.valor_mercado) * 100) : 0;
@@ -570,66 +570,73 @@ const UnifiedAssetListing = ({
 
     return (
       <TooltipProvider delayDuration={300}>
-        <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row transition-all duration-300 hover:shadow-xl hover:border-accent/30">
-          <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0 bg-secondary">
-            <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {asset.referencia_fencia && (
-                <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
-              )}
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
-                {saleTypeLabel(st)}
-              </span>
-            </div>
-            {discount > 0 && (
-              <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                -{discount}%
-              </div>
-            )}
-          </div>
-          <div className="p-5 flex-1 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />{asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
-                  {asset.comunidad_autonoma ? ` · ${asset.comunidad_autonoma}` : ""}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18, delay: Math.min(index * 0.05, 0.4) }}
+          whileHover={{ y: -2, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+        >
+          <Link to={`/npl/${asset.id}`} className="group bg-card rounded-2xl overflow-hidden card-elevated flex flex-col sm:flex-row transition-all duration-300 hover:shadow-xl hover:border-accent/30">
+            <div className="relative sm:w-72 aspect-[16/10] sm:aspect-auto overflow-hidden flex-shrink-0 bg-secondary">
+              <img src={imgUrl} alt={asset.direccion || asset.municipio || "Activo"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" decoding="async" />
+              <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                {asset.referencia_fencia && (
+                  <span className="bg-primary/90 text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">{asset.referencia_fencia}</span>
+                )}
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${saleTypeBgClass(st)}`}>
+                  {saleTypeLabel(st)}
                 </span>
-                {asset.tipo_activo && (
-                  <span className="text-[10px] bg-secondary px-2 py-0.5 rounded-full text-muted-foreground">{asset.tipo_activo}</span>
-                )}
-              </div>
-              <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 text-sm">
-                {asset.direccion || asset.municipio || "Ubicación no disponible"}
-              </h3>
-              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
-                {asset.sqm && asset.sqm > 0 && (
-                  <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
-                )}
-                <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
-                <ListingScorePreview price={asset.precio_orientativo || 0} marketValue={asset.valor_mercado || 0} ocupado={!!asset.propiedad_sin_posesion} provincia={asset.provincia} />
-              </div>
-              <ExitStrategyChips type={oppType} />
-            </div>
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-              <div>
-                {asset.valor_mercado && asset.valor_mercado > 0 && (
-                  <p className="text-xs text-muted-foreground line-through">{asset.valor_mercado.toLocaleString("es-ES")} € mercado</p>
-                )}
-                <p className="font-heading text-lg font-bold text-foreground">
-                  {asset.precio_orientativo && asset.precio_orientativo > 0
-                    ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
-                    : "Consultar"}
-                </p>
               </div>
               {discount > 0 && (
-                <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
-                  <TrendingDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-xs font-bold text-foreground">{discount}% dto.</span>
+                <div className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  -{discount}%
                 </div>
               )}
             </div>
-          </div>
-        </Link>
+            <div className="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{asset.municipio}{asset.provincia ? `, ${asset.provincia}` : ""}
+                    {asset.comunidad_autonoma ? ` · ${asset.comunidad_autonoma}` : ""}
+                  </span>
+                  {asset.tipo_activo && (
+                    <span className="text-[10px] bg-secondary px-2 py-0.5 rounded-full text-muted-foreground">{asset.tipo_activo}</span>
+                  )}
+                </div>
+                <h3 className="font-heading font-bold text-foreground group-hover:text-accent transition-colors mb-2 text-sm">
+                  {asset.direccion || asset.municipio || "Ubicación no disponible"}
+                </h3>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                  {asset.sqm && asset.sqm > 0 && (
+                    <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{asset.sqm.toLocaleString("es-ES")} m²</span>
+                  )}
+                  <ComplexityMeter type={oppType} estadoJudicial={asset.estado_judicial} />
+                  <ListingScorePreview price={asset.precio_orientativo || 0} marketValue={asset.valor_mercado || 0} ocupado={!!asset.propiedad_sin_posesion} provincia={asset.provincia} />
+                </div>
+                <ExitStrategyChips type={oppType} />
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+                <div>
+                  {asset.valor_mercado && asset.valor_mercado > 0 && (
+                    <p className="text-xs text-muted-foreground line-through">{asset.valor_mercado.toLocaleString("es-ES")} € mercado</p>
+                  )}
+                  <p className="font-heading text-lg font-bold text-foreground">
+                    {asset.precio_orientativo && asset.precio_orientativo > 0
+                      ? `${asset.precio_orientativo.toLocaleString("es-ES")} €`
+                      : "Consultar"}
+                  </p>
+                </div>
+                {discount > 0 && (
+                  <div className="flex items-center gap-1.5 bg-secondary px-3 py-1.5 rounded-full">
+                    <TrendingDown className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs font-bold text-foreground">{discount}% dto.</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Link>
+        </motion.div>
       </TooltipProvider>
     );
   };
