@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Search, Building2, ChevronLeft, ChevronRight, Loader2, TrendingDown } from "lucide-react";
 import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
+import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 
 interface NplAsset {
   id: string;
@@ -168,15 +169,15 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                         Ref: {a.referencia_fencia}
                       </span>
                     )}
-                    {a.cesion_remate && (
-                      <span className="text-[10px] font-bold bg-accent text-accent-foreground px-2 py-0.5 rounded-full">CDR</span>
-                    )}
-                    {a.cesion_credito && (
-                      <span className="text-[10px] font-bold bg-primary text-primary-foreground px-2 py-0.5 rounded-full">CC</span>
-                    )}
-                    {a.postura_subasta && (
-                      <span className="text-[10px] font-bold bg-secondary text-foreground px-2 py-0.5 rounded-full">Subasta</span>
-                    )}
+                    <OpportunityTypeBadge
+                      type={resolveOpportunityType({
+                        cesionRemate: a.cesion_remate,
+                        propiedadSinPosesion: a.propiedad_sin_posesion,
+                        posturaSubasta: a.postura_subasta,
+                      })}
+                      size="sm"
+                      showLearnMore
+                    />
                   </div>
                   <p className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">
                     {a.direccion || a.municipio || "Ubicación no disponible"}
