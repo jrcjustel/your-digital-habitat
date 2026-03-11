@@ -97,6 +97,7 @@ import IkesaHubPage from "./pages/IkesaHubPage";
 import LinkedInProfessionalPage from "./pages/LinkedInProfessionalPage";
 import EducationPage from "./pages/EducationPage";
 import PossessionStatusPage from "./pages/PossessionStatusPage";
+import RoiSimulatorPage from "./pages/RoiSimulatorPage";
 
 const queryClient = new QueryClient();
 
