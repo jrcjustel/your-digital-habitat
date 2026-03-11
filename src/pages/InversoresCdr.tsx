@@ -8,6 +8,8 @@ import HowThisWorks from "@/components/HowThisWorks";
 import AssetTypeDeepDive from "@/components/AssetTypeDeepDive";
 import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
+import ListingAcademyBanner from "@/components/ListingAcademyBanner";
+import VerticalConversionCta from "@/components/VerticalConversionCta";
 import { Gavel, Scale, Home, FileText } from "lucide-react";
 
 const highlights = [
@@ -41,12 +43,14 @@ const InversoresCdr = () => (
     </section>
     <div className="container mx-auto px-4 py-8">
       <NewInvestorBanner />
+      <ListingAcademyBanner assetType="cesion" />
       <HowThisWorks assetType="cesion" />
       <AssetTypeDeepDive assetType="cesion" />
       <LegalSafetyBanner />
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
       </div>
+      <VerticalConversionCta assetType="cesion" />
       <Disclaimer type="cesion-remate" />
     </div>
     <RealCaseStudies filterType="cesion" />

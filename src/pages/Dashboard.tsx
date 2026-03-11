@@ -18,6 +18,8 @@ import AlertsCreator from "@/components/AlertsCreator";
 import NdaSigningFlow from "@/components/NdaSigningFlow";
 import WelcomeWizard from "@/components/WelcomeWizard";
 import FirstOperationChecklist from "@/components/FirstOperationChecklist";
+import JourneyStageWidget from "@/components/JourneyStageWidget";
+import InvestmentChecklistGenerator from "@/components/InvestmentChecklistGenerator";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -210,6 +212,14 @@ const Dashboard = () => {
 
         <WelcomeWizard />
 
+        {/* Journey Stage Widget */}
+        <JourneyStageWidget
+          profileComplete={!!(profile.display_name && profile.investor_level)}
+          hasFavorites={favorites.length > 0}
+          hasOffers={offers.length > 0}
+          ndaSigned={!!profile.nda_signed}
+        />
+
         {/* First Operation Checklist */}
         <div className="mb-8">
           <FirstOperationChecklist
@@ -268,6 +278,7 @@ const Dashboard = () => {
             <TabsTrigger value="offers" className="gap-2"><Euro className="w-4 h-4" /> Mis ofertas</TabsTrigger>
             <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Mis documentos</TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Mis alertas</TabsTrigger>
+            <TabsTrigger value="checklist" className="gap-2"><CheckCircle className="w-4 h-4" /> Checklist</TabsTrigger>
           </TabsList>
 
           <TabsContent value="favorites">
@@ -716,6 +727,10 @@ const Dashboard = () => {
                 {saving ? "Guardando..." : "Guardar todos los cambios"}
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="checklist">
+            <InvestmentChecklistGenerator />
           </TabsContent>
         </Tabs>
       </div>

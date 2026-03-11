@@ -100,6 +100,8 @@ import PossessionStatusPage from "./pages/PossessionStatusPage";
 import RoiSimulatorPage from "./pages/RoiSimulatorPage";
 import InvestorSelfAssessment from "./pages/InvestorSelfAssessment";
 import MarketIntelligencePage from "./pages/MarketIntelligencePage";
+import ScoreMethodologyPage from "./pages/ScoreMethodologyPage";
+import RegulatoryFrameworkPage from "./pages/RegulatoryFrameworkPage";
 
 const queryClient = new QueryClient();
 
@@ -173,6 +175,8 @@ const App = () => (
             <Route path="/herramientas/simulador-roi" element={<RoiSimulatorPage />} />
             <Route path="/guia-inversion/test-inversor" element={<InvestorSelfAssessment />} />
             <Route path="/inteligencia-mercado" element={<MarketIntelligencePage />} />
+            <Route path="/guia-inversion/scoring" element={<ScoreMethodologyPage />} />
+            <Route path="/guia-inversion/marco-legal" element={<RegulatoryFrameworkPage />} />
             <Route path="/analisis-inversion" element={<InvestmentAnalysisPage />} />
             <Route path="/mapa" element={<Navigate to="/inmuebles" replace />} />
             <Route path="/comparador" element={<ComparatorPage />} />

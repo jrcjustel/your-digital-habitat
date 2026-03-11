@@ -8,6 +8,8 @@ import HowThisWorks from "@/components/HowThisWorks";
 import AssetTypeDeepDive from "@/components/AssetTypeDeepDive";
 import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
+import ListingAcademyBanner from "@/components/ListingAcademyBanner";
+import VerticalConversionCta from "@/components/VerticalConversionCta";
 import { Home, AlertTriangle, TrendingDown, Scale } from "lucide-react";
 
 const highlights = [
@@ -41,12 +43,14 @@ const InversoresOcupados = () => (
     </section>
     <div className="container mx-auto px-4 py-8">
       <NewInvestorBanner />
+      <ListingAcademyBanner assetType="ocupado" />
       <HowThisWorks assetType="ocupado" />
       <AssetTypeDeepDive assetType="ocupado" />
       <LegalSafetyBanner />
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("propiedad_sin_posesion", true)} />
       </div>
+      <VerticalConversionCta assetType="ocupado" />
       <Disclaimer type="ocupados" />
     </div>
     <RealCaseStudies filterType="ocupado" />

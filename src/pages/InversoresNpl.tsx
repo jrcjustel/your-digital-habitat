@@ -8,6 +8,8 @@ import HowThisWorks from "@/components/HowThisWorks";
 import AssetTypeDeepDive from "@/components/AssetTypeDeepDive";
 import LegalSafetyBanner from "@/components/LegalSafetyBanner";
 import NewInvestorBanner from "@/components/NewInvestorBanner";
+import ListingAcademyBanner from "@/components/ListingAcademyBanner";
+import VerticalConversionCta from "@/components/VerticalConversionCta";
 import { CreditCard, TrendingDown, Shield, FileText } from "lucide-react";
 
 const highlights = [
@@ -40,12 +42,14 @@ const InversoresNpl = () => (
     </section>
     <div className="container mx-auto px-4 py-8">
       <NewInvestorBanner />
+      <ListingAcademyBanner assetType="npl" />
       <HowThisWorks assetType="npl" />
       <AssetTypeDeepDive assetType="npl" />
       <LegalSafetyBanner />
       <div className="mt-8">
         <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
       </div>
+      <VerticalConversionCta assetType="npl" />
       <Disclaimer type="npl" />
     </div>
     <RealCaseStudies filterType="npl" />
