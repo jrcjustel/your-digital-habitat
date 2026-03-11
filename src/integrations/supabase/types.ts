@@ -93,6 +93,13 @@ export type Database = {
             referencedRelation: "npl_assets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "alert_notifications_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       alerts: {
@@ -221,6 +228,13 @@ export type Database = {
             referencedRelation: "npl_assets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "asset_images_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       auction_settings: {
@@ -263,6 +277,13 @@ export type Database = {
             columns: ["asset_id"]
             isOneToOne: true
             referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auction_settings_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: true
+            referencedRelation: "oportunidades"
             referencedColumns: ["id"]
           },
         ]
@@ -328,6 +349,13 @@ export type Database = {
             columns: ["asset_id"]
             isOneToOne: false
             referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bids_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
             referencedColumns: ["id"]
           },
         ]
@@ -536,6 +564,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "contact_log_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contact_log_gestor_id_fkey"
             columns: ["gestor_id"]
             isOneToOne: false
@@ -629,6 +664,13 @@ export type Database = {
             columns: ["npl_asset_id"]
             isOneToOne: false
             referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_npl_asset_id_fkey"
+            columns: ["npl_asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
             referencedColumns: ["id"]
           },
         ]
@@ -733,6 +775,13 @@ export type Database = {
             columns: ["asset_id"]
             isOneToOne: false
             referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "investor_asset_matches_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
             referencedColumns: ["id"]
           },
         ]
@@ -910,6 +959,81 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      oportunidades_extra: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          fecha_publicacion: string | null
+          gastos_fiscales: number | null
+          gastos_judiciales: number | null
+          gastos_notariales: number | null
+          gastos_reforma: number | null
+          id: string
+          liquidez_score: number | null
+          notas: string | null
+          npl_asset_id: string
+          riesgo_judicial: number | null
+          roi_estimado: number | null
+          score_inversion: number | null
+          tir_estimada: number | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          fecha_publicacion?: string | null
+          gastos_fiscales?: number | null
+          gastos_judiciales?: number | null
+          gastos_notariales?: number | null
+          gastos_reforma?: number | null
+          id?: string
+          liquidez_score?: number | null
+          notas?: string | null
+          npl_asset_id: string
+          riesgo_judicial?: number | null
+          roi_estimado?: number | null
+          score_inversion?: number | null
+          tir_estimada?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          fecha_publicacion?: string | null
+          gastos_fiscales?: number | null
+          gastos_judiciales?: number | null
+          gastos_notariales?: number | null
+          gastos_reforma?: number | null
+          id?: string
+          liquidez_score?: number | null
+          notas?: string | null
+          npl_asset_id?: string
+          riesgo_judicial?: number | null
+          roi_estimado?: number | null
+          score_inversion?: number | null
+          tir_estimada?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oportunidades_extra_npl_asset_id_fkey"
+            columns: ["npl_asset_id"]
+            isOneToOne: true
+            referencedRelation: "npl_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oportunidades_extra_npl_asset_id_fkey"
+            columns: ["npl_asset_id"]
+            isOneToOne: true
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1109,6 +1233,13 @@ export type Database = {
             referencedRelation: "npl_assets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "social_posts_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -1249,11 +1380,63 @@ export type Database = {
             referencedRelation: "npl_assets"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "waitlist_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "oportunidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      oportunidades: {
+        Row: {
+          cartera: string | null
+          cesion_credito: boolean | null
+          cesion_remate: boolean | null
+          codigo_postal: string | null
+          comunidad_autonoma: string | null
+          created_at: string | null
+          descripcion: string | null
+          deuda_pendiente: number | null
+          direccion: string | null
+          estado: string | null
+          estado_judicial: string | null
+          estado_ocupacional: string | null
+          fase_judicial: string | null
+          fecha_publicacion: string | null
+          gastos_fiscales: number | null
+          gastos_judiciales: number | null
+          gastos_notariales: number | null
+          gastos_reforma: number | null
+          id: string | null
+          judicializado: boolean | null
+          liquidez_score: number | null
+          margen_bruto_pct: number | null
+          margen_neto: number | null
+          municipio: string | null
+          notas: string | null
+          precio_compra: number | null
+          provincia: string | null
+          publicado: boolean | null
+          ref_catastral: string | null
+          referencia: string | null
+          riesgo_judicial: number | null
+          roi_estimado: number | null
+          score_inversion: number | null
+          servicer: string | null
+          superficie_m2: number | null
+          tipo_activo: string | null
+          tipo_procedimiento: string | null
+          tir_estimada: number | null
+          valor_activo: number | null
+          valor_mercado: number | null
+          vpo: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       calculate_lead_score: { Args: { p_user_id: string }; Returns: number }
