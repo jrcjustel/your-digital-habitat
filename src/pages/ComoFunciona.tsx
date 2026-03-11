@@ -37,6 +37,7 @@ import RealCaseStudies from "@/components/RealCaseStudies";
 import InvestorTimeline from "@/components/InvestorTimeline";
 import InvestmentDecisionMatrix from "@/components/InvestmentDecisionMatrix";
 import OpportunityOriginExplainer from "@/components/OpportunityOriginExplainer";
+import SourcingTransparencyPanel from "@/components/SourcingTransparencyPanel";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
