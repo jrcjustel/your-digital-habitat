@@ -429,9 +429,12 @@ Deno.serve(async (req) => {
     }
 
     // ── Phase 4: Execute inserts in batches ─────────────
+    const insertedIds: string[] = [];
+    const updatedIds: string[] = toUpdate.map(u => u.id);
+
     for (let i = 0; i < toInsert.length; i += BATCH_SIZE) {
       const batch = toInsert.slice(i, i + BATCH_SIZE);
-      const { error } = await supabaseAdmin.from("npl_assets").insert(batch);
+      const { data: insertedData, error } = await supabaseAdmin.from("npl_assets").insert(batch).select("id");
       if (error) {
         console.error("Insert batch error:", error);
         for (let j = 0; j < batch.length; j++) {
@@ -439,6 +442,7 @@ Deno.serve(async (req) => {
         }
       } else {
         inserted += batch.length;
+        if (insertedData) insertedIds.push(...insertedData.map((r: any) => r.id));
       }
     }
 
