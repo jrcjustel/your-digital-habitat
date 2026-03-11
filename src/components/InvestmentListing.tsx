@@ -248,6 +248,14 @@ const InvestmentListing = ({ filterFn, showColumns }: InvestmentListingProps) =>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
+                  <ComplexityMeter
+                    type={resolveOpportunityType({
+                      cesionRemate: a.cesion_remate,
+                      propiedadSinPosesion: a.propiedad_sin_posesion,
+                      posturaSubasta: a.postura_subasta,
+                    })}
+                    estadoJudicial={a.estado_judicial}
+                  />
                   <ListingScorePreview
                     price={a.precio_orientativo}
                     marketValue={a.valor_mercado}
