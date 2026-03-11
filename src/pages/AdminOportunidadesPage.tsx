@@ -165,6 +165,8 @@ const AdminOportunidadesPage = () => {
   const [filterProvincia, setFilterProvincia] = useState("all");
   const [filterTipo, setFilterTipo] = useState("all");
   const [filterRisk, setFilterRisk] = useState("all");
+  const [filterStrategy, setFilterStrategy] = useState<OpStrategy>("all");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [sortField, setSortField] = useState<SortField>("score_inversion");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(0);
