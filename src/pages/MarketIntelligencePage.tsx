@@ -325,7 +325,7 @@ const MarketIntelligencePage = () => (
                     label={{ value: "Retorno ↑", angle: -90, position: "insideLeft", fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                   />
                   <RTooltip content={<CustomScatterTooltip />} />
-                  <Scatter data={RISK_RETURN_DATA} nameKey="name">
+                  <Scatter data={RISK_RETURN_DATA} name="Activos">
                     {RISK_RETURN_DATA.map((d, i) => (
                       <Cell key={i} fill={d.color} />
                     ))}
