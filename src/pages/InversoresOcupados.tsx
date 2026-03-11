@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import InvestmentListing from "@/components/InvestmentListing";
+import UnifiedAssetListing from "@/components/UnifiedAssetListing";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import GlossaryTooltip from "@/components/GlossaryTooltip";
@@ -49,7 +49,7 @@ const InversoresOcupados = () => (
       <AssetTypeDeepDive assetType="ocupado" />
       <LegalSafetyBanner />
       <div className="mt-8">
-        <InvestmentListing filterFn={(q: any) => q.eq("propiedad_sin_posesion", true)} />
+        <UnifiedAssetListing defaultSaleType="ocupado" hideSaleTypeFilter />
       </div>
       <VerticalConversionCta assetType="ocupado" />
       <VerticalFaq assetType="ocupado" />
