@@ -102,6 +102,8 @@ import InvestorSelfAssessment from "./pages/InvestorSelfAssessment";
 import MarketIntelligencePage from "./pages/MarketIntelligencePage";
 import ScoreMethodologyPage from "./pages/ScoreMethodologyPage";
 import RegulatoryFrameworkPage from "./pages/RegulatoryFrameworkPage";
+import HowToReadListingPage from "./pages/HowToReadListingPage";
+import ServicerComparisonPage from "./pages/ServicerComparisonPage";
 
 const queryClient = new QueryClient();
 
