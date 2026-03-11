@@ -35,6 +35,8 @@ import PriceCycleGraph from "@/components/PriceCycleGraph";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import InvestorTimeline from "@/components/InvestorTimeline";
+import InvestmentDecisionMatrix from "@/components/InvestmentDecisionMatrix";
+import OpportunityOriginExplainer from "@/components/OpportunityOriginExplainer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
