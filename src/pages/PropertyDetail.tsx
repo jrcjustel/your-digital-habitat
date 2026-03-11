@@ -751,6 +751,14 @@ const PropertyDetail = () => {
               <p className="text-xs text-muted-foreground mb-1">Referencia</p>
               <p className="font-heading text-lg font-bold text-foreground">{property.reference}</p>
             </div>
+
+            {/* IKESA Invest Score */}
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
+            </div>
+
+            {/* Academy contextual link */}
+            <AcademyContextualLink category={academyCategory} variant="card" />
           </div>
         </div>
 
