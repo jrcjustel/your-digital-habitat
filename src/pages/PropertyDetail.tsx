@@ -1,6 +1,10 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { MapPin, Maximize, Bed, Bath, Calendar, TrendingUp, Share2, Heart, ChevronLeft, ChevronRight, Download, Gavel, Home, FileText, Building2, Scale, Lock, FolderOpen, BarChart3, Calculator } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
+import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
+import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
 import { supabase as sb } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -44,6 +48,34 @@ const PropertyDetail = () => {
   const [fachadaLoading, setFachadaLoading] = useState(false);
 
   const isRestricted = property ? (property.saleType === "npl" || property.saleType === "cesion-remate") : false;
+
+  // Intelligence layer
+  const opportunityType = useMemo(() => property ? resolveOpportunityType({
+    saleType: property.saleType,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "reo-libre" as const, [property]);
+
+  const riskLevel = useMemo(() => property ? deriveRiskLevel({
+    ocupado: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+    judicializado: property.judicialInfo?.judicializado || false,
+    faseJudicial: property.judicialInfo?.phase,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "bajo" as const, [property]);
+
+  const investScoreData = useMemo(() => property ? calculateInvestScore({
+    price: property.price,
+    marketValue: property.marketValue || property.price,
+    ocupado: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+    judicializado: property.judicialInfo?.judicializado || false,
+    faseJudicial: property.judicialInfo?.phase,
+    provincia: property.province,
+    estadoOcupacional: property.occupancyStatus,
+  }) : { score: 0, factors: { discount: 0, legalComplexity: 0, occupancy: 0, liquidity: 0, timeline: 0 } }, [property]);
+
+  const academyCategory = useMemo(() => property ? resolveAcademyCategory({
+    saleType: property.saleType,
+    estadoOcupacional: property.occupancyStatus,
+  }) : "libre" as const, [property]);
 
   useEffect(() => {
     if (user && id) {
@@ -232,6 +264,8 @@ const PropertyDetail = () => {
             <div>
               <div className="flex items-center flex-wrap gap-2">
                 <h2 className="font-heading text-xl font-bold text-foreground">Referencia {property.reference}</h2>
+                <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
+                <RiskTrafficLight level={riskLevel} size="sm" />
                 <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${operationColors[property.operation] || ""}`}>
                   {operationLabels[property.operation]}
                 </span>
@@ -717,6 +751,14 @@ const PropertyDetail = () => {
               <p className="text-xs text-muted-foreground mb-1">Referencia</p>
               <p className="font-heading text-lg font-bold text-foreground">{property.reference}</p>
             </div>
+
+            {/* IKESA Invest Score */}
+            <div className="bg-card rounded-2xl border border-border p-5">
+              <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
+            </div>
+
+            {/* Academy contextual link */}
+            <AcademyContextualLink category={academyCategory} variant="card" />
           </div>
         </div>
 

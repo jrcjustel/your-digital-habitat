@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,6 +9,10 @@ import {
   CreditCard, Gavel, Home, Users, TrendingDown, Euro, Calendar, Hash, Download, Mail, Heart,
   ShieldAlert, Key, AlertTriangle, ExternalLink, Info, ChevronDown, ChevronUp, Phone, Map
 } from "lucide-react";
+import OpportunityTypeBadge, { resolveOpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
+import IkesaInvestScore, { calculateInvestScore } from "@/components/intelligence/IkesaInvestScore";
+import RiskTrafficLight, { deriveRiskLevel } from "@/components/intelligence/RiskTrafficLight";
+import AcademyContextualLink, { resolveAcademyCategory } from "@/components/intelligence/AcademyContextualLink";
 import { generateInvestmentDossier, nplAssetToDossier } from "@/lib/dossier";
 import ShareDossierDialog from "@/components/ShareDossierDialog";
 import EnrichedDossierButton from "@/components/EnrichedDossierButton";
@@ -209,6 +213,38 @@ const NplDetail = () => {
     }
   };
 
+  // Intelligence layer (calculated dynamically, no DB changes) — must be before early returns
+  const opportunityType = useMemo(() => asset ? resolveOpportunityType({
+    cesionRemate: asset.cesion_remate,
+    propiedadSinPosesion: asset.propiedad_sin_posesion,
+    estadoOcupacional: asset.estado_ocupacional || undefined,
+    posturaSubasta: asset.postura_subasta,
+  }) : "npl" as const, [asset]);
+
+  const riskLevel = useMemo(() => asset ? deriveRiskLevel({
+    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+    judicializado: asset.judicializado,
+    faseJudicial: asset.fase_judicial,
+    estadoOcupacional: asset.estado_ocupacional,
+  }) : "medio" as const, [asset]);
+
+  const investScoreData = useMemo(() => asset ? calculateInvestScore({
+    price: asset.precio_orientativo || asset.deuda_ob || 0,
+    marketValue: asset.valor_mercado || 0,
+    ocupado: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+    judicializado: asset.judicializado,
+    faseJudicial: asset.fase_judicial,
+    provincia: asset.provincia,
+    estadoOcupacional: asset.estado_ocupacional,
+  }) : { score: 0, factors: { discount: 0, legalComplexity: 0, occupancy: 0, liquidity: 0, timeline: 0 } }, [asset]);
+
+  const academyCategory = useMemo(() => asset ? resolveAcademyCategory({
+    cesionRemate: asset.cesion_remate,
+    propiedadSinPosesion: asset.propiedad_sin_posesion,
+    estadoOcupacional: asset.estado_ocupacional || undefined,
+    posturaSubasta: asset.postura_subasta,
+  }) : "npl" as const, [asset]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -277,7 +313,11 @@ const NplDetail = () => {
         <div className="bg-card rounded-2xl border border-border overflow-hidden mb-0">
           <div className="p-5 md:p-6">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <span className="text-sm font-bold text-accent">{opLabel}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-bold text-accent">{opLabel}</span>
+                <OpportunityTypeBadge type={opportunityType} size="sm" showLearnMore />
+                <RiskTrafficLight level={riskLevel} size="sm" />
+              </div>
               <span className="text-xs text-muted-foreground">
                 <span className="font-medium text-foreground">Referencia</span> {reference}
               </span>
@@ -480,6 +520,14 @@ const NplDetail = () => {
                   </Button>
                 </ShareDossierDialog>
               </div>
+
+              {/* IKESA Invest Score */}
+              <div className="bg-card rounded-2xl border border-border p-5">
+                <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
+              </div>
+
+              {/* Academy contextual link */}
+              <AcademyContextualLink category={academyCategory} variant="card" />
             </div>
           </div>
         </div>
