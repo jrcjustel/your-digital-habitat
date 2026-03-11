@@ -143,6 +143,7 @@ const OfferForm = ({
       setForm({ nombre: "", apellidos: "", telefono: "", email: "", sociedad: "", nif: "", offerAmount: "", representedName: "", empresa: "", cif: "", mensaje: "" });
       setAlertas(false);
       setMarketing(false);
+      setSubmitted(mode);
 
       window.dispatchEvent(new CustomEvent("ikesa-proactive-chat", {
         detail: {
