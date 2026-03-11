@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, Send, Instagram, Facebook } from "lucide-react";
+import { MessageCircle, Send, Instagram, Facebook, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -9,7 +10,7 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 const footerSections = [
   {
-    title: "Inmuebles",
+    title: "Explora inmuebles",
     links: [
       { label: "Viviendas", href: "/inmuebles?type=vivienda" },
       { label: "Locales", href: "/inmuebles?type=local" },
@@ -22,7 +23,7 @@ const footerSections = [
     ],
   },
   {
-    title: "Academia",
+    title: "Aprende con nosotros",
     links: [
       { label: "Ruta Ocupados", href: "/academia/ruta/ruta-inmuebles-ocupados" },
       { label: "Ruta Cesiones de Remate", href: "/academia/ruta/ruta-cesiones-remate" },
@@ -34,7 +35,7 @@ const footerSections = [
     ],
   },
   {
-    title: "Legal",
+    title: "Transparencia",
     links: [
       { label: "Aviso legal", href: "/aviso-legal" },
       { label: "Política de privacidad", href: "/privacidad" },
@@ -52,141 +53,144 @@ const popularSearches = [
   { label: "NPLs España", href: "/inmuebles?saleType=npl" },
 ];
 
+const socialChannels = [
+  { href: "https://whatsapp.com/channel/IKESA", icon: MessageCircle, label: "Canal WhatsApp", className: "bg-[#25D366] hover:bg-[#20bd5a] text-white" },
+  { href: "https://wa.me/34600000000?text=Hola%2C%20quiero%20información%20sobre%20activos%20IKESA", icon: MessageCircle, label: "WhatsApp directo", className: "bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/30" },
+  { href: "https://t.me/ikesa_inversiones", icon: Send, label: "Canal Telegram", className: "bg-[#0088cc] hover:bg-[#0077b3] text-white" },
+  { href: "https://t.me/ikesa_bot", icon: Send, label: "Bot Telegram", className: "bg-[#0088cc]/20 hover:bg-[#0088cc]/30 text-[#0088cc] border border-[#0088cc]/30" },
+  { href: "https://instagram.com/ikesa_inversiones", icon: Instagram, label: "Instagram", className: "bg-[#E4405F] hover:bg-[#d63150] text-white" },
+  { href: "https://tiktok.com/@ikesa_inversiones", icon: TikTokIcon, label: "TikTok", className: "bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground" },
+  { href: "https://facebook.com/ikesainversiones", icon: Facebook, label: "Facebook", className: "bg-[#1877F2] hover:bg-[#1565d8] text-white" },
+];
+
 const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+    <footer className="bg-primary text-primary-foreground relative overflow-hidden">
+      {/* Organic blob */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+
+      <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
           <div className="col-span-2 md:col-span-1">
             <span className="font-heading text-2xl font-extrabold text-primary-foreground">ikesa</span>
-            <span className="block text-xs text-accent mt-0.5 font-medium">Inmobiliaria / Real Estate</span>
-            <p className="text-primary-foreground/50 text-sm leading-relaxed mt-2">
-              Democratizamos la inversión inmobiliaria. Acceso transparente a oportunidades de alta rentabilidad para todos.
+            <span className="block text-xs text-accent mt-0.5 font-medium tracking-wide">Inmobiliaria / Real Estate</span>
+            <p className="text-primary-foreground/50 text-sm leading-relaxed mt-3">
+              Invertir en inmuebles no debería ser solo para unos pocos. Nosotros te abrimos la puerta.
             </p>
+            <motion.button
+              onClick={() => navigate("/como-funciona")}
+              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:text-accent/80 transition-colors group"
+              whileHover={{ x: 4 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            >
+              Descubre cómo funciona
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </motion.button>
           </div>
-          {footerSections.map((section) => (
-            <div key={section.title}>
-              <h4 className="font-heading font-bold text-sm mb-4">{section.title}</h4>
+
+          {footerSections.map((section, si) => (
+            <motion.div
+              key={section.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ delay: si * 0.08, duration: 0.4 }}
+            >
+              <h4 className="font-heading font-bold text-sm mb-4 text-primary-foreground/90">{section.title}</h4>
               <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <button
                       onClick={() => navigate(link.href)}
-                      className="text-sm text-primary-foreground/50 hover:text-primary-foreground transition-colors text-left"
+                      className="text-sm text-primary-foreground/45 hover:text-primary-foreground hover:translate-x-1 transition-all duration-200 text-left"
                     >
                       {link.label}
                     </button>
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div className="border-t border-primary-foreground/10 pt-8 mb-8">
-          <h4 className="font-heading font-bold text-sm mb-3">Los más buscados</h4>
+        <motion.div
+          className="border-t border-primary-foreground/10 pt-8 mb-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h4 className="font-heading font-bold text-sm mb-3 text-primary-foreground/80">Lo que más se busca ahora</h4>
           <div className="flex flex-wrap gap-2">
             {popularSearches.map((search) => (
-              <button
+              <motion.button
                 key={search.label}
                 onClick={() => navigate(search.href)}
-                className="text-xs text-primary-foreground/40 hover:text-primary-foreground border border-primary-foreground/10 px-3 py-1.5 rounded-full transition-colors"
+                className="text-xs text-primary-foreground/40 hover:text-primary-foreground border border-primary-foreground/10 hover:border-primary-foreground/30 px-3.5 py-1.5 rounded-full transition-all duration-200"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
               >
                 {search.label}
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Canales de difusión */}
-        <div className="border-t border-primary-foreground/10 pt-8 mb-8">
-          <h4 className="font-heading font-bold text-sm mb-4">Síguenos en nuestros canales</h4>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="https://whatsapp.com/channel/IKESA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Canal WhatsApp
-            </a>
-            <a
-              href="https://wa.me/34600000000?text=Hola%2C%20quiero%20información%20sobre%20activos%20IKESA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/30 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <MessageCircle className="w-4 h-4" />
-              WhatsApp directo
-            </a>
-            <a
-              href="https://t.me/ikesa_inversiones"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b3] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <Send className="w-4 h-4" />
-              Canal Telegram
-            </a>
-            <a
-              href="https://t.me/ikesa_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#0088cc]/20 hover:bg-[#0088cc]/30 text-[#0088cc] border border-[#0088cc]/30 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <Send className="w-4 h-4" />
-              Bot Telegram
-            </a>
-            <a
-              href="https://instagram.com/ikesa_inversiones"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#E4405F] hover:bg-[#d63150] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <Instagram className="w-4 h-4" />
-              Instagram
-            </a>
-            <a
-              href="https://tiktok.com/@ikesa_inversiones"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <TikTokIcon className="w-4 h-4" />
-              TikTok
-            </a>
-            <a
-              href="https://facebook.com/ikesainversiones"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#1877F2] hover:bg-[#1565d8] text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-medium"
-            >
-              <Facebook className="w-4 h-4" />
-              Facebook
-            </a>
+        <motion.div
+          className="border-t border-primary-foreground/10 pt-8 mb-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h4 className="font-heading font-bold text-sm mb-1 text-primary-foreground/80">Estemos en contacto</h4>
+          <p className="text-xs text-primary-foreground/40 mb-4">Elige el canal que más te guste — publicamos oportunidades a diario.</p>
+          <div className="flex flex-wrap gap-2.5">
+            {socialChannels.map((ch, i) => (
+              <motion.a
+                key={ch.label}
+                href={ch.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium ${ch.className}`}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.04, duration: 0.3 }}
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <ch.icon className="w-4 h-4" />
+                {ch.label}
+              </motion.a>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
         <div className="border-t border-primary-foreground/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-primary-foreground/30">
-            © 2026 IKESA Inmobiliaria / Real Estate. Todos los derechos reservados.
+            © 2026 IKESA Inmobiliaria / Real Estate · Hecho con cariño en España 🇪🇸
           </p>
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate("/aviso-legal")} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
-              Aviso Legal
-            </button>
-            <button onClick={() => navigate("/privacidad")} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
-              Privacidad
-            </button>
-            <button onClick={() => navigate("/cookies")} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
-              Cookies
-            </button>
-            <button onClick={() => navigate("/canal-denuncias")} className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors">
-              Canal de Denuncias
-            </button>
+            {["Aviso Legal", "Privacidad", "Cookies", "Canal de Denuncias"].map((item) => {
+              const routes: Record<string, string> = {
+                "Aviso Legal": "/aviso-legal",
+                "Privacidad": "/privacidad",
+                "Cookies": "/cookies",
+                "Canal de Denuncias": "/canal-denuncias",
+              };
+              return (
+                <button
+                  key={item}
+                  onClick={() => navigate(routes[item])}
+                  className="text-xs text-primary-foreground/30 hover:text-primary-foreground/60 transition-colors"
+                >
+                  {item}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
