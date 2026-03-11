@@ -4,6 +4,10 @@ import InvestmentListing from "@/components/InvestmentListing";
 import RealCaseStudies from "@/components/RealCaseStudies";
 import Disclaimer from "@/components/Disclaimer";
 import GlossaryTooltip from "@/components/GlossaryTooltip";
+import HowThisWorks from "@/components/HowThisWorks";
+import AssetTypeDeepDive from "@/components/AssetTypeDeepDive";
+import LegalSafetyBanner from "@/components/LegalSafetyBanner";
+import NewInvestorBanner from "@/components/NewInvestorBanner";
 import { CreditCard, TrendingDown, Shield, FileText } from "lucide-react";
 
 const highlights = [
@@ -35,7 +39,13 @@ const InversoresNpl = () => (
       </div>
     </section>
     <div className="container mx-auto px-4 py-8">
-      <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
+      <NewInvestorBanner />
+      <HowThisWorks assetType="npl" />
+      <AssetTypeDeepDive assetType="npl" />
+      <LegalSafetyBanner />
+      <div className="mt-8">
+        <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
+      </div>
       <Disclaimer type="npl" />
     </div>
     <RealCaseStudies filterType="npl" />
