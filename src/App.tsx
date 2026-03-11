@@ -105,6 +105,7 @@ import ScoreMethodologyPage from "./pages/ScoreMethodologyPage";
 import RegulatoryFrameworkPage from "./pages/RegulatoryFrameworkPage";
 import HowToReadListingPage from "./pages/HowToReadListingPage";
 import ServicerComparisonPage from "./pages/ServicerComparisonPage";
+import AdminOportunidadesPage from "./pages/AdminOportunidadesPage";
 
 const queryClient = new QueryClient();
 
