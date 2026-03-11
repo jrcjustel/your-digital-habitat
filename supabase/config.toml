@@ -20,3 +20,9 @@ verify_jwt = false
 
 [functions.batch-scoring]
 verify_jwt = false
+
+[functions.api-oportunidades]
+verify_jwt = false
+
+[functions.api-inversiones]
+verify_jwt = false
