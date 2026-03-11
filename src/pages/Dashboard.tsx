@@ -278,6 +278,7 @@ const Dashboard = () => {
             <TabsTrigger value="offers" className="gap-2"><Euro className="w-4 h-4" /> Mis ofertas</TabsTrigger>
             <TabsTrigger value="documents" className="gap-2"><FolderOpen className="w-4 h-4" /> Mis documentos</TabsTrigger>
             <TabsTrigger value="alerts" className="gap-2"><Bell className="w-4 h-4" /> Mis alertas</TabsTrigger>
+            <TabsTrigger value="checklist" className="gap-2"><CheckCircle className="w-4 h-4" /> Checklist</TabsTrigger>
           </TabsList>
 
           <TabsContent value="favorites">
