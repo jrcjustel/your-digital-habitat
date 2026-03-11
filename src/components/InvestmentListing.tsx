@@ -9,6 +9,7 @@ import ListingScorePreview from "@/components/intelligence/ListingScorePreview";
 import OpportunityTypeBadge, { resolveOpportunityType, type OpportunityType } from "@/components/intelligence/OpportunityTypeBadge";
 import OpportunityTypeLegend from "@/components/intelligence/OpportunityTypeLegend";
 import EducationNudgeBar from "@/components/intelligence/EducationNudgeBar";
+import ExitStrategyChips from "@/components/intelligence/ExitStrategyChips";
 
 interface NplAsset {
   id: string;
