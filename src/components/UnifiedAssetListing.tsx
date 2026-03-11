@@ -758,6 +758,10 @@ const UnifiedAssetListing = ({
               <p className="text-muted-foreground text-lg mb-2">No se encontraron oportunidades</p>
               <button onClick={clearFilters} className="text-sm text-accent hover:underline">Limpiar filtros</button>
             </div>
+          ) : viewMode === "map" ? (
+            <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>}>
+              <AssetMapView assets={assets} coverImages={coverImages} />
+            </Suspense>
           ) : viewMode === "list" ? (
             <div className="space-y-4">
               {assets.map((a) => <PropertyListItem key={a.id} asset={a} />)}
@@ -766,7 +770,7 @@ const UnifiedAssetListing = ({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {assets.map((a) => <PropertyCard key={a.id} asset={a} />)}
             </div>
-          )}
+          )
 
           <Pagination />
 
