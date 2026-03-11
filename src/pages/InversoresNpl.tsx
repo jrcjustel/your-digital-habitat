@@ -37,6 +37,7 @@ const InversoresNpl = () => (
       <InvestmentListing filterFn={(q: any) => q.eq("cesion_credito", true)} />
       <Disclaimer type="npl" />
     </div>
+    <RealCaseStudies filterType="npl" />
     <Footer />
   </div>
 );

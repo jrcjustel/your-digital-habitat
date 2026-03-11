@@ -38,6 +38,7 @@ const InversoresCdr = () => (
       <InvestmentListing filterFn={(q: any) => q.eq("cesion_remate", true)} />
       <Disclaimer type="cesion-remate" />
     </div>
+    <RealCaseStudies filterType="cesion" />
     <Footer />
   </div>
 );
