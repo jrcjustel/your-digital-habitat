@@ -758,6 +758,21 @@ const PropertyDetail = () => {
               <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
             </div>
 
+            {/* Investment Intelligence Panel */}
+            <InvestmentIntelligenceCard
+              input={{
+                price: property.price,
+                marketValue: property.marketValue || property.price,
+                sqm: property.area || undefined,
+                occupied: property.occupancyStatus === "ocupado-con-derecho" || property.occupancyStatus === "ocupado-sin-derecho",
+                occupancyStatus: property.occupancyStatus,
+                judicialPhase: property.judicialInfo?.phase,
+                province: property.province,
+                commissionPct: property.comisionPorcentaje || 0,
+              }}
+              riskLevel={riskLevel}
+            />
+
             {/* Academy contextual link */}
             <AcademyContextualLink category={academyCategory} variant="card" />
           </div>

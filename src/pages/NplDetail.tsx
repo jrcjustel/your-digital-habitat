@@ -527,6 +527,21 @@ const NplDetail = () => {
                 <IkesaInvestScore score={investScoreData.score} factors={investScoreData.factors} size="md" />
               </div>
 
+              {/* Investment Intelligence Panel */}
+              <InvestmentIntelligenceCard
+                input={{
+                  price: asset.precio_orientativo || asset.deuda_ob || 0,
+                  marketValue: asset.valor_mercado || 0,
+                  sqm: asset.sqm || undefined,
+                  occupied: asset.propiedad_sin_posesion || asset.estado_ocupacional === "ocupado",
+                  occupancyStatus: asset.estado_ocupacional,
+                  judicialPhase: asset.fase_judicial,
+                  province: asset.provincia,
+                  commissionPct: asset.comision_porcentaje || 0,
+                }}
+                riskLevel={riskLevel}
+              />
+
               {/* Academy contextual link */}
               <AcademyContextualLink category={academyCategory} variant="card" />
             </div>
