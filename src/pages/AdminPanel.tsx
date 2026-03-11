@@ -147,6 +147,7 @@ const ContactLogTab = () => {
 };
 
 const AdminPanel = () => {
+  const navigate = useNavigate();
   const [kpis, setKpis] = useState<KPIs | null>(null);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [offers, setOffers] = useState<OfferRow[]>([]);
