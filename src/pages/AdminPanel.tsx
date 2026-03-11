@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SocialMediaManager from "@/components/SocialMediaManager";
 import AdminUserDetail from "@/components/AdminUserDetail";
@@ -16,7 +17,7 @@ import {
   BarChart3, Users, FileText, TrendingUp, Building2, Bell, Send,
   Search, ChevronDown, ChevronUp, Eye, Trash2, CheckCircle, XCircle,
   Clock, MessageCircle, Target, Activity, ArrowUpRight, ArrowDownRight,
-  Zap, History, Share2, MapPin,
+  Zap, History, Share2, MapPin, Shield,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -146,6 +147,7 @@ const ContactLogTab = () => {
 };
 
 const AdminPanel = () => {
+  const navigate = useNavigate();
   const [kpis, setKpis] = useState<KPIs | null>(null);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [offers, setOffers] = useState<OfferRow[]>([]);
@@ -428,9 +430,14 @@ const AdminPanel = () => {
             <h1 className="text-3xl font-bold text-foreground">Panel de Administración</h1>
             <p className="text-muted-foreground">Gestión integral del negocio IKESA</p>
           </div>
-          <Button variant="outline" onClick={loadAll} className="gap-2">
-            <Activity className="w-4 h-4" /> Actualizar datos
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => navigate("/admin/roles")} className="gap-2">
+              <Shield className="w-4 h-4" /> Roles y Permisos
+            </Button>
+            <Button variant="outline" onClick={loadAll} className="gap-2">
+              <Activity className="w-4 h-4" /> Actualizar datos
+            </Button>
+          </div>
         </div>
 
         {/* KPIs Grid */}

@@ -39,6 +39,7 @@ import Contacto from "./pages/Contacto";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import NotFound from "./pages/NotFound";
 import AdminPanel from "./pages/AdminPanel";
+import AdminRolesPanel from "./pages/AdminRolesPanel";
 import Academia from "./pages/Academia";
 import AcademiaArticle from "./pages/AcademiaArticle";
 import AcademiaRuta from "./pages/AcademiaRuta";
@@ -128,6 +129,7 @@ const App = () => (
             <Route path="/admin/documentos" element={<AdminRoute><AdminDocuments /></AdminRoute>} />
             <Route path="/admin/leads-valoracion" element={<AdminRoute><AdminValuationLeads /></AdminRoute>} />
             <Route path="/admin/panel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+            <Route path="/admin/roles" element={<AdminRoute><AdminRolesPanel /></AdminRoute>} />
             <Route path="/admin/chats" element={<AdminRoute><ChatManagementPage /></AdminRoute>} />
             <Route path="/admin/documentos-ia" element={<AdminRoute><DocumentManagementPage /></AdminRoute>} />
             <Route path="/admin/leads-inbox" element={<AdminRoute><LeadInboxPage /></AdminRoute>} />
