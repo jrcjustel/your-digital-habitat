@@ -190,7 +190,7 @@ function toDbRecord(mapped: Record<string, any>): Record<string, any> {
     deuda_ob: parseCurrency(mapped.deuda_ob),
     servicer: mapped.servicer || null,
     cartera: mapped.cartera || null,
-    publicado: parseBool(mapped.publicado),
+    publicado: mapped.publicado != null ? parseBool(mapped.publicado) : true,
     ndg: mapped.ndg || null,
     asset_id: mapped.asset_id || null,
     name_debtor: mapped.name_debtor || null,
