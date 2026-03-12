@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const ValuationCta = () => {
   return (
-    <section className="py-8 md:py-10">
+    <section className="py-5 md:py-6">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

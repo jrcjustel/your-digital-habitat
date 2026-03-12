@@ -33,7 +33,7 @@ const categories = [
 
 const CategoryCards = () => {
   return (
-    <section className="py-10 md:py-14" id="particulares">
+    <section className="py-6 md:py-8" id="particulares">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <span className="section-label">Cesiones de préstamos hipotecarios, cesiones de remate a terceros y activos ocupados</span>
