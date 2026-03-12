@@ -29,7 +29,7 @@ const pillars = [
 
 const WhyInvest = () => {
   return (
-    <section className="py-20 md:py-28 bg-background" id="inversores">
+    <section className="py-12 md:py-16 bg-background" id="inversores">
       <div className="container mx-auto px-4">
         {/* Header with image */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
