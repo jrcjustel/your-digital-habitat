@@ -32,7 +32,7 @@ const ServicersBar = () => (
             key={i}
             src={src}
             alt="Entidades colaboradoras"
-            className="h-8 md:h-12 w-auto object-contain flex-shrink-0 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+            className="h-5 md:h-7 w-auto object-contain flex-shrink-0 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
           />
         ))}
       </div>
