@@ -8,7 +8,7 @@ const BlogSection = () => {
   const posts = academyArticles.slice(0, 3);
 
   return (
-    <section className="py-10 md:py-14" id="blog">
+    <section className="py-6 md:py-8" id="blog">
       <div className="container mx-auto px-4">
         <div className="flex items-end justify-between mb-12">
           <div>
