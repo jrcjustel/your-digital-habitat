@@ -7,7 +7,7 @@ const logoStrips = [
 ];
 
 const ServicersBar = () => (
-  <section className="py-10 border-y border-border bg-background overflow-hidden">
+  <section className="py-6 border-y border-border bg-background overflow-hidden">
     <div className="container mx-auto px-4">
       <motion.p
         initial={{ opacity: 0 }}
